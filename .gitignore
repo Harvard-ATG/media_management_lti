@@ -1,0 +1,15 @@
+*~
+.DS_Store
+sqlnet.log
+*.log
+*.pid
+*.pyc
+*.pot
+.vagrant
+*.sqlite3
+pyenv
+# Generated files
+secure.py
+gunicorn.py
+# Where static files are collected
+http_static

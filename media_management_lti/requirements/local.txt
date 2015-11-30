@@ -1,0 +1,10 @@
+# local environment requirements (used for local testing and unit tests)
+
+#includes the base.txt requirements needed in all environments
+-r base.txt 
+ 
+# below are requirements specific to the local environment
+django-debug-toolbar==1.3.2
+mock==1.3.0
+pep8==1.6.2
+flake8==2.4.1
