@@ -57,7 +57,9 @@ ROOT_URLCONF = 'media_management_lti.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'media_manager/app/src/templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
