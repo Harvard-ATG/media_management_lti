@@ -25,11 +25,19 @@ gulp.task('buildCSS', function(){
     .pipe(gulp.dest('build/css'));
 })
 
-gulp.task('buildVendor', function(){
+gulp.task('buildVendorJS', function(){
   return gulp.src('bower_components/**/*.min.js')
     .pipe(concat('vendor.js'))
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('build/js'));
 });
+
+gulp.task('buildVendorCSS', function(){
+  return gulp.src(['bower_components/angular-bootstrap/ui-bootstrap-csp.css'])
+    .pipe(concat('vendor.css'))
+    .pipe(gulp.dest('build/css'));
+});
+
+gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS']);
 
 gulp.task('build', ['moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 

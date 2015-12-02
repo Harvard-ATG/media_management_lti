@@ -1,1 +1,1 @@
-angular.module('media_manage', []);
+angular.module('media_manager', []);
