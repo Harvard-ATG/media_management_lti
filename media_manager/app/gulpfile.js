@@ -26,7 +26,7 @@ gulp.task('buildCSS', function(){
 })
 
 gulp.task('buildVendorJS', function(){
-  return gulp.src('bower_components/**/*.min.js')
+  return gulp.src(['bower_components/angular/angular.min.js', 'bower_components/**/*.min.js'])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/js'));
 });
