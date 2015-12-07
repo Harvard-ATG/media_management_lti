@@ -12,7 +12,7 @@ gulp.task('moveHTML', function(){
 });
 
 gulp.task('buildJS', function(){
-  return gulp.src('src/js/app.js')
+  return gulp.src('src/js/**/*.js')
     .pipe(concat('app.js'))
     .pipe(uglify())
     .pipe(gulp.dest('build/js'));
@@ -26,13 +26,15 @@ gulp.task('buildCSS', function(){
 })
 
 gulp.task('buildVendorJS', function(){
-  return gulp.src(['bower_components/angular/angular.min.js', 'bower_components/**/*.min.js'])
+  return gulp.src(['bower_components/angular/angular.min.js',
+                    'bower_components/**/*.min.js'])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/js'));
 });
 
 gulp.task('buildVendorCSS', function(){
-  return gulp.src(['bower_components/angular-bootstrap/ui-bootstrap-csp.css'])
+  return gulp.src(['bower_components/bootstrap/dist/css/bootstrap.min.css',
+                    'bower_components/angular-bootstrap/ui-bootstrap-csp.css'])
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('build/css'));
 });
