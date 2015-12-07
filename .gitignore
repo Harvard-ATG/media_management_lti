@@ -13,3 +13,8 @@ secure.py
 gunicorn.py
 # Where static files are collected
 http_static
+
+# web app
+node_modules
+bower_components
+app/build
