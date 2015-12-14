@@ -1,4 +1,4 @@
-angular.module('media_manager', ['ngRoute'])
+angular.module('media_manager', ['ngRoute', 'ngDroplet'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {

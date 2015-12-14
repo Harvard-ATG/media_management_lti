@@ -30,4 +30,5 @@ angular.module('media_manager').controller('ListController', [function(){
   var lc = this;
   lc.data = data;
 
+
 }]);
