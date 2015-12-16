@@ -1,11 +1,13 @@
-angular.module('media_manager', ['ngRoute', 'ngDroplet'])
+angular.module('media_manager', ['ngRoute', 'ngDroplet', 'filereader'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
     templateUrl: "templates/main.html"
   })
   .when('/workspace', {
-    templateUrl: "templates/workspace.html"
+    templateUrl: "templates/workspace.html",
+    controller: 'WorkspaceController',
+    controllerAs: 'wc'
   })
   .when('/collections', {
     templateUrl: "templates/collections.html",

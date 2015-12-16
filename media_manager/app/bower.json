@@ -22,6 +22,7 @@
     "angular-route": "~1.4.8",
     "bootstrap": "~3.3.6",
     "ng-droplet": "~0.5.9",
-    "progressbar.js": "~0.9.0"
+    "progressbar.js": "~0.9.0",
+    "angular-fileupload": "angular-filereader#~1.0.4"
   }
 }

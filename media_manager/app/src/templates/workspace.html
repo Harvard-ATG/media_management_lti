@@ -2,7 +2,7 @@
 
 <section class="container">
 
-    <section class="droplet" ng-controller="WorkspaceController" ng-class="{ uploading: interface.isUploading() }">
+    <section class="droplet" ng-class="{ uploading: interface.isUploading() }">
 
         <ul class="statistics">
             <li><label>Valid:</label> {{interface.getFiles(interface.FILE_TYPES.VALID).length}}</li>
@@ -57,13 +57,31 @@
 
                 <li ng-repeat="model in interface.getFiles(interface.FILE_TYPES.VALID)">
                     <droplet-preview ng-model="model"></droplet-preview>
-                    <div class="delete" ng-click="model.deleteFile()">&times;</div>
+                    <!-- <div class="delete" ng-click="model.deleteFile()">&times;</div> -->
                     <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div>
+                    <div class="add" ng-click="wc.addFile(model)">+</div>
+
                 </li>
 
             </ul>
 
         </droplet>
+
+    </section>
+
+
+
+    <section class="toolbar">
+
+        <input type="button" class="button upload-files" value="Save Collection"
+               ng-click="wc.saveCollection()"/>
+    </section>
+    <section class="well">
+      <ul class="list-inline">
+        <li ng-repeat="image in wc.collection">
+          <droplet-preview ng-model="image"></droplet-preview>
+        </li>
+      </ul>
 
     </section>
 

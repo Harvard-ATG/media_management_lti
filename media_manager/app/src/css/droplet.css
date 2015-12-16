@@ -91,7 +91,7 @@ section.container section.droplet droplet {
     position: relative;
     border-radius: 2px;
     width: 100%;
-    height: 400px;
+    height: 200px;
     background-color: rgba(255, 255, 255, .1);
     margin-top: -5px;
     padding-top: 5px;
@@ -121,7 +121,7 @@ section.container section.droplet droplet.event-dragover {
 }
 
 section.container section.droplet droplet comment:after {
-    content: "Drag Image...";
+    /* content: "Drag Image..."; */
     width: 100%;
     height: 100%;
     pointer-events: none;
@@ -133,7 +133,7 @@ section.container section.droplet droplet comment:after {
     text-decoration: none;
     font-weight: normal;
     font-size: 20px;
-    line-height: 400px;
+    line-height: 200px;
     text-align: center;
 }
 
@@ -168,7 +168,7 @@ section.container section.droplet droplet ul.files li {
     margin: 5px;
 }
 
-section.container section.droplet droplet ul.files li img.droplet-preview {
+img.droplet-preview {
     max-width: 96px;
     background-size: cover;
     background-repeat: no-repeat;
@@ -207,6 +207,36 @@ section.container section.droplet droplet ul.files li:hover div.delete {
 }
 
 section.container section.droplet droplet ul.files li div.delete:hover {
+    background-color: rgba(0, 0, 0, .45);
+}
+
+section.container section.droplet droplet ul.files li div.add {
+    background-color: rgba(0, 0, 0, .25);
+    width: 50px;
+    height: 50px;
+    font-family: Lato, Arial, Tahoma, Helvetica, sans-serif;
+    color: white;
+    font-size: 25px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, .25);
+    text-align: center;
+    cursor: pointer;
+    line-height: 50px;
+    position: absolute;
+    border-radius: 50%;
+    z-index: 101;
+    top: 25px;
+    left: 25px;
+    opacity: 0;
+    transition: all .30s;
+    transform: scale(0.5);
+}
+
+section.container section.droplet droplet ul.files li:hover div.add {
+    opacity: 1;
+    transform: scale(1);
+}
+
+section.container section.droplet droplet ul.files li div.add:hover {
     background-color: rgba(0, 0, 0, .45);
 }
 
