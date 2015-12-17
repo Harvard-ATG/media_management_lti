@@ -29,9 +29,10 @@ gulp.task('buildVendorJS', function(){
   return gulp.src(['bower_components/angular/angular.min.js',
                     'bower_components/angular-bootstrap/ui-bootstrap.min.js',
                     'bower_components/angular-fileupload/angular-filereader.min.js',
+                    'bower_components/angular-resource/angular-resource.min.js',
                     'bower_components/angular-route/angular-route.min.js',
                     'bower_components/progressbar.js/dist/progressbar.min.js',
-                    'bower_components/ng-droplet/dist/ng-droplet.js'])
+                    'bower_components/ng-droplet/dist/ng-droplet.min.js'])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/js'));
 });

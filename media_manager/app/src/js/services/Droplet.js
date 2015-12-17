@@ -16,14 +16,14 @@ angular.module('media_manager')
   // Listen for when the interface has been configured.
   ds.whenDropletReady = function() {
 
-      ds.scope.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif', 'svg', 'torrent']);
-      ds.scope.interface.setRequestUrl('http://localhost:7000/upload.html');
-      ds.scope.interface.defineHTTPSuccess([/2.{2}/]);
-      ds.scope.interface.useArray(false);
+      ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif', 'svg', 'torrent']);
+      ds.interface.setRequestUrl('http://localhost:7000/upload.html');
+      ds.interface.defineHTTPSuccess([/2.{2}/]);
+      ds.interface.useArray(false);
 
       dummydata.forEach(function(url){
         addFile(url, function(blob){
-          ds.scope.interface.addFile(blob);
+          ds.interface.addFile(blob);
           ds.scope.$digest();
         });
       });

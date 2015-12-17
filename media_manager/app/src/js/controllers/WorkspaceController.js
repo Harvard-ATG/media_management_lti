@@ -1,8 +1,20 @@
 angular.module('media_manager')
-.controller('WorkspaceController', ['$scope', '$timeout', 'FileReader', 'Droplet', function($scope, $timeout, FileReader, Droplet){
+.controller('WorkspaceController', ['$scope',
+                                    '$timeout',
+                                    'FileReader',
+                                    'Droplet',
+                                    'CourseImages',
+                                    function($scope,
+                                      $timeout,
+                                      FileReader,
+                                      Droplet,
+                                      CourseImages){
 
   var wc = this;
   wc.Droplet = Droplet;
+  wc.courseImages = CourseImages.get({id: 1}, function(){
+    console.log(wc.courseImages);
+  });
 
   Droplet.scope = $scope;
   $scope.$on('$dropletReady', Droplet.whenDropletReady);
