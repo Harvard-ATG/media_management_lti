@@ -1,12 +1,18 @@
 angular.module('media_manager')
 .factory('Courses', ['$resource', function($resource){
-  return $resource('http://localhost:8000/courses/:id');
-}]);
-
-angular.module('media_manager')
-.factory('CourseImages', ['$resource', function($resource){
-  return $resource('http://localhost:8000/courses/:id/images',
-    { id: '@id' },
-    { 'get':    { method:'GET', isArray: true } }
+  var host = 'http://localhost:8000';
+  return $resource(host + '/courses/:id',
+    { id: '@id', image_id: '@image_id', collection_id: '@collection_id' }, {
+      'getImages': {
+        method: 'GET',
+        isArray: true,
+        url: host + '/courses/:id/images/:image_id'
+      },
+      'getCollections': {
+        method: 'GET',
+        isArray: true,
+        url: host + '/courses/:id/collections/:collection_id'
+      }
+    }
   );
 }]);

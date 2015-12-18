@@ -1,5 +1,16 @@
 <section class="background colourful"></section>
 
+<section>
+  <ul class="list-unstyled">
+    <li ng-repeat="collection in wc.courseCollections">
+      {{ collection.title }}
+    </li>
+  </ul>
+
+</section>
+
+
+
 <section class="container">
 
 <!--
@@ -27,12 +38,11 @@
 
       <ul class="files">
 
-        <li ng-repeat="image in wc.courseImages">
+        <li ng-if="image.image_url" ng-repeat="image in wc.courseImages">
           <droplet-thumb ng-model="image"></droplet-thumb>
           <!-- <div class="delete" ng-click="model.deleteFile()">&times;</div> -->
           <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div>
-          <div class="add" ng-click="wc.addFile(model)">+</div>
-
+          <div class="add" ng-click="wc.addFile(image)">+</div>
         </li>
 
       </ul>

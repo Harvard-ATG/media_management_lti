@@ -3,27 +3,37 @@ angular.module('media_manager')
                                     '$timeout',
                                     'FileReader',
                                     'Droplet',
-                                    'CourseImages',
+                                    'Courses',
                                     function($scope,
                                       $timeout,
                                       FileReader,
                                       Droplet,
-                                      CourseImages){
+                                      Courses){
 
   var wc = this;
   wc.Droplet = Droplet;
-  wc.courseImages = CourseImages.get({id: 1}, function(){
-    console.log(wc.courseImages);
-  });
+  wc.courseImages = Courses.getImages({id: 1});
+  wc.courseCollections = CourseCollections.get({id: 1});
+
 
   Droplet.scope = $scope;
   $scope.$on('$dropletReady', Droplet.whenDropletReady);
   $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
   $scope.$on('$dropletError', Droplet.onDropletError);
 
+  // TODO: upload...
+
   wc.collection = [];
-  wc.addFile = function(model){
-    wc.collection.push(model);
+  wc.addFile = function(image){
+    wc.collection.push(image);
+  };
+
+  wc.saveCollection = function(){
+    if(wc.current_collection == undefined){
+      // post to create a new collection
+
+      // post the images array
+    }
   };
 
 }]);
