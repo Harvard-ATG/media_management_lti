@@ -1,5 +1,5 @@
 angular.module('media_manager')
-.factory('Courses', ['$resource', function($resource){
+.factory('Course', ['$resource', function($resource){
   var host = 'http://localhost:8000';
   return $resource(host + '/courses/:id',
     { id: '@id', image_id: '@image_id', collection_id: '@collection_id' }, {
