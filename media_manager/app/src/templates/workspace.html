@@ -1,63 +1,73 @@
-<section class="background colourful"></section>
+<div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
 
-<section>
-  <ul class="list-unstyled">
-    <li ng-repeat="collection in wc.courseCollections">
-      {{ collection.title }}
-      <button ng-click="wc.deleteCollection(collection.id)" type="button" class="btn btn-default btn-xs">
-        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-      </button>
-    </li>
-  </ul>
+          <section>
+            <ul class="nav nav-sidebar">
+              <li ng-repeat="collection in wc.courseCollections">
+                <a ng-href="/#/collection.id">{{ collection.title }}</a>
+                <!--
+                <button ng-click="wc.deleteCollection(collection.id)" type="button" class="btn btn-default btn-xs">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+                -->
+              </li>
+            </ul>
+          </section>
 
-</section>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Workspace</h1>
+
+          <section class="droplet well" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
+
+            <droplet ng-model="wc.Droplet.interface">
+
+              <div class="loading" ng-class="{ visible: wc.Droplet.interface.isUploading() }">
+                <svg viewBox="0 0 400 400">
+                  <path class="loading-path" data-progressbar ng-model="wc.Droplet.interface.progress.percent"
+                        d="M 0,1 L 398,1 L 398,234 L 1,234 L 0,1"
+                        stroke="#D3B2D1" stroke-width="1" fill-opacity="0"
+                        style="stroke-dasharray: 392px, 392px;stroke-dashoffset: 392px;"></path>
+                </svg>
+              </div>
+
+              <comment></comment>
+
+              <ul class="files">
+
+                <li ng-if="image.image_url" ng-repeat="image in wc.courseImages">
+                  <droplet-thumb ng-model="image"></droplet-thumb>
+                  <!-- <div class="delete" ng-click="model.deleteFile()">&times;</div> -->
+                  <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div>
+                  <div class="add" ng-click="wc.addFile(image)">+</div>
+                </li>
+
+              </ul>
+
+            </droplet>
+
+          </section>
+
+
+          <h2 class="sub-header">Current Collection</h2>
+
+          <section class="toolbar">
+
+            <input type="button" class="button upload-files" value="Save Collection"
+                   ng-click="wc.saveCollection()"/>
+          </section>
+          <section class="well">
+            <ul class="list-inline">
+              <li ng-repeat="image in wc.collection.images">
+                <droplet-thumb ng-model="image"></droplet-thumb>
+              </li>
+            </ul>
+
+          </section>
 
 
 
-<section class="container">
-
-  <section class="droplet" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
-
-    <droplet ng-model="wc.Droplet.interface">
-
-      <div class="loading" ng-class="{ visible: wc.Droplet.interface.isUploading() }">
-        <svg viewBox="0 0 400 400">
-          <path class="loading-path" data-progressbar ng-model="wc.Droplet.interface.progress.percent"
-                d="M 0,1 L 398,1 L 398,234 L 1,234 L 0,1"
-                stroke="#D3B2D1" stroke-width="1" fill-opacity="0"
-                style="stroke-dasharray: 392px, 392px;stroke-dashoffset: 392px;"></path>
-        </svg>
+        </div>
       </div>
-
-      <comment></comment>
-
-      <ul class="files">
-
-        <li ng-if="image.image_url" ng-repeat="image in wc.courseImages">
-          <droplet-thumb ng-model="image"></droplet-thumb>
-          <!-- <div class="delete" ng-click="model.deleteFile()">&times;</div> -->
-          <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div>
-          <div class="add" ng-click="wc.addFile(image)">+</div>
-        </li>
-
-      </ul>
-
-    </droplet>
-
-  </section>
-
-  <section class="toolbar">
-
-    <input type="button" class="button upload-files" value="Save Collection"
-           ng-click="wc.saveCollection()"/>
-  </section>
-  <section class="well">
-    <ul class="list-inline">
-      <li ng-repeat="image in wc.collection.images">
-        <droplet-thumb ng-model="image"></droplet-thumb>
-      </li>
-    </ul>
-
-  </section>
-
-</section>
+    </div>

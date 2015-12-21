@@ -1,13 +1,13 @@
 angular.module('media_manager')
 .controller('WorkspaceController', ['$scope',
                                     '$timeout',
-                                    'FileReader',
+                                    '$routeParams',
                                     'Droplet',
                                     'Course',
                                     'Collection',
                                     function($scope,
                                       $timeout,
-                                      FileReader,
+                                      $routeParams,
                                       Droplet,
                                       Course,
                                       Collection){
@@ -24,9 +24,15 @@ angular.module('media_manager')
 
   // TODO: upload...
 
-  //wc.collection = [];
-  wc.collection = new Collection();
-  wc.collection.images = [];
+
+  if($routeParams.collectionId !== undefined){
+    wc.collection = Collection.get({id: $routeParams.collectionId});
+  } else {
+    //wc.collection = [];
+    wc.collection = new Collection();
+    wc.collection.images = [];
+  }
+
 
   wc.addFile = function(image){
     wc.collection.images.push(image);
@@ -64,5 +70,7 @@ angular.module('media_manager')
       });
     });
   };
+
+
 
 }]);
