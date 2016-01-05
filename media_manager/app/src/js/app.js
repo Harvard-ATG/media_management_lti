@@ -4,7 +4,12 @@ angular.module('media_manager', ['ngRoute', 'ngDroplet', 'filereader', 'ngResour
   .when('/', {
     templateUrl: "templates/main.html"
   })
-  .when('/workspace/', {
+  .when('/workspace', {
+    templateUrl: "templates/workspace.html",
+    controller: 'WorkspaceController',
+    controllerAs: 'wc'
+  })
+  .when('/workspace/:collectionId', {
     templateUrl: "templates/workspace.html",
     controller: 'WorkspaceController',
     controllerAs: 'wc'
