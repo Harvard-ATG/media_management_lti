@@ -7,7 +7,10 @@ angular.module('media_manager')
         method: 'POST',
         url: host + '/collections/:id/images',
         isArray: true
-      }
+      },
+      'update': {
+        method:'PUT'
+      }    
     }
   );
 }]);
