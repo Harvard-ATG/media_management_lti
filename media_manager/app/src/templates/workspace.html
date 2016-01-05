@@ -4,8 +4,13 @@
 
           <section>
             <ul class="nav nav-sidebar">
+              <li>
+                <a ng-href="/#/workspace" class="btn btn-default" aria-label="New Collection">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </a>
+              </li>
               <li ng-repeat="collection in wc.courseCollections">
-                <a ng-href="/#/collection.id">{{ collection.title }}</a>
+                <a ng-href="/#/workspace/{{collection.id}}">{{ collection.title }}</a>
                 <!--
                 <button ng-click="wc.deleteCollection(collection.id)" type="button" class="btn btn-default btn-xs">
                   <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -46,16 +51,20 @@
               </ul>
 
             </droplet>
+            <label>Filelist length:</label> {{wc.Droplet.interface.getFiles().length}}
 
           </section>
 
 
-          <h2 class="sub-header">Current Collection</h2>
+          <h2 class="sub-header"><span editable-text="wc.collection.title">{{ wc.collection.title }}</span></h1>
+
 
           <section class="toolbar">
 
             <input type="button" class="button upload-files" value="Save Collection"
-                   ng-click="wc.saveCollection()"/>
+                  ng-click="wc.saveCollection()"/>
+            <input type="button" class="button upload-files" value="Delete Collection"
+                  ng-click="wc.deleteCollection()"/>
           </section>
           <section class="well">
             <ul class="list-inline">
