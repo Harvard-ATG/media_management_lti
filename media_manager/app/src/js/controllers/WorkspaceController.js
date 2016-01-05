@@ -2,12 +2,14 @@ angular.module('media_manager')
 .controller('WorkspaceController', ['$scope',
                                     '$timeout',
                                     '$routeParams',
+                                    '$location',
                                     'Droplet',
                                     'Course',
                                     'Collection',
                                     function($scope,
                                       $timeout,
                                       $routeParams,
+                                      $location,
                                       Droplet,
                                       Course,
                                       Collection){
@@ -37,6 +39,8 @@ angular.module('media_manager')
     //wc.collection = [];
     wc.collection = new Collection();
     wc.collection.images = [];
+    wc.collection.title = "Untitled Collection";
+
   }
 
 
@@ -45,9 +49,9 @@ angular.module('media_manager')
   };
 
   wc.saveCollection = function(){
-    if(wc.current_collection == undefined){
+    if($routeParams.collectionId === undefined){
+      console.log("new collection");
       // post to create a new collection
-      wc.collection.title = "Untitled Collection";
       wc.collection.course_id = 1;
 
       // post to save a new collection
@@ -64,6 +68,23 @@ angular.module('media_manager')
       });
 
     } else {
+      console.log("update collection");
+      console.log(wc.collection.id);
+      if(wc.collection.description == ''){
+        wc.collection.description = "something";
+      }
+
+      Collection.update({}, wc.collection, function(data){
+
+        var collectionPostData = wc.collection.images.map(function(image){
+          return {course_image_id: image.id};
+        });
+        // posting the array of images
+        Collection.saveImages({id: data.id}, collectionPostData, function(data){
+          //wc.courseCollections = Course.getCollections({id: 1});
+          wc.courseCollections.push(wc.collection);
+        });
+      });
 
 
     }
@@ -77,6 +98,7 @@ angular.module('media_manager')
           wc.courseCollections.splice(index, 1);
         }
       });
+      $location.path('/');
     });
   };
 
