@@ -12,6 +12,7 @@ angular.module('media_manager')
                                       Course,
                                       Collection){
 
+
   var wc = this;
   wc.Droplet = Droplet;
   wc.courseImages = Course.getImages({id: 1});
@@ -21,8 +22,13 @@ angular.module('media_manager')
   $scope.$on('$dropletReady', Droplet.whenDropletReady);
   $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
   $scope.$on('$dropletError', Droplet.onDropletError);
+  $scope.$on('$dropletFileAdded', function(){
+    wc.Droplet.interface.uploadFiles();
+  });
 
   // TODO: upload...
+
+
 
 
   if($routeParams.collectionId !== undefined){
@@ -56,6 +62,9 @@ angular.module('media_manager')
           wc.courseCollections.push(wc.collection);
         });
       });
+
+    } else {
+
 
     }
   };
