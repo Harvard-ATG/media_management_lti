@@ -31,14 +31,16 @@ gulp.task('buildVendorJS', function(){
                     'bower_components/angular-fileupload/angular-filereader.min.js',
                     'bower_components/angular-resource/angular-resource.min.js',
                     'bower_components/angular-route/angular-route.min.js',
+                    'bower_components/angular-xeditable/dist/js/xeditable.min.js',
                     'bower_components/progressbar.js/dist/progressbar.min.js',
-                    'bower_components/ng-droplet/dist/ng-droplet.min.js'])
+                    'bower_components/ng-droplet/dist/ng-droplet.js'])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/js'));
 });
 
 gulp.task('buildVendorCSS', function(){
   return gulp.src(['bower_components/bootstrap/dist/css/bootstrap.min.css',
+                    'bower_components/angular-xeditable/dist/css/xeditable.css',
                     'bower_components/angular-bootstrap/ui-bootstrap-csp.css'])
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('build/css'));
