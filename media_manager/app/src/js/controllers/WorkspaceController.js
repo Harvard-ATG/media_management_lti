@@ -48,6 +48,14 @@ angular.module('media_manager')
     wc.collection.images.push(image);
   };
 
+  wc.removeFile = function(image){
+    wc.collection.images.forEach(function(imageInstance, arr, index){
+      if(imageInstance.id == image.id){
+        wc.collection.images.splice(index, 1);
+      }
+    });
+  };
+
   wc.saveCollection = function(){
     if($routeParams.collectionId === undefined){
       console.log("new collection");
@@ -57,14 +65,19 @@ angular.module('media_manager')
       // post to save a new collection
       Collection.save({}, wc.collection, function(data){
 
+        console.log(data);
+
         var collectionPostData = wc.collection.images.map(function(image){
           return {course_image_id: image.id};
         });
         // posting the array of images
-        Collection.saveImages({id: data.id}, collectionPostData, function(data){
+        Collection.saveImages({id: data.id}, collectionPostData, function(){
           //wc.courseCollections = Course.getCollections({id: 1});
+          wc.collection.id = data.id;
           wc.courseCollections.push(wc.collection);
+          $location.path('/workspace/' + data.id);
         });
+
       });
 
     } else {
@@ -84,6 +97,18 @@ angular.module('media_manager')
           //wc.courseCollections = Course.getCollections({id: 1});
           wc.courseCollections.push(wc.collection);
         });
+      }, function(data){
+
+        console.log("failed.. but still going forward!");
+        var collectionPostData = wc.collection.images.map(function(image){
+          return {course_image_id: image.id};
+        });
+        // posting the array of images
+        Collection.saveImages({id: data.id}, collectionPostData, function(data){
+          //wc.courseCollections = Course.getCollections({id: 1});
+          wc.courseCollections.push(wc.collection);
+        });
+
       });
 
 
@@ -91,15 +116,18 @@ angular.module('media_manager')
   };
 
   wc.deleteCollection = function(id){
-    Collection.delete({id: id}, function(){
-      //wc.courseCollections = Course.getCollections({id: 1});
+    wc.collection.$delete(function(){
       wc.courseCollections.forEach(function(collection, index){
         if(collection.id == id){
           wc.courseCollections.splice(index, 1);
         }
       });
-      $location.path('/');
+      $location.path('/workspace');
     });
+  };
+
+  wc.actuallyDeleteCollection = function(id){
+
   };
 
 
