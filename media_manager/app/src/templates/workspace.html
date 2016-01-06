@@ -9,7 +9,7 @@
                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                 </a>
               </li>
-              <li ng-repeat="collection in wc.courseCollections" ng-class="{active:false}">
+              <li ng-repeat="collection in wc.courseCollections" ng-class="{active:wc.isActiveCollection(collection.id)}">
                 <a ng-href="/#/workspace/{{collection.id}}">{{ collection.title }}</a>
                 <!--
                 <button ng-click="wc.deleteCollection(collection.id)" type="button" class="btn btn-default btn-xs">
@@ -64,15 +64,6 @@
             </ul>
 
           </section>
-
-          <div id="confirm-delete" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-            <div class="modal-dialog modal-sm">
-              <div class="modal-content">
-                ...
-              </div>
-            </div>
-          </div>
-
 
 
 

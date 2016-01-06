@@ -7,6 +7,7 @@ angular.module('media_manager')
                                     'Droplet',
                                     'Course',
                                     'Collection',
+                                    'CollectionCache',
                                     function($scope,
                                       $timeout,
                                       $routeParams,
@@ -14,13 +15,17 @@ angular.module('media_manager')
                                       $uibModal,
                                       Droplet,
                                       Course,
-                                      Collection){
+                                      Collection,
+                                      CollectionCache){
 
 
   var wc = this;
   wc.Droplet = Droplet;
   wc.courseImages = Course.getImages({id: 1});
-  wc.courseCollections = Course.getCollections({id: 1});
+  if(CollectionCache.collections.length === 0){
+    CollectionCache.collections = Course.getCollections({id: 1});
+  }
+  wc.courseCollections = CollectionCache.collections;
 
   Droplet.scope = $scope;
   $scope.$on('$dropletReady', Droplet.whenDropletReady);
@@ -30,8 +35,12 @@ angular.module('media_manager')
     wc.Droplet.interface.uploadFiles();
   });
 
-  // TODO: upload...
-
+  wc.isActiveCollection = function(id){
+    if(id == wc.collection.id){
+      return true;
+    }
+    return false;
+  };
 
 
 
@@ -128,7 +137,7 @@ angular.module('media_manager')
           modalInstance.close();
         };
         cd.cancel = function(){
-          modalInstance.close();  
+          modalInstance.close();
         };
       }],
       controllerAs: 'cd',

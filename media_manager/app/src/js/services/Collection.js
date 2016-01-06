@@ -10,7 +10,12 @@ angular.module('media_manager')
       },
       'update': {
         method:'PUT'
-      }    
+      }
     }
   );
+}]);
+angular.module('media_manager')
+.service('CollectionCache', [function(){
+  this.collections = [];
+  this.current = {id: null};
 }]);
