@@ -33,6 +33,7 @@ gulp.task('buildVendorJS', function(){
                     'bower_components/angular-route/angular-route.min.js',
                     'bower_components/angular-xeditable/dist/js/xeditable.min.js',
                     'bower_components/progressbar.js/dist/progressbar.min.js',
+                    'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
                     'bower_components/ng-droplet/dist/ng-droplet.js'])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/js'));
