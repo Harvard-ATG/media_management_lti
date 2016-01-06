@@ -153,8 +153,11 @@ angular.module('media_manager')
 
   wc.actuallyDeleteCollection = function(id){
     wc.collection.$delete(function(){
+      console.log("initial: " + id);
       wc.courseCollections.forEach(function(collection, index){
+        console.log(collection.id);
         if(collection.id == id){
+          console.log("removing... " + id);
           wc.courseCollections.splice(index, 1);
         }
       });
