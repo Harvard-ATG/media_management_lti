@@ -16,3 +16,7 @@ angular.module('media_manager')
     }
   );
 }]);
+angular.module('media_manager')
+.service('ImageCache', [function(){
+  this.images = [];
+}]);

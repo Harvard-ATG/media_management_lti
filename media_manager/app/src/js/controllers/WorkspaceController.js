@@ -8,6 +8,7 @@ angular.module('media_manager')
                                     'Course',
                                     'Collection',
                                     'CollectionCache',
+                                    'ImageCache',
                                     function($scope,
                                       $timeout,
                                       $routeParams,
@@ -16,12 +17,17 @@ angular.module('media_manager')
                                       Droplet,
                                       Course,
                                       Collection,
-                                      CollectionCache){
+                                      CollectionCache,
+                                      ImageCache){
 
 
   var wc = this;
   wc.Droplet = Droplet;
-  wc.courseImages = Course.getImages({id: 1});
+  if(ImageCache.images.length === 0){
+    ImageCache.images = Course.getImages({id: 1});
+  }
+  wc.courseImages = ImageCache.images;
+
   if(CollectionCache.collections.length === 0){
     CollectionCache.collections = Course.getCollections({id: 1});
   }
