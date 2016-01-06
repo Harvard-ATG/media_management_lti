@@ -3,6 +3,7 @@ angular.module('media_manager')
                                     '$timeout',
                                     '$routeParams',
                                     '$location',
+                                    '$uibModal',
                                     'Droplet',
                                     'Course',
                                     'Collection',
@@ -10,6 +11,7 @@ angular.module('media_manager')
                                       $timeout,
                                       $routeParams,
                                       $location,
+                                      $uibModal,
                                       Droplet,
                                       Course,
                                       Collection){
@@ -115,7 +117,26 @@ angular.module('media_manager')
     }
   };
 
-  wc.deleteCollection = function(id){
+  wc.deleteCollectionModal = function(id){
+    var modalInstance = $uibModal.open({
+      animation: false,
+      templateUrl: 'templates/confirmDelete.html',
+      controller: ['$scope', function($scope){
+        var cd = this;
+        cd.ok = function(){
+          wc.actuallyDeleteCollection(id);
+          modalInstance.close();
+        };
+        cd.cancel = function(){
+          modalInstance.close();  
+        };
+      }],
+      controllerAs: 'cd',
+      size: 'sm'
+    });
+  };
+
+  wc.actuallyDeleteCollection = function(id){
     wc.collection.$delete(function(){
       wc.courseCollections.forEach(function(collection, index){
         if(collection.id == id){
@@ -124,10 +145,6 @@ angular.module('media_manager')
       });
       $location.path('/workspace');
     });
-  };
-
-  wc.actuallyDeleteCollection = function(id){
-
   };
 
 
