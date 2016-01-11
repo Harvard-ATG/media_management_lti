@@ -58,7 +58,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'media_manager/app/src/templates')
+            os.path.join(BASE_DIR, 'app/build')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -143,9 +143,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-# This directory is being ignored by git
-STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'http_static'))
-STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'app/build'))
+STATIC_URL = '/build/'
+
+STATICFILES_DIRS = [
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+	os.path.join(BASE_DIR, 'app/build'),
+]
 
 # Logging
 # https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging
