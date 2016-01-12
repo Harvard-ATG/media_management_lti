@@ -73,3 +73,4 @@ gulp.task('watch', function(){
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);
+gulp.task('dev', ['build', 'watch']);
