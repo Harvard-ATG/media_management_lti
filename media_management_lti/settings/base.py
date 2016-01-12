@@ -25,12 +25,13 @@ DEBUG = SECURE_SETTINGS.get('enable_debug', False)
 # Application definition
 
 INSTALLED_APPS = [
-    #  'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_app_lti',
     'media_manager',
 ]
 
@@ -41,6 +42,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django_auth_lti.middleware.LTIAuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -51,6 +53,13 @@ MIDDLEWARE_CLASSES = [
 # other than the built-in Django auth, such as PIN, LTI, etc.
 # AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 # LOGIN_URL = '/accounts/login'
+AUTHENTICATION_BACKENDS = (
+    #'libs.auth.GoogleBackend',
+    #'django_openid_auth.auth.OpenIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'django_auth_lti.backends.LTIAuthBackend',
+)
+
 
 ROOT_URLCONF = 'media_management_lti.urls'
 
@@ -205,5 +214,28 @@ LOGGING = {
         # after an app logger handles a log message.
     },
 }
+
+# Add LTI configuration settings (for django-app-lti)
+LTI_SETUP = {
+    "TOOL_TITLE": "Media Manager",
+    "TOOL_DESCRIPTION": "Management of Medias",
+    "LAUNCH_URL": "lti:launch", # defaults to "lti:launch"
+    "LAUNCH_REDIRECT_URL": "media_manager:index",
+    "INITIALIZE_MODELS": False, # can be: False | resource_only | resource_and_course | resource_and_course_users
+    "EXTENSION_PARAMETERS": {
+        "canvas.instructure.com": {
+            "privacy_level": "public",
+            "course_navigation": {
+                "enabled": "true",
+                "default": "disabled",
+                "text": "Media Manager (localhost)",
+            }
+        }
+    }
+}
+
+# Add LTI oauth credentials (for django-auth-lti)
+LTI_OAUTH_CREDENTIALS = {"mykey":"mysecret"}
+
 
 # Other project specific settings
