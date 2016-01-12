@@ -2,20 +2,20 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
-    templateUrl: "templates/main.html"
+    templateUrl: "build/templates/main.html"
   })
   .when('/workspace', {
-    templateUrl: "templates/workspace.html",
+    templateUrl: "build/templates/workspace.html",
     controller: 'WorkspaceController',
     controllerAs: 'wc'
   })
   .when('/workspace/:collectionId', {
-    templateUrl: "templates/workspace.html",
+    templateUrl: "build/templates/workspace.html",
     controller: 'WorkspaceController',
     controllerAs: 'wc'
   })
   .when('/collections', {
-    templateUrl: "templates/collections.html",
+    templateUrl: "build/templates/collections.html",
     controller: 'ListController',
     controllerAs: 'lc'
   });
