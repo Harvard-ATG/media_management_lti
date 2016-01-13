@@ -1,4 +1,4 @@
-"""media_management_lti URL Configuration
+"""media_manager URL Configuration
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/{{ docs_version }}/topics/http/urls/
 Examples:
@@ -14,10 +14,9 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from media_manager import views
 
 urlpatterns = [
     #  url(r'^admin/', admin.site.urls),
-    # url(r'^$', views.index, name='index'),
-    url(r'^lti/', include('django_app_lti.urls', namespace="lti")),
-    url(r'^$', include('media_manager.urls', namespace="media_manager")),
+    url(r'^$', views.index),
 ]
