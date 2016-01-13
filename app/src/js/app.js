@@ -2,7 +2,7 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
-    templateUrl: "build/templates/main.html"
+    redirectTo: "/workspace"
   })
   .when('/workspace', {
     templateUrl: "build/templates/workspace.html",
