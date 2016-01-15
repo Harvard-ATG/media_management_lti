@@ -2,12 +2,25 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django_app_lti.views import LTILaunchView
 
+import json
+import re
+
 def index(request):
+
     template = loader.get_template('index.html')
-    context = RequestContext(request, {})
-    #content = 'Welcome to my app. Course ID: %s User: %s' % (course_id, request.user.email)
-    #return HttpResponse(content)
-    return HttpResponse(template.render(context))
+    edit = False;
+    if re.search('Instructor', request.LTI['roles'][0]):
+        edit = True;
+    context = {
+        "data": {
+            "edit": edit,
+            "user_id": request.user.username,
+            "course_id": request.LTI['custom_canvas_course_id'],
+        },
+    };
+    request_context = RequestContext(request, context)
+
+    return HttpResponse(template.render(request_context))
 
 class MyLTILaunchView(LTILaunchView):
     def hook_before_post(self, request):
