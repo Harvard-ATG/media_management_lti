@@ -1,8 +1,8 @@
-angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'filereader', 'ngResource'])
+angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
-    redirectTo: "/workspace"
+    redirectTo: "/collections"
   })
   .when('/workspace', {
     templateUrl: "build/templates/workspace.html",
