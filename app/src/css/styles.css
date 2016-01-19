@@ -10,3 +10,7 @@ a.unlink:hover {
   text-decoration: none;
   cursor: pointer;
 }
+button.btn-unstyled {
+  border: none;
+  background: none;
+}
