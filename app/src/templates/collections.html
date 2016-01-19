@@ -1,77 +1,13 @@
-<!--
-<div class=row>
-  <div class="col-sm-6 col-md-4" ng-repeat="col in lc.data">
-    <div class=thumbnail>
-      <img ng-src="{{ col.src }}" width="200" height="200" alt="" />
-      <div class="caption">
-        <h3>{{ col.title }}</h3>
-        <p>{{ col.description }}</p>
-        <p><a href=# class="btn btn-primary" role=button>Button</a> <a href=# class="btn" role=button>Button</a></p>
-      </div>
-    </div>
-  </div>
-</div>
--->
 
-<h1><a target="_blank" href="https://github.com/Wildhoney/ngDroplet">ngDroplet</a></h1>
+<h1>Collections</h1>
 
-            <ul class="statistics">
-                <li><label>Valid:</label> {{interface.getFiles(interface.FILE_TYPES.VALID).length}}</li>
-                <li><label>Invalid:</label> {{interface.getFiles(interface.FILE_TYPES.INVALID).length}}</li>
-                <li><label>Uploaded:</label> {{interface.getFiles(interface.FILE_TYPES.UPLOADED).length}}</li>
-                <li><label>Deleted:</label> {{interface.getFiles(interface.FILE_TYPES.DELETED).length}}</li>
-                <li><label>Total:</label> {{interface.getFiles().length}}</li>
-            </ul>
+<button type="button" class="btn btn-primary" ng-click="lc.gotoNew()">
+  + Collection
+</button>
 
-            <section class="toolbar">
-
-                <input type="button" class="button upload-files" value="Upload Files"
-                       ng-click="interface.uploadFiles()"
-                       ng-hide="interface.isUploading()"
-                       ng-class="{ clickable: interface.isReady() }" />
-
-                <input type="button" class="button upload-files" value="Uploading..." ng-show="interface.isUploading()" />
-
-                <div class="add-files">
-                    <input type="button" class="button add-files" value="Add Files..." />
-                    <droplet-upload-multiple ng-model="interface"></droplet-upload-multiple>
-                </div>
-
-                <comment class="progress" ng-class="{ visible: interface.isUploading() }">
-                    Uploaded: {{interface.progress.percent}}%
-                </comment>
-
-            </section>
-
-            <droplet ng-model="interface" class="well" style="width: 400px; height: 400px;">
-
-                <div class="loading" ng-class="{ visible: interface.isUploading() }">
-                    <svg viewBox="0 0 400 400">
-                        <path class="loading-path" data-progressbar ng-model="interface.progress.percent"
-                              d="M 0,1 L 398,1 L 398,234 L 1,234 L 0,1"
-                              stroke="#D3B2D1" stroke-width="1" fill-opacity="0"
-                              style="stroke-dasharray: 392px, 392px;stroke-dashoffset: 392px;"></path>
-                    </svg>
-                </div>
-
-                <comment></comment>
-
-                <section class="message success" ng-class="{ visible: success }" ng-click="success = false">
-                    Successfully uploaded {{uploadCount}} files.
-                </section>
-
-                <section class="message error" ng-class="{ visible: error }" ng-click="error = false">
-                    Failed to upload any of the files.
-                </section>
-
-                <ul class="files">
-
-                    <li ng-repeat="model in interface.getFiles(interface.FILE_TYPES.VALID)">
-                        <droplet-preview ng-model="model"></droplet-preview>
-                        <div class="delete" ng-click="model.deleteFile()">&times;</div>
-                        <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div>
-                    </li>
-
-                </ul>
-
-            </droplet>
+<ul class="list-group">
+  <li class="list-group-item" ng-repeat="collection in lc.collections">
+    <span class="badge">{{ collection.images.length }}</span>
+    {{ collection.title }}
+  </li>
+</ul>
