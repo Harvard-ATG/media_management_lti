@@ -1,28 +1,6 @@
 <div class="container-fluid">
       <div class="row">
 
-
-<!--
-        <div class="col-sm-3 col-md-2 sidebar">
-
-          <section>
-            <ul class="nav nav-sidebar">
-              <li>
-                <a ng-href="/#/workspace" class="btn btn-default" aria-label="New Collection">
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                </a>
-              </li>
-              <li ng-repeat="collection in wc.courseCollections" ng-class="{active:wc.isActiveCollection(collection.id)}">
-                <a ng-href="/#/workspace/{{collection.id}}">{{ collection.title }}</a>
-                <button ng-click="wc.deleteCollection(collection.id)" type="button" class="btn btn-default btn-xs">
-                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </button>
-              </li>
-            </ul>
-          </section>
--->
-
-
         </div>
         <div class="col-md-12 main">
           <h1 class="page-header">Library</h1>
@@ -62,8 +40,6 @@
 
             <input type="button" class="button upload-files" value="Save Collection"
                   ng-click="wc.saveCollection()"/>
-            <input ng-if="wc.collection.id" type="button" class="button upload-files" value="Delete Collection"
-                  ng-click="wc.deleteCollectionModal(wc.collection.id)"/>
           </section>
           <section class="well">
             <ul class="list-inline">
