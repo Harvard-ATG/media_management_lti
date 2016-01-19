@@ -92,7 +92,7 @@ angular.module('media_manager')
           //wc.courseCollections = Course.getCollections({id: 1});
           wc.collection.id = data.id;
           wc.courseCollections.push(wc.collection);
-          $location.path('/workspace/' + data.id);
+          $location.path('/collections/' + data.id);
         });
 
       });
@@ -132,35 +132,6 @@ angular.module('media_manager')
     }
   };
 
-  wc.deleteCollectionModal = function(id){
-    var modalInstance = $uibModal.open({
-      animation: false,
-      templateUrl: 'templates/confirmDelete.html',
-      controller: ['$scope', function($scope){
-        var cd = this;
-        cd.ok = function(){
-          wc.actuallyDeleteCollection(id);
-          modalInstance.close();
-        };
-        cd.cancel = function(){
-          modalInstance.close();
-        };
-      }],
-      controllerAs: 'cd',
-      size: 'sm'
-    });
-  };
-
-  wc.actuallyDeleteCollection = function(id){
-    wc.collection.$delete(function(){
-      wc.courseCollections.forEach(function(collection, index){
-        if(collection.id == id){
-          wc.courseCollections.splice(index, 1);
-        }
-      });
-      $location.path('/workspace');
-    });
-  };
 
 
 

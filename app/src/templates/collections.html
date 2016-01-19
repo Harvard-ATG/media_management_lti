@@ -1,13 +1,30 @@
 
 <h1>Collections</h1>
 
-<button type="button" class="btn btn-primary" ng-click="lc.gotoNew()">
+<a class="btn btn-primary" ng-href="/#/workspace">
   + Collection
-</button>
+</a>
 
 <ul class="list-group">
   <li class="list-group-item" ng-repeat="collection in lc.collections">
-    <span class="badge">{{ collection.images.length }}</span>
+
+    <div class="btn-group dropdown pull-right" uib-dropdown="" is-open="status.isopen" style="">
+      <button id="single-button" type="button" class="btn btn-default btn-sm dropdown-toggle" uib-dropdown-toggle="" ng-disabled="disabled" aria-haspopup="true" aria-expanded="false">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        <span class="caret"></span>
+      </button>
+      <ul uib-dropdown-menu="" role="menu" aria-labelledby="single-button" class="dropdown-menu">
+        <li role="menuitem"><a ng-href="/#/workspace/{{ collection.id }}">Edit</a></li>
+        <li role="menuitem">
+          <button ng-click="lc.deleteCollectionModal(collection.id)" type="button" class="btn btn-unstyled btn-xs">
+            Delete
+          </button>
+        </li>
+      </ul>
+    </div>
+    <span class="badge">
+      {{ collection.images.length }}
+    </span>
     {{ collection.title }}
   </li>
 </ul>
