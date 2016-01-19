@@ -12,11 +12,9 @@ def index(request):
     if re.search('Instructor', request.LTI['roles'][0]):
         edit = True;
     context = {
-        "data": {
-            "edit": edit,
-            "user_id": request.user.username,
-            "course_id": request.LTI['custom_canvas_course_id'],
-        },
+        "edit": edit,
+        "user_id": request.user.username,
+        "course_id": request.LTI['custom_canvas_course_id'],
     };
     request_context = RequestContext(request, context)
 
