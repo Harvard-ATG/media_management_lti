@@ -92,7 +92,7 @@ angular.module('media_manager')
           //wc.courseCollections = Course.getCollections({id: 1});
           wc.collection.id = data.id;
           wc.courseCollections.push(wc.collection);
-          $location.path('/collections/' + data.id);
+          $location.path('/collections/');
         });
 
       });

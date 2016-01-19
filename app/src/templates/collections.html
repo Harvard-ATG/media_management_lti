@@ -16,9 +16,9 @@
       <ul uib-dropdown-menu="" role="menu" aria-labelledby="single-button" class="dropdown-menu">
         <li role="menuitem"><a ng-href="/#/workspace/{{ collection.id }}">Edit</a></li>
         <li role="menuitem">
-          <button ng-click="lc.deleteCollectionModal(collection.id)" type="button" class="btn btn-unstyled btn-xs">
+          <a href="javascript:;" ng-click="lc.deleteCollectionModal(collection.id)">
             Delete
-          </button>
+          </a>
         </li>
       </ul>
     </div>

@@ -42,6 +42,5 @@ angular.module('media_manager').controller('ListController', ['$scope',
 
   };
 
-//2, 79x, xxx
 
 }]);
