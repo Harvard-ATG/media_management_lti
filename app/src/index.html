@@ -7,6 +7,7 @@
 </head>
 <body ng-app="media_manager">
 
+<!--
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -23,18 +24,22 @@
           <li><a href="/#/workspace">Workspace</a></li>
           <li><a href="/#/collections">Collections</a></li>
         </ul>
-<!--
-        <form class="navbar-form navbar-right">
-          <input type="text" class="form-control" placeholder="Search...">
-        </form>
--->
       </div>
     </div>
   </nav>
+-->
 
   <div class="container">
     <div ng-view></div>
   </div>
+
+  <script>
+    window.config = {
+      "edit": "{{ edit }}",
+      "user_id": "{{ user_id }}",
+      "course_id": "{{ course_id }}"
+    };
+  </script>
 
 </body>
 </html>
