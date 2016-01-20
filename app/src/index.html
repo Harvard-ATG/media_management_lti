@@ -1,9 +1,10 @@
+{% load staticfiles %}
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/build/css/vendor.css"/>
-  <link rel="stylesheet" href="/build/css/styles.css"/>
-  <script src="/build/js/vendor.js"></script>
-  <script src="/build/js/app.js"></script>
+  <link rel="stylesheet" href="{% static "/build/css/vendor.css" %}" />
+  <link rel="stylesheet" href="{% static "/build/css/styles.css" %}" />
+  <script src="{% static "/build/js/vendor.js" %}"></script>
+  <script src="{% static "/build/js/app.js" %}"></script>
 </head>
 <body ng-app="media_manager">
 
@@ -33,13 +34,9 @@
     <div ng-view></div>
   </div>
 
-  <script>
-    window.config = {
-      "edit": "{{ edit }}",
-      "user_id": "{{ user_id }}",
-      "course_id": "{{ course_id }}"
-    };
-  </script>
+<script>
+window.config = {{app_config|safe}};
+</script>
 
 </body>
 </html>

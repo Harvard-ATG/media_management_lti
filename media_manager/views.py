@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render
 from django.template import RequestContext, loader
 from django_app_lti.views import LTILaunchView
 
@@ -6,33 +8,54 @@ import json
 import re
 
 def index(request):
+    app_lti_context = AppLTIContext(request)
+    app_config = {
+        "perms": app_lti_context.get_perms(),
+        "user_id": app_lti_context.get_user_id(),
+        "context_id": app_lti_context.get_context_id(),
+    }
 
-    template = loader.get_template('index.html')
-    edit = False;
-    if re.search('Instructor', request.LTI['roles'][0]):
-        edit = True;
+    if not app_lti_context.has_perm("read"):
+        raise PermissionDenied
+
     context = {
-        "edit": edit,
-        "user_id": request.user.username,
-        "course_id": request.LTI['custom_canvas_course_id'],
-    };
-    request_context = RequestContext(request, context)
+        "app_config": json.dumps(app_config, sort_keys=True, indent=4, separators=(',', ': '))
+    }
 
-    return HttpResponse(template.render(request_context))
+    return render(request, 'index.html', context=context)
 
-class MyLTILaunchView(LTILaunchView):
-    def hook_before_post(self, request):
-        super(MyLTILaunchView, self).hook_before_post(request)
-        print "before post"
+class AppLTIContext(object):
+    def __init__(self, request):
+        self.request = request
+        self.launch_params = self._get_launch_params()
 
-    def hook_process_post(self, request):
-        super(MyLTILaunchView, self).hook_process_post(request)
-        print "process post"
+    def _get_launch_params(self):
+        launch_params = {}
+        LTI = getattr(self.request, 'LTI', None)
+        if LTI is not None:
+            launch_params.update(self.request.LTI)
+        return launch_params
 
-    def hook_after_post(self, request):
-        super(MyLTILaunchView, self).hook_after_post(request)
-        print "after post"
-
-    def hook_get_redirect(self):
-        print "get redirect"
-        return super(MyLTILaunchView, self).hook_get_redirect()
+    def get_user_id(self):
+        return self.launch_params.get('user_id', None)
+    
+    def get_context_id(self):
+        return self.launch_params.get('context_id', None)
+    
+    def get_perms(self):
+        perms = {
+            "read": False,
+            "edit": False,
+        }
+    
+        if 'roles' in self.launch_params:
+            role_str = ','. join(self.launch_params['roles'])
+            perms["read"] = bool(re.search('Learner|Instructor|Administrator|TeachingAssistant', role_str))
+            perms["edit"] = bool(re.search('Instructor|Administrator|TeachingAssistant', role_str))
+    
+        return perms
+    
+    def has_perm(self, permission):
+        perms = self.get_perms()
+        return perms[permission] is True
+    
