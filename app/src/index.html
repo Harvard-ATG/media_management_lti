@@ -5,6 +5,9 @@
   <link rel="stylesheet" href="{% static "/build/css/styles.css" %}" />
   <script src="{% static "/build/js/vendor.js" %}"></script>
   <script src="{% static "/build/js/app.js" %}"></script>
+  <script>
+window.appConfig = {{appConfig|safe}};
+  </script>
 </head>
 <body ng-app="media_manager">
 
@@ -33,10 +36,6 @@
   <div class="container">
     <div ng-view></div>
   </div>
-
-<script>
-window.config = {{app_config|safe}};
-</script>
 
 </body>
 </html>

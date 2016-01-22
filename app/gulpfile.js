@@ -16,33 +16,33 @@ gulp.task('moveHTML', function(){
 gulp.task('buildJS', function(){
   return gulp.src('src/js/**/*.js')
     .pipe(concat('app.js'))
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(gulp.dest('build/js'));
 });
 
 gulp.task('buildCSS', function(){
   return gulp.src('src/css/**/*.css')
     .pipe(concat('styles.css'))
-    .pipe(minifycss())
+    //.pipe(minifycss())
     .pipe(gulp.dest('build/css'));
 })
 
 gulp.task('buildVendorJS', function(){
-  return gulp.src(['bower_components/angular/angular.min.js',
-                    'bower_components/angular-bootstrap/ui-bootstrap.min.js',
-                    'bower_components/angular-fileupload/angular-filereader.min.js',
-                    'bower_components/angular-resource/angular-resource.min.js',
-                    'bower_components/angular-route/angular-route.min.js',
-                    'bower_components/angular-xeditable/dist/js/xeditable.min.js',
-                    'bower_components/progressbar.js/dist/progressbar.min.js',
-                    'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+  return gulp.src(['bower_components/angular/angular.js',
+                    'bower_components/angular-bootstrap/ui-bootstrap.js',
+                    'bower_components/angular-fileupload/angular-filereader.js',
+                    'bower_components/angular-resource/angular-resource.js',
+                    'bower_components/angular-route/angular-route.js',
+                    'bower_components/angular-xeditable/dist/js/xeditable.js',
+                    'bower_components/progressbar.js/dist/progressbar.js',
+                    'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
                     'bower_components/ng-droplet/dist/ng-droplet.js'])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/js'));
 });
 
 gulp.task('buildVendorCSS', function(){
-  return gulp.src(['bower_components/bootstrap/dist/css/bootstrap.min.css',
+  return gulp.src(['bower_components/bootstrap/dist/css/bootstrap.css',
                     'bower_components/angular-xeditable/dist/css/xeditable.css',
                     'bower_components/angular-bootstrap/ui-bootstrap-csp.css'])
     .pipe(concat('vendor.css'))

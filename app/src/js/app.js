@@ -15,7 +15,7 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controllerAs: 'wc'
   })
   .when('/collections', {
-    templateUrl: "build/templates/collections.html",
+    templateUrl: "build/templates/collectionList.html",
     controller: 'ListController',
     controllerAs: 'lc'
   });

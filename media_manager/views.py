@@ -13,13 +13,14 @@ def index(request):
         "perms": app_lti_context.get_perms(),
         "user_id": app_lti_context.get_user_id(),
         "context_id": app_lti_context.get_context_id(),
+        "course_id": 1,
     }
 
     if not app_lti_context.has_perm("read"):
         raise PermissionDenied
 
     context = {
-        "app_config": json.dumps(app_config, sort_keys=True, indent=4, separators=(',', ': '))
+        "appConfig": json.dumps(app_config, sort_keys=True, indent=4, separators=(',', ': '))
     }
 
     return render(request, 'index.html', context=context)
