@@ -10,4 +10,5 @@ SECURE_SETTINGS = {
     'db_default_name': 'media_management_lti',
     'db_default_user': 'media_management_lti',
     'db_default_password': 'media_management_lti',
+    'media_management_api_url': 'http://localhost:8000',
 }

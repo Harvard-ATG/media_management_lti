@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.template import RequestContext, loader
@@ -14,6 +15,7 @@ def index(request):
         "user_id": app_lti_context.get_user_id(),
         "context_id": app_lti_context.get_context_id(),
         "course_id": 1,
+        "media_management_api_url": settings.MEDIA_MANAGEMENT_API_URL,
     }
 
     if not app_lti_context.has_perm("read"):

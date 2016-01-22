@@ -6,4 +6,5 @@ angular.module('media_manager').service('AppConfig', function() {
     this.perms = config.perms;
     this.context_id = config.context_id;
     this.course_id = config.course_id;
+    this.media_management_api_url = config.media_management_api_url;
 });

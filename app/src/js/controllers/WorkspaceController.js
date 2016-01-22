@@ -7,8 +7,7 @@ angular.module('media_manager')
                                     'Droplet',
                                     'Course',
                                     'Collection',
-                                    'CollectionCache',
-                                    'ImageCache',
+                                    'CourseCache',
                                     function($scope,
                                       $timeout,
                                       $routeParams,
@@ -17,21 +16,16 @@ angular.module('media_manager')
                                       Droplet,
                                       Course,
                                       Collection,
-                                      CollectionCache,
-                                      ImageCache){
+                                      CourseCache){
 
 
   var wc = this;
   wc.Droplet = Droplet;
-  if(ImageCache.images.length === 0){
-    ImageCache.images = Course.getImages({id: 1});
-  }
-  wc.courseImages = ImageCache.images;
 
-  if(CollectionCache.collections.length === 0){
-    CollectionCache.collections = Course.getCollections({id: 1});
-  }
-  wc.courseCollections = CollectionCache.collections;
+  CourseCache.loadImages();
+  wc.courseImages = CourseCache.images;
+  CourseCache.loadCollections();
+  wc.courseCollections = CourseCache.collections;
 
   Droplet.scope = $scope;
   $scope.$on('$dropletReady', Droplet.whenDropletReady);

@@ -14,8 +14,3 @@ angular.module('media_manager')
     }
   );
 }]);
-angular.module('media_manager')
-.service('CollectionCache', [function(){
-  this.collections = [];
-  this.current = {id: null};
-}]);

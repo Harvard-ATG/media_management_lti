@@ -235,7 +235,8 @@ LTI_SETUP = {
 }
 
 # Add LTI oauth credentials (for django-auth-lti)
-LTI_OAUTH_CREDENTIALS = {"mykey":"mysecret"}
+LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get("lti_oauth_credentials", {"mykey":"mysecret"})
 
 
 # Other project specific settings
+MEDIA_MANAGEMENT_API_URL = SECURE_SETTINGS.get("media_management_api_url", "http://localhost:8000")
