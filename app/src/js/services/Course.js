@@ -1,6 +1,6 @@
 angular.module('media_manager')
-.factory('Course', ['$resource', function($resource){
-  var host = 'http://localhost:8000';
+.factory('Course', ['$resource', 'AppConfig', function($resource, AppConfig){
+  var host = AppConfig.media_management_api_url;
   return $resource(host + '/courses/:id',
     { id: '@id', image_id: '@image_id', collection_id: '@collection_id' }, {
       'getImages': {

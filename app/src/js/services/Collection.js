@@ -1,6 +1,6 @@
 angular.module('media_manager')
-.factory('Collection', ['$resource', function($resource){
-  var host = 'http://localhost:8000';
+.factory('Collection', ['$resource',  'AppConfig', function($resource, AppConfig){
+  var host = AppConfig.media_management_api_url;
   return $resource(host + '/collections/:id',
     { id: '@id' }, {
       'saveImages': {
