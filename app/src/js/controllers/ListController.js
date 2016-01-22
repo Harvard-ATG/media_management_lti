@@ -1,12 +1,24 @@
 angular.module('media_manager').controller('ListController', ['$scope',
     'Collection',
     'Course',
+    'CourseCache',
     'AppConfig',
+    'Breadcrumbs',
     '$uibModal',
-    function($scope, Collection, Course, AppConfig, $uibModal) {
+    function(
+    $scope,
+    Collection,
+    Course,
+    CourseCache,
+    AppConfig,
+    Breadcrumbs,
+    $uibModal) {
         var lc = this;
 
-        lc.collections = Course.getCollections({id: AppConfig.course_id});
+        Breadcrumbs.home();
+        CourseCache.load();
+
+        lc.collections = CourseCache.collections;
 
         lc.canEdit = AppConfig.perms.edit;
 

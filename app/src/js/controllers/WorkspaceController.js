@@ -8,6 +8,7 @@ angular.module('media_manager')
                                     'Course',
                                     'Collection',
                                     'CourseCache',
+                                    'Breadcrumbs',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -18,6 +19,7 @@ angular.module('media_manager')
                                       Course,
                                       Collection,
                                       CourseCache,
+                                      Breadcrumbs,
                                       AppConfig){
 
 
@@ -94,6 +96,8 @@ angular.module('media_manager')
     });    
   };
 
+  Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
+  
   CourseCache.load();
   
   wc.courseImages = CourseCache.images;
