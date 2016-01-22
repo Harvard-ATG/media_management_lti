@@ -1,13 +1,11 @@
 angular.module('media_manager')
-.service('Droplet', ['$timeout', 'CourseCache', 'AppConfig', function($timeout, CourseCache, AppConfig){
+.service('Droplet', ['$timeout', 'AppConfig', function($timeout, AppConfig){
   var ds = this;
-
   ds.interface = {};
   ds.uploadCount = 0;
   ds.success = false;
   ds.error = false;
   ds.scope = undefined;
-
 
   // Listen for when the interface has been configured.
   ds.whenDropletReady = function() {
@@ -32,8 +30,8 @@ angular.module('media_manager')
           ds.scope.success = false;
       }, 5000);
 
-      console.log("done uploading", event, response, files);
-	  CourseCache.addImage(response);
+      console.log("droplet success", event, response, files);
+      ds.scope.$broadcast('$dropletUploadComplete', response, files);
   };
 
   // Listen for when the files have failed to upload.
@@ -45,8 +43,7 @@ angular.module('media_manager')
           ds.scope.error = false;
       }, 5000);
 
-      console.log("error!");
-
+      console.log("droplet error", event, response);
   };
 
 

@@ -1,7 +1,4 @@
-<div class="container-fluid">
-      <div class="row">
-
-        </div>
+<div ng-if="wc.canEdit" class="container-fluid">
         <div class="col-md-12 main">
           <h1 class="page-header">Library</h1>
 
@@ -18,11 +15,11 @@
 
               <ul class="files">
 
-                <li ng-if="image.image_url" ng-repeat="image in wc.courseImages track by $index">
-                  <droplet-thumb ng-model="image"></droplet-thumb>
+                <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
+                  <droplet-thumb ng-model="courseImage"></droplet-thumb>
                   <!-- <div class="delete" ng-click="model.deleteFile()">&times;</div> -->
                   <!-- <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div> -->
-                  <div class="overlay" ng-click="wc.addFile(image)">+</div>
+                  <div class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
                 </li>
 
               </ul>
@@ -43,9 +40,9 @@
           </section>
           <section class="well">
             <ul class="list-inline">
-              <li class="droplet-thumb" ng-repeat="image in wc.collection.images track by $index">
-                <droplet-thumb ng-model="image"></droplet-thumb>
-                <div class="overlay" ng-click="wc.removeFile(image)">-</div>
+              <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images track by $index">
+                <droplet-thumb ng-model="collectionImage"></droplet-thumb>
+                <div class="overlay" ng-click="wc.removeFromCollection($index)">-</div>
               </li>
             </ul>
 
@@ -53,6 +50,6 @@
 
 
 
-        </div>
+            </div>
       </div>
-    </div>
+</div>

@@ -21,21 +21,19 @@ angular.module('media_manager')
 .service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
   this.images = [];
   this.collections = [];
-  this.currentCollection = {id:null};
-
-  this.addImage = function(image) {
-    this.images.push(image)
-  };
-
   this.loadImages = function() {
-    if(this.images.length === 0){
+    if (this.images.length == 0) {
       this.images = Course.getImages({id: AppConfig.course_id});
     }
+    
   };
-  
   this.loadCollections = function() {
-    if(this.collections.length === 0){
+    if (this.collections.length == 0) {
       this.collections = Course.getCollections({id: AppConfig.course_id});
     }
   };
+  this.load = function() {
+    this.loadImages();
+    this.loadCollections();
+  }
 }]);
