@@ -49,7 +49,6 @@ angular.module('media_manager')
   
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
-    wc.unsavedChanges = true;
   };
 
   wc.removeFromCollection = function(imageIndex){
@@ -80,7 +79,6 @@ angular.module('media_manager')
     } else {
       wc.createCollection();
     }
-    wc.unsavedChanges = false;
   };
   
   wc.updateCollection = function() {
@@ -127,7 +125,6 @@ angular.module('media_manager')
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
   wc.Droplet = Droplet;
-  wc.unsavedChanges = false;
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
 
