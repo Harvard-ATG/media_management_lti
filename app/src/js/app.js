@@ -18,5 +18,10 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     templateUrl: "build/templates/collectionList.html",
     controller: 'ListController',
     controllerAs: 'lc'
+  })
+  .when('/mirador/:collectionId', {
+    templateUrl: "build/templates/miradorView.html",
+    controller: 'MiradorController',
+    controllerAs: 'mr'
   });
 }]);

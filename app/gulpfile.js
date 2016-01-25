@@ -13,6 +13,10 @@ gulp.task('moveHTML', function(){
     .pipe(gulp.dest('build'));
 });
 
+gulp.task('moveVendorSrc', function(){
+  return gulp.src('src/vendor/**/*').pipe(gulp.dest('build/vendor'));
+});
+
 gulp.task('buildJS', function(){
   return gulp.src('src/js/**/*.js')
     .pipe(concat('app.js'))
@@ -54,7 +58,7 @@ gulp.task('moveVendorFonts', function(){
   .pipe(gulp.dest('build/fonts'));
 });
 
-gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts']);
+gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
 
 gulp.task('build', ['moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 

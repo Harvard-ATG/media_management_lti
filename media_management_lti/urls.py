@@ -14,10 +14,10 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from media_manager import views
 
 urlpatterns = [
     #  url(r'^admin/', admin.site.urls),
-    # url(r'^$', views.index, name='index'),
     url(r'^lti/', include('django_app_lti.urls', namespace="lti")),
-    url(r'^$', include('media_manager.urls', namespace="media_manager")),
+    url(r'^', include('media_manager.urls', namespace="media_manager")),
 ]
