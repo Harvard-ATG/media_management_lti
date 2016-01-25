@@ -15,5 +15,14 @@ button.btn-unstyled {
   background: none;
 }
 .header-bar {
-  margin-bottom: 20px;
+  margin: 20px 0;
+}
+.breadcrumb {
+  margin-bottom: 0px;
+}
+.workspace-library {
+  border: 1px solid #ccc;
+}
+.workspace-collection {
+  margin-top: 10px;
 }

@@ -35,5 +35,13 @@ angular.module('media_manager')
   this.load = function() {
     this.loadImages();
     this.loadCollections();
-  }
+  };
+  this.getCollectionById = function(id) {
+    for (var i = 0; i < this.collections.length; i++) {
+      if (this.collections[i].id == id) {
+        return this.collections[i];
+      }
+    }
+    return false;
+  };
 }]);

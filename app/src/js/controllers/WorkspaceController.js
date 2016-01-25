@@ -1,6 +1,7 @@
 angular.module('media_manager')
 .controller('WorkspaceController', ['$scope',
                                     '$timeout',
+                                    '$log',
                                     '$routeParams',
                                     '$location',
                                     '$uibModal',
@@ -8,10 +9,12 @@ angular.module('media_manager')
                                     'Course',
                                     'Collection',
                                     'CourseCache',
+                                    'CollectionBehavior',
                                     'Breadcrumbs',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
+                                      $log,
                                       $routeParams,
                                       $location,
                                       $uibModal,
@@ -19,13 +22,12 @@ angular.module('media_manager')
                                       Course,
                                       Collection,
                                       CourseCache,
+                                      CollectionBehavior,
                                       Breadcrumbs,
                                       AppConfig){
 
 
   var wc = this;
-
-  wc.canEdit = AppConfig.perms.edit;
   
   wc.isActiveCollection = function(id){
     return id == wc.collection.id;
@@ -44,12 +46,32 @@ angular.module('media_manager')
     return collection
   };
 
+  
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
+    wc.unsavedChanges = true;
   };
 
   wc.removeFromCollection = function(imageIndex){
     wc.collection.images.splice(imageIndex, 1);
+  };
+
+  wc.canDeleteCollection = function() {
+    return wc.collection.id ? true : false;
+  };
+
+  wc.deleteCollection = function() {
+    var collection_id = wc.collection.id;
+    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
+    deletePromise.then(function(result) {
+      $location.path('/collections/');
+    }, function(result) {
+      $log.debug("error deleting collection", collection_id);
+    });
+  };
+  
+  wc.cancelCollection = function() {
+    $location.path('/collections/');
   };
 
   wc.saveCollection = function(){
@@ -58,10 +80,11 @@ angular.module('media_manager')
     } else {
       wc.createCollection();
     }
+    wc.unsavedChanges = false;
   };
   
   wc.updateCollection = function() {
-    console.log("update collection", wc.collection.id);
+    $log.debug("update collection", wc.collection.id);
     wc.collection.description = wc.collection.description || "No description";
     wc.collection.course_image_ids = wc.collection.images.map(function(image) {
       // images could come from the image library, or already be part of the collection
@@ -77,12 +100,12 @@ angular.module('media_manager')
     Collection.update({}, wc.collection, function(data){
       wc.collection = wc.loadActiveCollection();
     }, function(errorResponse) {
-      console.log("error updating collection:", errorResponse);
+      $log.debug("error updating collection:", errorResponse);
     }); 
   };
 
   wc.createCollection = function() {
-    console.log("create collection");
+    $log.debug("create collection");
     wc.collection.course_id = 1;
     wc.collection.course_image_ids = wc.collection.images.map(function(image){
       return image.id;
@@ -99,14 +122,15 @@ angular.module('media_manager')
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
   
   CourseCache.load();
+  Droplet.scope = $scope;
   
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
-
   wc.Droplet = Droplet;
+  wc.unsavedChanges = false;
   wc.collection = wc.loadActiveCollection();
-  
-  Droplet.scope = $scope;
+  wc.canEdit = AppConfig.perms.edit;
+
   $scope.$on('$dropletReady', Droplet.whenDropletReady);
   $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
   $scope.$on('$dropletError', Droplet.onDropletError);
@@ -116,6 +140,5 @@ angular.module('media_manager')
   $scope.$on('$dropletUploadComplete', function(event, response, files) {
     wc.courseImages.push(response);
   });
-
 
 }]);
