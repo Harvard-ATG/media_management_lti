@@ -1,0 +1,48 @@
+<div data-ng-include data-src="'build/templates/breadcrumbs.html'"></div>
+
+<div ng-if="wc.canEdit" class="container-fluid">
+  <div class="row">
+    <h2>Image Library</h2>
+    <div class="add-files" style="margin-bottom: 10px">
+      <div style="display:inline-block;"><i>Drag & drop</i> images into the library below or</div>
+      <droplet-upload-single ng-model="wc.Droplet.interface" style="display:inline-block;"></droplet-upload-single>
+    </div>
+
+    <section class="droplet workspace-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
+      <droplet ng-model="wc.Droplet.interface">
+        <ul class="files">
+          <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
+            <droplet-thumb ng-model="courseImage"></droplet-thumb>
+            <!-- <div class="delete" ng-click="model.deleteFile()">&times;</div> -->
+            <!-- <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div> -->
+            <div class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
+          </li>
+        </ul>
+      </droplet>
+      <!-- <label>Filelist length:</label> {{wc.Droplet.interface.getFiles().length}} -->
+    </section>
+
+    <h2>Collection</h2>
+    <div>Select images from the library above to add to the collection.</div>
+    <div class="panel panel-default workspace-collection">
+      <div class="panel-heading">
+        <h3 class="panel-title"><span editable-text="wc.collection.title">{{ wc.collection.title }}</span></h3>
+      </div>
+      <div class="panel-body">
+        <div ng-show="wc.collection.images.length == 0">Empty collection</div>
+        <ul class="list-inline">
+          <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images track by $index">
+            <droplet-thumb ng-model="collectionImage"></droplet-thumb>
+            <div class="overlay" ng-click="wc.removeFromCollection($index)">-</div>
+          </li>
+        </ul>
+      </div>
+      <div class="panel-footer">
+        <input type="button" class="btn btn-primary" value="Save Collection" ng-click="wc.saveCollection()"/>
+        <input type="button" class="btn btn-default pull-right" style="margin-left: 20px;" value="Cancel" ng-click="wc.cancelCollection()"/>
+        <input type="button" class="btn btn-danger pull-right" value="Delete Collection" ng-show="wc.canDeleteCollection()" ng-click="wc.deleteCollection()"/>
+      </div>
+    </div>
+
+  </div>
+</div>
