@@ -67,7 +67,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'app/build')
+            #os.path.join(BASE_DIR, 'app/build')
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -212,6 +212,11 @@ LOGGING = {
         # },
         # Make sure that propagate is False so that the root logger doesn't get involved
         # after an app logger handles a log message.
+        'media_manager': {
+            'level': _DEFAULT_LOG_LEVEL,
+            'handlers': ['default'],
+            'propagate': False,
+        }
     },
 }
 
@@ -236,7 +241,6 @@ LTI_SETUP = {
 
 # Add LTI oauth credentials (for django-auth-lti)
 LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get("lti_oauth_credentials", {"mykey":"mysecret"})
-
 
 # Other project specific settings
 MEDIA_MANAGEMENT_API_URL = SECURE_SETTINGS.get("media_management_api_url", "http://localhost:8000")
