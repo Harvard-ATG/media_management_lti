@@ -5,26 +5,27 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     redirectTo: "/collections"
   })
   .when('/workspace', {
-    templateUrl: "build/templates/workspace.html",
+    templateUrl: "/static/app/templates/workspace.html",
     controller: 'WorkspaceController',
     controllerAs: 'wc'
   })
   .when('/workspace/:collectionId', {
-    templateUrl: "build/templates/workspace.html",
+    templateUrl: "/static/app/templates/workspace.html",
     controller: 'WorkspaceController',
     controllerAs: 'wc'
   })
   .when('/collections', {
-    templateUrl: "build/templates/collectionList.html",
+    templateUrl: "/static/app/templates/collectionList.html",
     controller: 'ListController',
     controllerAs: 'lc'
   })
   .when('/mirador/:collectionId', {
-    templateUrl: "build/templates/miradorView.html",
+    templateUrl: "/static/app/templates/miradorView.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
   });
 }]);
+
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
     var br = this;
     $scope.crumbs = Breadcrumbs.crumbs;
@@ -216,77 +217,6 @@ angular.module('media_manager')
 
 }]);
 
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
-    }
-
-}]);
-
 angular.module('media_manager').service('AppConfig', function() {
     var config = window.appConfig;
 
@@ -357,7 +287,7 @@ angular.module('media_manager')
         var deferredDelete = $q.defer();
         var modalInstance = $uibModal.open({
             animation: false,
-            templateUrl: '/build/templates/confirmDelete.html',
+            templateUrl: '/static/app/templates/confirmDelete.html',
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var collection = CourseCache.getCollectionById(id);
@@ -383,6 +313,7 @@ angular.module('media_manager')
     };
 
 }]);
+
 angular.module('media_manager')
 .factory('Course', ['$resource', 'AppConfig', function($resource, AppConfig){
   var host = AppConfig.media_management_api_url;
@@ -479,5 +410,76 @@ angular.module('media_manager')
       console.log("droplet error", event, response);
   };
 
+
+}]);
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
 
 }]);

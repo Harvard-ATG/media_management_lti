@@ -1,10 +1,10 @@
 {% load staticfiles %}
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="{% static "/build/css/vendor.css" %}" />
-  <link rel="stylesheet" href="{% static "/build/css/styles.css" %}" />
-  <script src="{% static "/build/js/vendor.js" %}"></script>
-  <script src="{% static "/build/js/app.js" %}"></script>
+  <link rel="stylesheet" href="{% static "app/css/vendor.css" %}" />
+  <link rel="stylesheet" href="{% static "app/css/styles.css" %}" />
+  <script src="{% static "app/js/vendor.js" %}"></script>
+  <script src="{% static "app/js/app.js" %}"></script>
   <script>
 window.appConfig = {{appConfig|safe}};
   </script>

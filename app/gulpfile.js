@@ -10,25 +10,26 @@ gulp.task('moveHTML', function(){
   gulp.src('src/index.html')
     .pipe(gulp.dest('.'));
   return gulp.src(['src/**/*.html'])
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('build/app'));
 });
 
 gulp.task('moveVendorSrc', function(){
-  return gulp.src('src/vendor/**/*').pipe(gulp.dest('build/vendor'));
+  return gulp.src('src/vendor/**/*')
+    .pipe(gulp.dest('build/app/vendor'));
 });
 
 gulp.task('buildJS', function(){
   return gulp.src('src/js/**/*.js')
     .pipe(concat('app.js'))
     //.pipe(uglify())
-    .pipe(gulp.dest('build/js'));
+    .pipe(gulp.dest('build/app/js'));
 });
 
 gulp.task('buildCSS', function(){
   return gulp.src('src/css/**/*.css')
     .pipe(concat('styles.css'))
     //.pipe(minifycss())
-    .pipe(gulp.dest('build/css'));
+    .pipe(gulp.dest('build/app/css'));
 })
 
 gulp.task('buildVendorJS', function(){
@@ -42,7 +43,7 @@ gulp.task('buildVendorJS', function(){
                     'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
                     'bower_components/ng-droplet/dist/ng-droplet.js'])
     .pipe(concat('vendor.js'))
-    .pipe(gulp.dest('build/js'));
+    .pipe(gulp.dest('build/app/js'));
 });
 
 gulp.task('buildVendorCSS', function(){
@@ -50,12 +51,12 @@ gulp.task('buildVendorCSS', function(){
                     'bower_components/angular-xeditable/dist/css/xeditable.css',
                     'bower_components/angular-bootstrap/ui-bootstrap-csp.css'])
     .pipe(concat('vendor.css'))
-    .pipe(gulp.dest('build/css'));
+    .pipe(gulp.dest('build/app/css'));
 });
 
 gulp.task('moveVendorFonts', function(){
   return gulp.src(['bower_components/bootstrap/dist/fonts/*'])
-  .pipe(gulp.dest('build/fonts'));
+  .pipe(gulp.dest('build/app/fonts'));
 });
 
 gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
