@@ -41,7 +41,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django_auth_lti.middleware.LTIAuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -56,7 +56,7 @@ MIDDLEWARE_CLASSES = [
 AUTHENTICATION_BACKENDS = (
     #'libs.auth.GoogleBackend',
     #'django_openid_auth.auth.OpenIDBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    #'django.contrib.auth.backends.ModelBackend',
     'django_auth_lti.backends.LTIAuthBackend',
 )
 
