@@ -3,7 +3,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import render
 from media_manager.models import Course
-from media_manager.services import MediaManagementAPI, AppLTIContext
+from media_manager import services
 
 import requests
 import json
@@ -13,21 +13,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 def index(request):
-    app_lti_context = AppLTIContext(request)
+    app_lti_context = services.AppLTIContext(request)
     if not app_lti_context.has_perm("read"):
         raise PermissionDenied
 
-    course_identifiers = {
-        "lti_context_id": app_lti_context.get_context_id(),
-        "lti_tool_consumer_instance_guid": app_lti_context.get_tool_consumer_instance_guid()
-    }
-
-    try:
-        course = Course.objects.get(**course_identifiers)
-    except Course.DoesNotExist:
-        logger.info("First launch with course identifiers: %s" % course_identifiers)
-        api = MediaManagementAPI(settings.MEDIA_MANAGEMENT_API_URL)
-        course = api.create_course(app_lti_context.get_context_title(), course_identifiers)
+    course = services.load_course(app_lti_context)
     
     app_config = {
         "perms": app_lti_context.get_perms(),
@@ -43,7 +33,7 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 def mirador(request, collection_id):
-    app_lti_context = AppLTIContext(request)
+    app_lti_context = services.AppLTIContext(request)
     if not app_lti_context.has_perm("read"):
         raise PermissionDenied
 
