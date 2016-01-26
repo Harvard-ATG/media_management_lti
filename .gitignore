@@ -17,4 +17,3 @@ http_static
 # web app
 node_modules
 bower_components
-build
