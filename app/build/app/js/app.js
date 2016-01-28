@@ -87,6 +87,7 @@ angular.module('media_manager')
                                     'Collection',
                                     'CourseCache',
                                     'CollectionBehavior',
+                                    'ImageLightBox',
                                     'Breadcrumbs',
                                     'AppConfig',
                                     function($scope,
@@ -100,12 +101,15 @@ angular.module('media_manager')
                                       Collection,
                                       CourseCache,
                                       CollectionBehavior,
+                                      ImageLightBox,
                                       Breadcrumbs,
                                       AppConfig){
 
 
   var wc = this;
-  
+
+  wc.imagelb = ImageLightBox;
+
   wc.isActiveCollection = function(id){
     return id == wc.collection.id;
   };
@@ -123,7 +127,7 @@ angular.module('media_manager')
     return collection
   };
 
-  
+
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
   };
@@ -145,7 +149,7 @@ angular.module('media_manager')
       $log.debug("error deleting collection", collection_id);
     });
   };
-  
+
   wc.cancelCollection = function() {
     $location.path('/collections/');
   };
@@ -157,7 +161,7 @@ angular.module('media_manager')
       wc.createCollection();
     }
   };
-  
+
   wc.updateCollection = function() {
     $log.debug("update collection", wc.collection.id);
     wc.collection.description = wc.collection.description || "No description";
@@ -170,13 +174,13 @@ angular.module('media_manager')
       };
       return image[image_prop_for[image.type]];
     })
-    
+
     // put to update collection
     Collection.update({}, wc.collection, function(data){
       wc.collection = wc.loadActiveCollection();
     }, function(errorResponse) {
       $log.debug("error updating collection:", errorResponse);
-    }); 
+    });
   };
 
   wc.createCollection = function() {
@@ -191,14 +195,14 @@ angular.module('media_manager')
       wc.collection.id = data.id;
       wc.courseCollections.push(wc.collection);
       $location.path('/collections/');
-    });    
+    });
   };
 
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
-  
+
   CourseCache.load();
   Droplet.scope = $scope;
-  
+
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
   wc.Droplet = Droplet;
@@ -214,6 +218,77 @@ angular.module('media_manager')
   $scope.$on('$dropletUploadComplete', function(event, response, files) {
     wc.courseImages.push(response);
   });
+
+}]);
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
 
 }]);
 
@@ -414,72 +489,38 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+.service('ImageLightBox', ['$uibModal', function($uibModal){
+  var service = this;
 
+  service.imageModal = function(images, index) {
+    index = index || 0;
+    var modalInstance = $uibModal.open({
+      animation: false,
+      templateUrl: '/static/app/templates/imageLightBox.html',
+      controller: ['$scope', function($scope) {
+        var lb = this;
+        lb.index = index;
+        lb.total = images.length;
+        lb.image = images[lb.index];
+
+        lb.next = function(){
+          if(lb.index < images.length){
+            lb.index++;
+            lb.image = images[lb.index];
+          }
+        };
+        lb.prev = function(){
+          if(lb.index > 0){
+            lb.index--;
+            lb.image = images[lb.index];
+          }
+        };
+      }],
+      controllerAs: 'lb',
+      size: 'lg'
+    });
+    return;
   };
-}]);
 
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
-    }
 
 }]);

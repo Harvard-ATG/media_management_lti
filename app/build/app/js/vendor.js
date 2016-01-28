@@ -51959,12 +51959,6 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
 
     "use strict";
 
-    /**
-     * @property blankImage
-     * @type {String}
-     */
-    var blankImage = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
     // The truest wisdom is a resolute determination...
     var module = $angular.module('ngDroplet', []).directive('droplet', ['$rootScope', '$window', '$timeout', '$q',
 
@@ -52029,14 +52023,14 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
                 $scope.isError = false;
 
                 /**
-                 * @method isValid
+                 * @method _isValid
                  * @param value {String|Number}
                  * @param values {Array}
                  * @return {Boolean}
                  * @private
                  */
-                var isValid = function isValid(value, values) {
-
+                var _isValid = function _isValid(value, values) {
+                    console.log("isValid");
                     /**
                      * @method conditionallyLowercase
                      * @param value {String|Number}
@@ -52097,7 +52091,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
                  * @return {Boolean}
                  */
                 $scope.isValidHTTPStatus = function isValidHTTPStatus(statusCode) {
-                    return isValid(statusCode, $scope.options.statuses.success);
+                    return _isValid(statusCode, $scope.options.statuses.success);
                 };
 
                 /**
@@ -52106,7 +52100,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
                  * @return {Boolean}
                  */
                 $scope.isValidExtension = function isValidExtension(extension) {
-                    return isValid(extension, $scope.options.extensions);
+                    return _isValid(extension, $scope.options.extensions);
                 };
 
                 /**
@@ -52546,6 +52540,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
                         requestLength = $scope.getRequestLength(queuedFiles),
                         deferred      = $q.defer();
 
+
                     // Initiate the HTTP request.
                     httpRequest.open('post', $scope.options.requestUrl, true);
 
@@ -52590,7 +52585,10 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
                     // `formData` object.
                     $angular.forEach(queuedFiles, function forEach(model) {
                         formData.append(fileProperty, model.file);
+                        console.log(fileProperty);
+                        console.log(model.file);
                     });
+                    formData.append("title", "untitled");
 
                     // Voila...
                     $scope.isUploading = true;
@@ -52909,6 +52907,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
                 // Bind to the "drop" event which will contain the items the user dropped
                 // onto the element.
                 element.bind('drop', function onDrop(event) {
+                    console.log("dropping!");
 
                     _preventDefault(event);
 
@@ -52953,7 +52952,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
              * @property template
              * @type {String}
              */
-            template: '<img ng-show="model.isImage()" src="' + blankImage + '" style="background-image: url({{imageData}})" class="droplet-preview" />',
+            template: '<img ng-show="model.isImage()" style="background-image: url({{imageData}})" class="droplet-preview" />',
 
             /**
              * @method link
@@ -52987,7 +52986,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
                 };
 
                 if (scope.model.isImage()) {
-
+                    console.log("it is an image");
                     // Initialise the loading of the image into the file reader.
                     fileReader.readAsDataURL(scope.model.file);
 
