@@ -25,7 +25,7 @@ angular.module('media_manager')
     if (this.images.length == 0) {
       this.images = Course.getImages({id: AppConfig.course_id});
     }
-    
+
   };
   this.loadCollections = function() {
     if (this.collections.length == 0) {
@@ -43,5 +43,12 @@ angular.module('media_manager')
       }
     }
     return false;
+  };
+  this.getImageById = function(id){
+    this.images.forEach(function(item){
+      if(item.id == id){
+        return item;
+      }
+    });
   };
 }]);
