@@ -7,11 +7,16 @@ angular.module('media_manager')
     var modalInstance = $uibModal.open({
       animation: false,
       templateUrl: '/static/app/templates/imageLightBox.html',
-      controller: ['$scope', function($scope) {
+      controller: ['$scope', 'Image', 'ImageBehavior', function($scope, Image, ImageBehavior) {
         var lb = this;
         lb.index = index;
         lb.total = images.length;
         lb.image = images[lb.index];
+        lb.imageBehavior = ImageBehavior;
+
+        lb.delete = function(image){
+          
+        };
 
         lb.next = function(){
           if(lb.index < images.length){
