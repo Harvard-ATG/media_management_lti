@@ -36,7 +36,7 @@ angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope
     $scope.crumbs = Breadcrumbs.crumbs;
 }]);
 angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope){
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
   var ic = this;
 
   ic.imageBehavior = ImageBehavior;
@@ -63,9 +63,6 @@ angular.module('media_manager')
   $scope.$watch(function watch(scope){
     return CourseCache.current_image;
   }, function handleChange(newval, oldval){
-    console.log("changing!");
-    console.log(oldval);
-    console.log(newval);
     if(newval.id == oldval.id){
       ic.metachanged = true;
     } else {
@@ -74,6 +71,14 @@ angular.module('media_manager')
     }
   });
 
+  ic.save = function(){
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
 
   ic.next = function(){
     if(ic.index + 1 < CourseCache.images.length){
@@ -585,7 +590,11 @@ angular.module('media_manager')
 .factory('Image', ['$resource', 'AppConfig', function($resource, AppConfig){
   var host = AppConfig.media_management_api_url;
   return $resource(host + '/images/:id',
-    { id: '@id'}
+    { id: '@id'}, {
+      'update': {
+        method:'PUT'
+      }
+    }
   );
 }]);
 
