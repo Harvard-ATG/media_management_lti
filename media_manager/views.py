@@ -13,17 +13,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 def index(request):
-    app_lti_context = services.AppLTIContext(request)
-    if not app_lti_context.has_perm("read"):
+    lti_service = services.LTIService(request)
+    if not lti_service.has_perm("read"):
         raise PermissionDenied
 
-    service = services.CourseService(app_lti_context)
+    service = services.CourseService(lti_service)
     course = service.load_course()
     access_token = service.obtain_user_token()
     
     app_config = {
-        "perms": app_lti_context.get_perms(),
-        "user_id": app_lti_context.get_user_id(),
+        "perms": lti_service.get_perms(),
         "course_id": course.api_course_id,
         "access_token": access_token,
         "media_management_api_url": settings.MEDIA_MANAGEMENT_API_URL,
@@ -36,14 +35,16 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 def mirador(request, collection_id):
-    app_lti_context = services.AppLTIContext(request)
-    if not app_lti_context.has_perm("read"):
+    lti_service = services.LTIService(request)
+    if not lti_service.has_perm("read"):
         raise PermissionDenied
 
     manifest_uri = "{base_url}/collections/{collection_id}/manifest"
     manifest_uri = manifest_uri.format(base_url=settings.MEDIA_MANAGEMENT_API_URL, collection_id=collection_id)
     app_config = {
-        "data": [{"manifestUri": manifest_uri, "location": "Harvard University"}]
+        "data": [
+            {"manifestUri": manifest_uri, "location": "Harvard University"},
+        ]
     }
 
     context = {

@@ -1,10 +1,7 @@
 angular.module('media_manager').service('AppConfig', function() {
-    var config = window.appConfig;
-
-    this.initialConfig = config;
-    this.user_id = config.user_id;
-    this.perms = config.perms;
-    this.context_id = config.context_id;
-    this.course_id = config.course_id;
-    this.media_management_api_url = config.media_management_api_url;
+    this.config = window.appConfig || {};
+    this.perms = this.config.perms;
+    this.course_id = this.config.course_id;
+    this.access_token = this.config.access_token;
+    this.media_management_api_url = this.config.media_management_api_url;
 });
