@@ -19,7 +19,10 @@ def index(request):
 
     service = services.CourseService(lti_service)
     course = service.load_course()
-    access_token = service.obtain_user_token()
+    if not course:
+        raise Exception("Course instance required to launch tool")
+
+    access_token = service.obtain_user_token(course_instance=course)
     
     app_config = {
         "perms": lti_service.get_perms(),

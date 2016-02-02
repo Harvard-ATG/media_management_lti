@@ -4,8 +4,8 @@
   <div class="col-md-3">
     <input ng-model="query" type="text" name="query" class="form-control" placeholder="Search for Collection" aria-label="Search for Collection" />
   </div>
-  <div class="col-md-9">
-    <a class="btn btn-primary pull-right" ng-href="/#/workspace">+ Collection</a>
+  <divclass="col-md-9">
+    <div ng-if="lc.canEdit"><a class="btn btn-primary pull-right" ng-href="/#/workspace">+ Collection</a></div>
   </div>
 </div>
 
