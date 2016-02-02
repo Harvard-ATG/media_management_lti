@@ -36,13 +36,13 @@ angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope
     $scope.crumbs = Breadcrumbs.crumbs;
 }]);
 angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', function($routeParams, CourseCache, ImageBehavior){
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope){
   var ic = this;
 
   ic.imageBehavior = ImageBehavior;
+  ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
   ic.index = 0;
-  ic.total = CourseCache.images.length;
   CourseCache.images.forEach(function(img, index){
     if(img.id == $routeParams.imageId){
       ic.image = img;
@@ -50,10 +50,27 @@ angular.module('media_manager')
     }
   });
 
+  var crumbed = false;
+  var resetBreadcrumb = function(){
+    if(crumbed){
+      Breadcrumbs.popCrumb();
+    }
+    Breadcrumbs.addCrumb("Image " + CourseCache.current_image.id, $location.url());
+    crumbed = true;
+  }
+
+  $scope.$watch(function watch(scope){
+    return CourseCache.current_image;
+  }, function handleChange(newval, oldval){
+    resetBreadcrumb();
+  });
+
   ic.next = function(){
-    if(ic.index < CourseCache.images.length){
+    if(ic.index + 1 < CourseCache.images.length){
       ic.index++;
       ic.image = CourseCache.images[ic.index];
+      CourseCache.current_image = CourseCache.images[ic.index];
+      resetBreadcrumb();
     }
   };
 
@@ -61,6 +78,8 @@ angular.module('media_manager')
     if(ic.index > 0){
       ic.index--;
       ic.image = CourseCache.images[ic.index];
+      CourseCache.current_image = CourseCache.images[ic.index];
+      resetBreadcrumb();
     }
   }
 
@@ -452,9 +471,13 @@ angular.module('media_manager')
 .service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
   this.images = [];
   this.collections = [];
+  this.current_image = {};
   this.loadImages = function() {
     if (this.images.length == 0) {
       this.images = Course.getImages({id: AppConfig.course_id});
+      if(this.images.length > 0){
+        this.current_image = images[0];
+      }
     }
 
   };
@@ -476,13 +499,24 @@ angular.module('media_manager')
     return false;
   };
   this.getImageById = function(id){
-    var image = undefined;
+    var that = this;
     this.images.forEach(function(item){
       if(item.id == id){
-        image = item;
+        that.current_image = item;
       }
     });
-    return image;
+    return that.current_image;
+  };
+  this.getPrevImage = function(image_id){
+    for(var i = 0; i < this.images.length; i++){
+      if(this.images[i].id == image_id){
+        if(i > 0){
+          return this.images[i-1];
+        } else {
+          return this.images[0];
+        }
+      }
+    }
   };
 }]);
 
@@ -563,6 +597,7 @@ angular.module('media_manager')
             if (remove_at_idx >= 0) {
                 $log.debug("removing image id ", id, " from cache at index", remove_at_idx);
                 images.splice(remove_at_idx, 1);
+                CourseCache.current_image = CourseCache.getPrevImage(id);
             }
         });
     };
