@@ -25,7 +25,7 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controllerAs: 'mr'
   })
   .when('/image/:imageId', {
-    templateUrl: "/static/app/templates/imageLightBox.html",
+    templateUrl: "/static/app/templates/image.html",
     controller: 'ImageController',
     controllerAs: 'ic'
   });
