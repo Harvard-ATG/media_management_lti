@@ -16,7 +16,7 @@
             <!-- <div class="delete" ng-click="model.deleteFile()">&times;</div> -->
             <!-- <div class="size">{{model.file.size / 1024 / 1024 | number: 1}}MB</div> -->
             <div class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
-            <div class="resize-overlay" ng-click="wc.imagelb.imageModal(wc.courseImages, $index)">
+            <div class="resize-overlay" ng-click="wc.imageView(courseImage.id)">
               <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
             </div>
           </li>

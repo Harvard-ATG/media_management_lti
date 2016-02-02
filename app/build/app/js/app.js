@@ -2,7 +2,7 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
-    redirectTo: "/collections"
+    redirectTo: "/workspace"
   })
   .when('/workspace', {
     templateUrl: "/static/app/templates/workspace.html",
@@ -23,6 +23,11 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     templateUrl: "/static/app/templates/miradorView.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
+  })
+  .when('/image/:imageId', {
+    templateUrl: "/static/app/templates/image.html",
+    controller: 'ImageController',
+    controllerAs: 'ic'
   });
 }]);
 
@@ -30,6 +35,37 @@ angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope
     var br = this;
     $scope.crumbs = Breadcrumbs.crumbs;
 }]);
+angular.module('media_manager')
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', function($routeParams, CourseCache, ImageBehavior){
+  var ic = this;
+
+  ic.imageBehavior = ImageBehavior;
+  ic.image = CourseCache.getImageById($routeParams.imageId);
+  ic.index = 0;
+  ic.total = CourseCache.images.length;
+  CourseCache.images.forEach(function(img, index){
+    if(img.id == $routeParams.imageId){
+      ic.image = img;
+      ic.index = index;
+    }
+  });
+
+  ic.next = function(){
+    if(ic.index < CourseCache.images.length){
+      ic.index++;
+      ic.image = CourseCache.images[ic.index];
+    }
+  };
+
+  ic.prev = function(){
+    if(ic.index > 0){
+      ic.index--;
+      ic.image = CourseCache.images[ic.index];
+    }
+  }
+
+}]);
+
 angular.module('media_manager').controller('ListController', [
     '$scope',
     'CourseCache',
@@ -109,6 +145,10 @@ angular.module('media_manager')
   var wc = this;
 
   wc.imagelb = ImageLightBox;
+
+  wc.imageView = function(id){
+    $location.path('/image/' + id);
+  };
 
   wc.isActiveCollection = function(id){
     return id == wc.collection.id;
@@ -416,7 +456,7 @@ angular.module('media_manager')
     if (this.images.length == 0) {
       this.images = Course.getImages({id: AppConfig.course_id});
     }
-    
+
   };
   this.loadCollections = function() {
     if (this.collections.length == 0) {
@@ -434,6 +474,15 @@ angular.module('media_manager')
       }
     }
     return false;
+  };
+  this.getImageById = function(id){
+    var image = undefined;
+    this.images.forEach(function(item){
+      if(item.id == id){
+        image = item;
+      }
+    });
+    return image;
   };
 }]);
 
@@ -489,6 +538,70 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
+.factory('Image', ['$resource', 'AppConfig', function($resource, AppConfig){
+  var host = AppConfig.media_management_api_url;
+  return $resource(host + '/images/:id',
+    { id: '@id'}
+  );
+}]);
+
+angular.module('media_manager')
+.service('ImageBehavior', ['$q', '$log', 'Image', 'CourseCache', '$uibModal', function($q, $log, Image, CourseCache, $uibModal){
+    var service = this;
+
+    service.actuallyDeleteImage = function(id) {
+        var image = new Image({ id: id });
+        return image.$delete(function() {
+            var remove_at_idx = -1;
+            var images = CourseCache.images;
+            for(var idx = 0; idx < images.length; idx++) {
+                if (images[idx].id == id) {
+                    remove_at_idx = idx;
+                    break;
+                }
+            }
+            if (remove_at_idx >= 0) {
+                $log.debug("removing image id ", id, " from cache at index", remove_at_idx);
+                images.splice(remove_at_idx, 1);
+            }
+        });
+    };
+
+    service.deleteImageModal = function(id) {
+        var deferredDelete = $q.defer();
+        var modalInstance = $uibModal.open({
+            animation: false,
+            templateUrl: '/static/app/templates/confirmDelete.html',
+            controller: ['$scope', function($scope) {
+                var cd = this;
+                console.log("id: " + id);
+                console.log(CourseCache.images);
+                var image = CourseCache.getImageById(id);
+                console.log(image);
+                cd.confirm_msg = "Are you sure you want to delete image " + image.title + " (ID:" + image.id + ")? ";
+                cd.ok = function() {
+                    var deletePromise = service.actuallyDeleteImage(id);
+                    deletePromise.then(function() {
+                        deferredDelete.resolve("success");
+                    }, function() {
+                        deferredDelete.reject("error");
+                    });
+                    modalInstance.close();
+                };
+                cd.cancel = function() {
+                    modalInstance.close();
+                    deferred.reject("cancel")
+                };
+            }],
+            controllerAs: 'cd',
+            size: 'sm'
+        });
+        return deferredDelete.promise;
+    };
+
+}]);
+
+angular.module('media_manager')
 .service('ImageLightBox', ['$uibModal', function($uibModal){
   var service = this;
 
@@ -497,11 +610,16 @@ angular.module('media_manager')
     var modalInstance = $uibModal.open({
       animation: false,
       templateUrl: '/static/app/templates/imageLightBox.html',
-      controller: ['$scope', function($scope) {
+      controller: ['$scope', 'Image', 'ImageBehavior', function($scope, Image, ImageBehavior) {
         var lb = this;
         lb.index = index;
         lb.total = images.length;
         lb.image = images[lb.index];
+        lb.imageBehavior = ImageBehavior;
+
+        lb.delete = function(image){
+          
+        };
 
         lb.next = function(){
           if(lb.index < images.length){
