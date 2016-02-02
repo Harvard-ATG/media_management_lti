@@ -23,5 +23,10 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     templateUrl: "/static/app/templates/miradorView.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
+  })
+  .when('/image/:imageId', {
+    templateUrl: "/static/app/templates/imageLightBox.html",
+    controller: 'ImageController',
+    controllerAs: 'ic'
   });
 }]);

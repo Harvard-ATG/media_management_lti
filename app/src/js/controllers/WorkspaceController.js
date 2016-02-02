@@ -33,6 +33,10 @@ angular.module('media_manager')
 
   wc.imagelb = ImageLightBox;
 
+  wc.imageView = function(id){
+    $location.path('/image/' + id);
+  };
+
   wc.isActiveCollection = function(id){
     return id == wc.collection.id;
   };
