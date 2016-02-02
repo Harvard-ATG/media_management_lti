@@ -16,6 +16,7 @@ angular.module('media_manager')
             if (remove_at_idx >= 0) {
                 $log.debug("removing image id ", id, " from cache at index", remove_at_idx);
                 images.splice(remove_at_idx, 1);
+                CourseCache.current_image = CourseCache.getPrevImage(id);
             }
         });
     };
