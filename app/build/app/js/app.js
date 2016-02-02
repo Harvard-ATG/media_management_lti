@@ -59,21 +59,11 @@ angular.module('media_manager')
     crumbed = true;
   }
 
-  ic.metachanged = false;
   $scope.$watch(function watch(scope){
     return CourseCache.current_image;
   }, function handleChange(newval, oldval){
-    console.log("changing!");
-    console.log(oldval);
-    console.log(newval);
-    if(newval.id == oldval.id){
-      ic.metachanged = true;
-    } else {
-      resetBreadcrumb();
-      ic.metachanged = false;
-    }
+    resetBreadcrumb();
   });
-
 
   ic.next = function(){
     if(ic.index + 1 < CourseCache.images.length){
