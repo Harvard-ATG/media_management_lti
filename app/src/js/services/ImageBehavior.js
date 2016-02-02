@@ -21,14 +21,16 @@ angular.module('media_manager')
     };
 
     service.deleteImageModal = function(id) {
-        console.log('deleteImageModal');
         var deferredDelete = $q.defer();
         var modalInstance = $uibModal.open({
             animation: false,
             templateUrl: '/static/app/templates/confirmDelete.html',
             controller: ['$scope', function($scope) {
                 var cd = this;
+                console.log("id: " + id);
+                console.log(CourseCache.images);
                 var image = CourseCache.getImageById(id);
+                console.log(image);
                 cd.confirm_msg = "Are you sure you want to delete image " + image.title + " (ID:" + image.id + ")? ";
                 cd.ok = function() {
                     var deletePromise = service.actuallyDeleteImage(id);

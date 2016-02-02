@@ -45,10 +45,12 @@ angular.module('media_manager')
     return false;
   };
   this.getImageById = function(id){
+    var image = undefined;
     this.images.forEach(function(item){
       if(item.id == id){
-        return item;
+        image = item;
       }
     });
+    return image;
   };
 }]);

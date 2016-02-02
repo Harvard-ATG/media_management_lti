@@ -1,11 +1,11 @@
 angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', function($routeParams, CourseCache){
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', function($routeParams, CourseCache, ImageBehavior){
   var ic = this;
 
-  console.log("asdf");
-
+  ic.imageBehavior = ImageBehavior;
   ic.image = CourseCache.getImageById($routeParams.imageId);
   ic.index = 0;
+  ic.total = CourseCache.images.length;
   CourseCache.images.forEach(function(img, index){
     if(img.id == $routeParams.imageId){
       ic.image = img;
