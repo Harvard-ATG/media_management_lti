@@ -29,4 +29,6 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controller: 'ImageController',
     controllerAs: 'ic'
   });
-}]);
+}]).run(function($http) {
+  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+})

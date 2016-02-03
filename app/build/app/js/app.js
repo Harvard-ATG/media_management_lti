@@ -29,7 +29,9 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controller: 'ImageController',
     controllerAs: 'ic'
   });
-}]);
+}]).run(function($http) {
+  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+})
 
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
     var br = this;
@@ -244,7 +246,7 @@ angular.module('media_manager')
 
   wc.createCollection = function() {
     $log.debug("create collection");
-    wc.collection.course_id = 1;
+    wc.collection.course_id = AppConfig.course_id;
     wc.collection.course_image_ids = wc.collection.images.map(function(image){
       return image.id;
     });
@@ -280,86 +282,13 @@ angular.module('media_manager')
 
 }]);
 
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
-    }
-
-}]);
-
 angular.module('media_manager').service('AppConfig', function() {
-    var config = window.appConfig;
-
-    this.initialConfig = config;
-    this.user_id = config.user_id;
-    this.perms = config.perms;
-    this.context_id = config.context_id;
-    this.course_id = config.course_id;
-    this.media_management_api_url = config.media_management_api_url;
+    this.config = window.appConfig || {};
+    this.perms = this.config.perms;
+    this.course_id = this.config.course_id;
+    this.access_token = this.config.access_token;
+    this.authorization_header = "Token " + this.config.access_token;
+    this.media_management_api_url = this.config.media_management_api_url;
 });
 
 angular.module('media_manager').service('Breadcrumbs', function() {
@@ -537,7 +466,10 @@ angular.module('media_manager')
 
       ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif']);
       ds.interface.setRequestUrl(request_url);
-      ds.interface.setRequestHeaders({'Accept': 'application/json'})
+      ds.interface.setRequestHeaders({
+        'Accept': 'application/json',
+        'Authorization': AppConfig.authorization_header
+      })
       ds.interface.defineHTTPSuccess([/2.{2}/]);
       ds.interface.useArray(false);
       ds.interface.setPostData({"title": "Untitled"})
@@ -675,5 +607,76 @@ angular.module('media_manager')
     return;
   };
 
+
+}]);
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
 
 }]);

@@ -15,7 +15,10 @@ angular.module('media_manager')
 
       ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif']);
       ds.interface.setRequestUrl(request_url);
-      ds.interface.setRequestHeaders({'Accept': 'application/json'})
+      ds.interface.setRequestHeaders({
+        'Accept': 'application/json',
+        'Authorization': AppConfig.authorization_header
+      })
       ds.interface.defineHTTPSuccess([/2.{2}/]);
       ds.interface.useArray(false);
       ds.interface.setPostData({"title": "Untitled"})
