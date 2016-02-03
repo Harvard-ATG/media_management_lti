@@ -104,7 +104,7 @@ angular.module('media_manager')
 
   wc.createCollection = function() {
     $log.debug("create collection");
-    wc.collection.course_id = 1;
+    wc.collection.course_id = AppConfig.course_id;
     wc.collection.course_image_ids = wc.collection.images.map(function(image){
       return image.id;
     });

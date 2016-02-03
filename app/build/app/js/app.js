@@ -24,6 +24,276 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controller: 'MiradorController',
     controllerAs: 'mr'
   });
+}]).run(function($http) {
+  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+})
+
+angular.module('media_manager').service('AppConfig', function() {
+    this.config = window.appConfig || {};
+    this.perms = this.config.perms;
+    this.course_id = this.config.course_id;
+    this.access_token = this.config.access_token;
+    this.authorization_header = "Token " + this.config.access_token;
+    this.media_management_api_url = this.config.media_management_api_url;
+});
+
+angular.module('media_manager').service('Breadcrumbs', function() {
+    var br = this;
+    var default_crumbs = [{"text": "List Collections", "route": "/"}];
+    this.crumbs = [];
+    this.addCrumb = function(text, route) {
+        this.crumbs.push({"text": text, "route": route});
+    };
+    this.popCrumb = function() {
+        this.crumbs.pop();
+    };
+    this.home = function() {
+        this.crumbs = angular.copy(default_crumbs);
+        return this;
+    }
+    this.home();
+});
+
+angular.module('media_manager')
+.factory('Collection', ['$resource',  'AppConfig', function($resource, AppConfig){
+  var host = AppConfig.media_management_api_url;
+  return $resource(host + '/collections/:id',
+    { id: '@id' }, {
+      'saveImages': {
+        method: 'POST',
+        url: host + '/collections/:id/images',
+        isArray: true
+      },
+      'update': {
+        method:'PUT'
+      }
+    }
+  );
+}]);
+angular.module('media_manager')
+.service('CollectionBehavior', ['$q', '$log', 'Collection', 'CourseCache',  '$uibModal', function($q, $log, Collection, CourseCache, $uibModal){
+    var service = this;
+
+    service.actuallyDeleteCollection = function(id) {
+        var collection = new Collection({ id: id });
+        return collection.$delete(function() {
+            var remove_at_idx = -1;
+            var collections = CourseCache.collections;
+            for(var idx = 0; idx < collections.length; idx++) {
+                if (collections[idx].id == id) {
+                    remove_at_idx = idx;
+                    break;
+                }
+            }
+            if (remove_at_idx >= 0) {
+                $log.debug("removing collection id ", id, " from cache at index", remove_at_idx);
+                collections.splice(remove_at_idx, 1);
+            }
+        });
+    };
+
+    service.deleteCollectionModal = function(id) {
+        var deferredDelete = $q.defer();
+        var modalInstance = $uibModal.open({
+            animation: false,
+            templateUrl: '/static/app/templates/confirmDelete.html',
+            controller: ['$scope', function($scope) {
+                var cd = this;
+                var collection = CourseCache.getCollectionById(id);
+                cd.confirm_msg = "Are you sure you want to delete collection " + collection.title + " (ID:" + collection.id + ")? ";
+                cd.ok = function() {
+                    var deletePromise = service.actuallyDeleteCollection(id);
+                    deletePromise.then(function() {
+                        deferredDelete.resolve("success");
+                    }, function() {
+                        deferredDelete.reject("error");
+                    });
+                    modalInstance.close();
+                };
+                cd.cancel = function() {
+                    modalInstance.close();
+                    deferred.reject("cancel")
+                };
+            }],
+            controllerAs: 'cd',
+            size: 'sm'
+        });
+        return deferredDelete.promise;
+    };
+
+}]);
+
+angular.module('media_manager')
+.factory('Course', ['$resource', 'AppConfig', function($resource, AppConfig){
+  var host = AppConfig.media_management_api_url;
+  return $resource(host + '/courses/:id',
+    { id: '@id', image_id: '@image_id', collection_id: '@collection_id' }, {
+      'getImages': {
+        method: 'GET',
+        isArray: true,
+        url: host + '/courses/:id/images/:image_id'
+      },
+      'getCollections': {
+        method: 'GET',
+        isArray: true,
+        url: host + '/courses/:id/collections/:collection_id'
+      }
+    }
+  );
+}]);
+
+angular.module('media_manager')
+.service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
+  this.images = [];
+  this.collections = [];
+  this.loadImages = function() {
+    if (this.images.length == 0) {
+      this.images = Course.getImages({id: AppConfig.course_id});
+    }
+    
+  };
+  this.loadCollections = function() {
+    if (this.collections.length == 0) {
+      this.collections = Course.getCollections({id: AppConfig.course_id});
+    }
+  };
+  this.load = function() {
+    this.loadImages();
+    this.loadCollections();
+  };
+  this.getCollectionById = function(id) {
+    for (var i = 0; i < this.collections.length; i++) {
+      if (this.collections[i].id == id) {
+        return this.collections[i];
+      }
+    }
+    return false;
+  };
+}]);
+
+angular.module('media_manager')
+.service('Droplet', ['$timeout', 'AppConfig', function($timeout, AppConfig){
+  var ds = this;
+  ds.interface = {};
+  ds.uploadCount = 0;
+  ds.success = false;
+  ds.error = false;
+  ds.scope = undefined;
+
+  // Listen for when the interface has been configured.
+  ds.whenDropletReady = function() {
+      var request_url = ":base_url/courses/:course_id/images";
+      request_url = request_url.replace(':base_url', AppConfig.media_management_api_url);
+      request_url = request_url.replace(':course_id', AppConfig.course_id);
+
+      ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif']);
+      ds.interface.setRequestUrl(request_url);
+      ds.interface.setRequestHeaders({
+        'Accept': 'application/json',
+        'Authorization': AppConfig.authorization_header
+      })
+      ds.interface.defineHTTPSuccess([/2.{2}/]);
+      ds.interface.useArray(false);
+      ds.interface.setPostData({"title": "Untitled"})
+  };
+
+  // Listen for when the files have been successfully uploaded.
+  ds.onDropletSuccess = function(event, response, files) {
+      ds.scope.uploadCount = files.length;
+      ds.scope.success     = true;
+
+      $timeout(function timeout() {
+          ds.scope.success = false;
+      }, 5000);
+
+      console.log("droplet success", event, response, files);
+      ds.scope.$broadcast('$dropletUploadComplete', response, files);
+  };
+
+  // Listen for when the files have failed to upload.
+  ds.onDropletError = function(event, response) {
+      console.log("onDropletError", event, response);
+      ds.scope.error = true;
+
+      $timeout(function timeout() {
+          ds.scope.error = false;
+      }, 5000);
+
+      console.log("droplet error", event, response);
+  };
+
+
+}]);
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
+
 }]);
 
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
@@ -214,272 +484,5 @@ angular.module('media_manager')
   $scope.$on('$dropletUploadComplete', function(event, response, files) {
     wc.courseImages.push(response);
   });
-
-}]);
-
-angular.module('media_manager').service('AppConfig', function() {
-    var config = window.appConfig;
-
-    this.initialConfig = config;
-    this.user_id = config.user_id;
-    this.perms = config.perms;
-    this.context_id = config.context_id;
-    this.course_id = config.course_id;
-    this.media_management_api_url = config.media_management_api_url;
-});
-
-angular.module('media_manager').service('Breadcrumbs', function() {
-    var br = this;
-    var default_crumbs = [{"text": "List Collections", "route": "/"}];
-    this.crumbs = [];
-    this.addCrumb = function(text, route) {
-        this.crumbs.push({"text": text, "route": route});
-    };
-    this.popCrumb = function() {
-        this.crumbs.pop();
-    };
-    this.home = function() {
-        this.crumbs = angular.copy(default_crumbs);
-        return this;
-    }
-    this.home();
-});
-
-angular.module('media_manager')
-.factory('Collection', ['$resource',  'AppConfig', function($resource, AppConfig){
-  var host = AppConfig.media_management_api_url;
-  return $resource(host + '/collections/:id',
-    { id: '@id' }, {
-      'saveImages': {
-        method: 'POST',
-        url: host + '/collections/:id/images',
-        isArray: true
-      },
-      'update': {
-        method:'PUT'
-      }
-    }
-  );
-}]);
-angular.module('media_manager')
-.service('CollectionBehavior', ['$q', '$log', 'Collection', 'CourseCache',  '$uibModal', function($q, $log, Collection, CourseCache, $uibModal){
-    var service = this;
-
-    service.actuallyDeleteCollection = function(id) {
-        var collection = new Collection({ id: id });
-        return collection.$delete(function() {
-            var remove_at_idx = -1;
-            var collections = CourseCache.collections;
-            for(var idx = 0; idx < collections.length; idx++) {
-                if (collections[idx].id == id) {
-                    remove_at_idx = idx;
-                    break;
-                }
-            }
-            if (remove_at_idx >= 0) {
-                $log.debug("removing collection id ", id, " from cache at index", remove_at_idx);
-                collections.splice(remove_at_idx, 1);
-            }
-        });
-    };
-
-    service.deleteCollectionModal = function(id) {
-        var deferredDelete = $q.defer();
-        var modalInstance = $uibModal.open({
-            animation: false,
-            templateUrl: '/static/app/templates/confirmDelete.html',
-            controller: ['$scope', function($scope) {
-                var cd = this;
-                var collection = CourseCache.getCollectionById(id);
-                cd.confirm_msg = "Are you sure you want to delete collection " + collection.title + " (ID:" + collection.id + ")? ";
-                cd.ok = function() {
-                    var deletePromise = service.actuallyDeleteCollection(id);
-                    deletePromise.then(function() {
-                        deferredDelete.resolve("success");
-                    }, function() {
-                        deferredDelete.reject("error");
-                    });
-                    modalInstance.close();
-                };
-                cd.cancel = function() {
-                    modalInstance.close();
-                    deferred.reject("cancel")
-                };
-            }],
-            controllerAs: 'cd',
-            size: 'sm'
-        });
-        return deferredDelete.promise;
-    };
-
-}]);
-
-angular.module('media_manager')
-.factory('Course', ['$resource', 'AppConfig', function($resource, AppConfig){
-  var host = AppConfig.media_management_api_url;
-  return $resource(host + '/courses/:id',
-    { id: '@id', image_id: '@image_id', collection_id: '@collection_id' }, {
-      'getImages': {
-        method: 'GET',
-        isArray: true,
-        url: host + '/courses/:id/images/:image_id'
-      },
-      'getCollections': {
-        method: 'GET',
-        isArray: true,
-        url: host + '/courses/:id/collections/:collection_id'
-      }
-    }
-  );
-}]);
-
-angular.module('media_manager')
-.service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
-  this.images = [];
-  this.collections = [];
-  this.loadImages = function() {
-    if (this.images.length == 0) {
-      this.images = Course.getImages({id: AppConfig.course_id});
-    }
-    
-  };
-  this.loadCollections = function() {
-    if (this.collections.length == 0) {
-      this.collections = Course.getCollections({id: AppConfig.course_id});
-    }
-  };
-  this.load = function() {
-    this.loadImages();
-    this.loadCollections();
-  };
-  this.getCollectionById = function(id) {
-    for (var i = 0; i < this.collections.length; i++) {
-      if (this.collections[i].id == id) {
-        return this.collections[i];
-      }
-    }
-    return false;
-  };
-}]);
-
-angular.module('media_manager')
-.service('Droplet', ['$timeout', 'AppConfig', function($timeout, AppConfig){
-  var ds = this;
-  ds.interface = {};
-  ds.uploadCount = 0;
-  ds.success = false;
-  ds.error = false;
-  ds.scope = undefined;
-
-  // Listen for when the interface has been configured.
-  ds.whenDropletReady = function() {
-      var request_url = ":base_url/courses/:course_id/images";
-      request_url = request_url.replace(':base_url', AppConfig.media_management_api_url);
-      request_url = request_url.replace(':course_id', AppConfig.course_id);
-
-      ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif']);
-      ds.interface.setRequestUrl(request_url);
-      ds.interface.setRequestHeaders({'Accept': 'application/json'})
-      ds.interface.defineHTTPSuccess([/2.{2}/]);
-      ds.interface.useArray(false);
-      ds.interface.setPostData({"title": "Untitled"})
-  };
-
-  // Listen for when the files have been successfully uploaded.
-  ds.onDropletSuccess = function(event, response, files) {
-      ds.scope.uploadCount = files.length;
-      ds.scope.success     = true;
-
-      $timeout(function timeout() {
-          ds.scope.success = false;
-      }, 5000);
-
-      console.log("droplet success", event, response, files);
-      ds.scope.$broadcast('$dropletUploadComplete', response, files);
-  };
-
-  // Listen for when the files have failed to upload.
-  ds.onDropletError = function(event, response) {
-      console.log("onDropletError", event, response);
-      ds.scope.error = true;
-
-      $timeout(function timeout() {
-          ds.scope.error = false;
-      }, 5000);
-
-      console.log("droplet error", event, response);
-  };
-
-
-}]);
-
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
-    }
 
 }]);
