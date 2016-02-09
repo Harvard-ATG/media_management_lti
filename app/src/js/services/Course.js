@@ -21,11 +21,15 @@ angular.module('media_manager')
 .service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
   this.images = [];
   this.collections = [];
+  this.current_image = {};
   this.loadImages = function() {
     if (this.images.length == 0) {
       this.images = Course.getImages({id: AppConfig.course_id});
+      if(this.images.length > 0){
+        this.current_image = images[0];
+      }
     }
-    
+
   };
   this.loadCollections = function() {
     if (this.collections.length == 0) {
@@ -43,5 +47,25 @@ angular.module('media_manager')
       }
     }
     return false;
+  };
+  this.getImageById = function(id){
+    var that = this;
+    this.images.forEach(function(item){
+      if(item.id == id){
+        that.current_image = item;
+      }
+    });
+    return that.current_image;
+  };
+  this.getPrevImage = function(image_id){
+    for(var i = 0; i < this.images.length; i++){
+      if(this.images[i].id == image_id){
+        if(i > 0){
+          return this.images[i-1];
+        } else {
+          return this.images[0];
+        }
+      }
+    }
   };
 }]);

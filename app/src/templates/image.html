@@ -1,0 +1,22 @@
+<div data-ng-include data-src="'/static/app/templates/breadcrumbs.html'"></div>
+
+<div class="modal-header">
+    <h3 class="modal-title">{{ ic.CourseCache.current_image.title }}</h3>
+</div>
+<div class="modal-body">
+  <div class="text-center">
+    {{ ic.index + 1 }} / {{ ic.CourseCache.images.length }}
+  </div>
+  <div class="text-center">
+    <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="ic.prev()">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="ic.next()">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    </button>
+  </div>
+  <img style="display: block; margin-left: auto; margin-right: auto; max-height: 400px;" ng-src="{{ ic.CourseCache.current_image.image_url }}"/>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-danger" type="button" ng-click="ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id)">Delete</button>
+</div>

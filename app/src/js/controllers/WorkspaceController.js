@@ -10,6 +10,7 @@ angular.module('media_manager')
                                     'Collection',
                                     'CourseCache',
                                     'CollectionBehavior',
+                                    'ImageLightBox',
                                     'Breadcrumbs',
                                     'AppConfig',
                                     function($scope,
@@ -23,12 +24,19 @@ angular.module('media_manager')
                                       Collection,
                                       CourseCache,
                                       CollectionBehavior,
+                                      ImageLightBox,
                                       Breadcrumbs,
                                       AppConfig){
 
 
   var wc = this;
-  
+
+  wc.imagelb = ImageLightBox;
+
+  wc.imageView = function(id){
+    $location.path('/image/' + id);
+  };
+
   wc.isActiveCollection = function(id){
     return id == wc.collection.id;
   };
@@ -46,7 +54,7 @@ angular.module('media_manager')
     return collection
   };
 
-  
+
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
   };
@@ -68,7 +76,7 @@ angular.module('media_manager')
       $log.debug("error deleting collection", collection_id);
     });
   };
-  
+
   wc.cancelCollection = function() {
     $location.path('/collections/');
   };
@@ -80,7 +88,7 @@ angular.module('media_manager')
       wc.createCollection();
     }
   };
-  
+
   wc.updateCollection = function() {
     $log.debug("update collection", wc.collection.id);
     wc.collection.description = wc.collection.description || "No description";
@@ -93,13 +101,13 @@ angular.module('media_manager')
       };
       return image[image_prop_for[image.type]];
     })
-    
+
     // put to update collection
     Collection.update({}, wc.collection, function(data){
       wc.collection = wc.loadActiveCollection();
     }, function(errorResponse) {
       $log.debug("error updating collection:", errorResponse);
-    }); 
+    });
   };
 
   wc.createCollection = function() {
@@ -114,14 +122,14 @@ angular.module('media_manager')
       wc.collection.id = data.id;
       wc.courseCollections.push(wc.collection);
       $location.path('/collections/');
-    });    
+    });
   };
 
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
-  
+
   CourseCache.load();
   Droplet.scope = $scope;
-  
+
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
   wc.Droplet = Droplet;

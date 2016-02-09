@@ -345,7 +345,7 @@ div.overlay {
     line-height: 50px;
     position: absolute;
     border-radius: 50%;
-    z-index: 101;
+      z-index: 101;
     top: 25px;
     left: 25px;
     opacity: 0;
@@ -353,11 +353,34 @@ div.overlay {
     transform: scale(0.5);
 }
 
-li div.overlay:hover {
+div.resize-overlay {
+  /*background-color: rgba(0, 0, 0, .25);*/
+  width: 30px;
+  height: 30px;
+  font-family: Lato, Arial, Tahoma, Helvetica, sans-serif;
+  color: white;
+  font-size: 25px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, .25);
+  text-align: center;
+  cursor: pointer;
+  line-height: 30px;
+  position: absolute;
+  border-radius: 20%;
+  z-index: 101;
+  top: 3px;
+  left: 65px;
+  opacity: 1;
+  transition: all .30s;
+  transform: scale(0.5);
+}
+
+li div.overlay:hover,
+li div.resize-overlay:hover {
     background-color: rgba(0, 0, 0, .45);
 }
 
-li:hover div.overlay {
+li:hover div.overlay,
+li:hover div.resize-overlay:hover {
     opacity: 1;
     transform: scale(1);
 }

@@ -23,6 +23,11 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     templateUrl: "/static/app/templates/miradorView.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
+  })
+  .when('/image/:imageId', {
+    templateUrl: "/static/app/templates/image.html",
+    controller: 'ImageController',
+    controllerAs: 'ic'
   });
 }]).run(function($http) {
   $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
