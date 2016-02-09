@@ -33,252 +33,74 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
   $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
 })
 
-angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
-    var br = this;
-    $scope.crumbs = Breadcrumbs.crumbs;
-}]);
 angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope){
-  var ic = this;
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
 
-  ic.imageBehavior = ImageBehavior;
-  ic.CourseCache = CourseCache;
-  ic.image = CourseCache.getImageById($routeParams.imageId);
-  ic.index = 0;
-  CourseCache.images.forEach(function(img, index){
-    if(img.id == $routeParams.imageId){
-      ic.image = img;
-      ic.index = index;
-    }
-  });
-
-  var crumbed = false;
-  var resetBreadcrumb = function(){
-    if(crumbed){
-      Breadcrumbs.popCrumb();
-    }
-    Breadcrumbs.addCrumb("Image " + CourseCache.current_image.id, $location.url());
-    crumbed = true;
-  }
-
-  $scope.$watch(function watch(scope){
-    return CourseCache.current_image;
-  }, function handleChange(newval, oldval){
-    resetBreadcrumb();
-  });
-
-  ic.next = function(){
-    if(ic.index + 1 < CourseCache.images.length){
-      ic.index++;
-      ic.image = CourseCache.images[ic.index];
-      CourseCache.current_image = CourseCache.images[ic.index];
-      resetBreadcrumb();
-    }
   };
-
-  ic.prev = function(){
-    if(ic.index > 0){
-      ic.index--;
-      ic.image = CourseCache.images[ic.index];
-      CourseCache.current_image = CourseCache.images[ic.index];
-      resetBreadcrumb();
-    }
-  }
-
 }]);
 
-angular.module('media_manager').controller('ListController', [
-    '$scope',
-    'CourseCache',
-    'CollectionBehavior',
-    'AppConfig',
-    'Breadcrumbs',
-    function(
-    $scope,
-    CourseCache,
-    CollectionBehavior,
-    AppConfig,
-    Breadcrumbs) {
-        var lc = this;
-
-        Breadcrumbs.home();
-        CourseCache.load();
-
-        lc.collections = CourseCache.collections;
-        lc.canEdit = AppConfig.perms.edit;
-        lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
-        lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
-    }
-]);
-angular.module('media_manager').controller('MiradorController', [
-    '$scope',
-    '$routeParams',
-    '$location',
-    'AppConfig',
-    'Breadcrumbs',
-function(
-    $scope,
-    $routeParams,
-    $location,
-    AppConfig,
-    Breadcrumbs
-) {
-    var mr = this;
-    var miradorUrl = "/mirador/:collection_id";
-    miradorUrl = miradorUrl.replace(':collection_id', $routeParams.collectionId);
-    
-    mr.canRead = AppConfig.perms.read;
-    mr.iframeSrc =  miradorUrl;
-    
-    Breadcrumbs.home().addCrumb("Mirador", $location.url());
-}]);
 angular.module('media_manager')
-.controller('WorkspaceController', ['$scope',
-                                    '$timeout',
-                                    '$log',
-                                    '$routeParams',
-                                    '$location',
-                                    '$uibModal',
-                                    'Droplet',
-                                    'Course',
-                                    'Collection',
-                                    'CourseCache',
-                                    'CollectionBehavior',
-                                    'ImageLightBox',
-                                    'Breadcrumbs',
-                                    'AppConfig',
-                                    function($scope,
-                                      $timeout,
-                                      $log,
-                                      $routeParams,
-                                      $location,
-                                      $uibModal,
-                                      Droplet,
-                                      Course,
-                                      Collection,
-                                      CourseCache,
-                                      CollectionBehavior,
-                                      ImageLightBox,
-                                      Breadcrumbs,
-                                      AppConfig){
+.directive('progressbar', [function () {
+    return {
 
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
 
-  var wc = this;
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
 
-  wc.imagelb = ImageLightBox;
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
 
-  wc.imageView = function(id){
-    $location.path('/image/' + id);
-  };
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
 
-  wc.isActiveCollection = function(id){
-    return id == wc.collection.id;
-  };
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
 
-  wc.loadActiveCollection = function() {
-    var collection;
-    if($routeParams.collectionId !== undefined){
-      collection = Collection.get({id: $routeParams.collectionId});
-    } else {
-      //wc.collection = [];
-      collection = new Collection();
-      collection.images = [];
-      collection.title = "Untitled Collection";
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
     }
-    return collection
-  };
-
-
-  wc.addToCollection = function(courseImage){
-    wc.collection.images.push(courseImage);
-  };
-
-  wc.removeFromCollection = function(imageIndex){
-    wc.collection.images.splice(imageIndex, 1);
-  };
-
-  wc.canDeleteCollection = function() {
-    return wc.collection.id ? true : false;
-  };
-
-  wc.deleteCollection = function() {
-    var collection_id = wc.collection.id;
-    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
-    deletePromise.then(function(result) {
-      $location.path('/collections/');
-    }, function(result) {
-      $log.debug("error deleting collection", collection_id);
-    });
-  };
-
-  wc.cancelCollection = function() {
-    $location.path('/collections/');
-  };
-
-  wc.saveCollection = function(){
-    if($routeParams.collectionId){
-      wc.updateCollection();
-    } else {
-      wc.createCollection();
-    }
-  };
-
-  wc.updateCollection = function() {
-    $log.debug("update collection", wc.collection.id);
-    wc.collection.description = wc.collection.description || "No description";
-    wc.collection.course_image_ids = wc.collection.images.map(function(image) {
-      // images could come from the image library, or already be part of the collection
-      // and we want to make sure we're returning the image "id" property, not the collectionimage "id"
-      image_prop_for = {
-        "collectionimages": "course_image_id",
-        "images": "id"
-      };
-      return image[image_prop_for[image.type]];
-    })
-
-    // put to update collection
-    Collection.update({}, wc.collection, function(data){
-      wc.collection = wc.loadActiveCollection();
-    }, function(errorResponse) {
-      $log.debug("error updating collection:", errorResponse);
-    });
-  };
-
-  wc.createCollection = function() {
-    $log.debug("create collection");
-    wc.collection.course_id = AppConfig.course_id;
-    wc.collection.course_image_ids = wc.collection.images.map(function(image){
-      return image.id;
-    });
-
-    // post to save a new collection
-    Collection.save({}, wc.collection, function(data){
-      wc.collection.id = data.id;
-      wc.courseCollections.push(wc.collection);
-      $location.path('/collections/');
-    });
-  };
-
-  Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
-
-  CourseCache.load();
-  Droplet.scope = $scope;
-
-  wc.courseImages = CourseCache.images;
-  wc.courseCollections = CourseCache.collections;
-  wc.Droplet = Droplet;
-  wc.collection = wc.loadActiveCollection();
-  wc.canEdit = AppConfig.perms.edit;
-
-  $scope.$on('$dropletReady', Droplet.whenDropletReady);
-  $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
-  $scope.$on('$dropletError', Droplet.onDropletError);
-  $scope.$on('$dropletFileAdded', function(){
-    wc.Droplet.interface.uploadFiles();
-  });
-  $scope.$on('$dropletUploadComplete', function(event, response, files) {
-    wc.courseImages.push(response);
-  });
 
 }]);
 
@@ -610,73 +432,251 @@ angular.module('media_manager')
 
 }]);
 
+angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
+    var br = this;
+    $scope.crumbs = Breadcrumbs.crumbs;
+}]);
 angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope){
+  var ic = this;
 
+  ic.imageBehavior = ImageBehavior;
+  ic.CourseCache = CourseCache;
+  ic.image = CourseCache.getImageById($routeParams.imageId);
+  ic.index = 0;
+  CourseCache.images.forEach(function(img, index){
+    if(img.id == $routeParams.imageId){
+      ic.image = img;
+      ic.index = index;
+    }
+  });
+
+  var crumbed = false;
+  var resetBreadcrumb = function(){
+    if(crumbed){
+      Breadcrumbs.popCrumb();
+    }
+    Breadcrumbs.addCrumb("Image " + CourseCache.current_image.id, $location.url());
+    crumbed = true;
+  }
+
+  $scope.$watch(function watch(scope){
+    return CourseCache.current_image;
+  }, function handleChange(newval, oldval){
+    resetBreadcrumb();
+  });
+
+  ic.next = function(){
+    if(ic.index + 1 < CourseCache.images.length){
+      ic.index++;
+      ic.image = CourseCache.images[ic.index];
+      CourseCache.current_image = CourseCache.images[ic.index];
+      resetBreadcrumb();
+    }
   };
+
+  ic.prev = function(){
+    if(ic.index > 0){
+      ic.index--;
+      ic.image = CourseCache.images[ic.index];
+      CourseCache.current_image = CourseCache.images[ic.index];
+      resetBreadcrumb();
+    }
+  }
+
 }]);
 
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
+angular.module('media_manager').controller('ListController', [
+    '$scope',
+    'CourseCache',
+    'CollectionBehavior',
+    'AppConfig',
+    'Breadcrumbs',
+    function(
+    $scope,
+    CourseCache,
+    CollectionBehavior,
+    AppConfig,
+    Breadcrumbs) {
+        var lc = this;
 
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
+        Breadcrumbs.home();
+        CourseCache.load();
 
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
+        lc.collections = CourseCache.collections;
+        lc.canEdit = AppConfig.perms.edit;
+        lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
+        lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
     }
+]);
+angular.module('media_manager').controller('MiradorController', [
+    '$scope',
+    '$routeParams',
+    '$location',
+    'AppConfig',
+    'Breadcrumbs',
+function(
+    $scope,
+    $routeParams,
+    $location,
+    AppConfig,
+    Breadcrumbs
+) {
+    var mr = this;
+    var miradorUrl = "/mirador/:collection_id";
+    miradorUrl = miradorUrl.replace(':collection_id', $routeParams.collectionId);
+    
+    mr.canRead = AppConfig.perms.read;
+    mr.iframeSrc =  miradorUrl;
+    
+    Breadcrumbs.home().addCrumb("Mirador", $location.url());
+}]);
+angular.module('media_manager')
+.controller('WorkspaceController', ['$scope',
+                                    '$timeout',
+                                    '$log',
+                                    '$routeParams',
+                                    '$location',
+                                    '$uibModal',
+                                    'Droplet',
+                                    'Course',
+                                    'Collection',
+                                    'CourseCache',
+                                    'CollectionBehavior',
+                                    'ImageLightBox',
+                                    'Breadcrumbs',
+                                    'AppConfig',
+                                    function($scope,
+                                      $timeout,
+                                      $log,
+                                      $routeParams,
+                                      $location,
+                                      $uibModal,
+                                      Droplet,
+                                      Course,
+                                      Collection,
+                                      CourseCache,
+                                      CollectionBehavior,
+                                      ImageLightBox,
+                                      Breadcrumbs,
+                                      AppConfig){
+
+
+  var wc = this;
+
+  wc.imagelb = ImageLightBox;
+
+  wc.imageView = function(id){
+    $location.path('/image/' + id);
+  };
+
+  wc.isActiveCollection = function(id){
+    return id == wc.collection.id;
+  };
+
+  wc.loadActiveCollection = function() {
+    var collection;
+    if($routeParams.collectionId !== undefined){
+      collection = Collection.get({id: $routeParams.collectionId});
+    } else {
+      //wc.collection = [];
+      collection = new Collection();
+      collection.images = [];
+      collection.title = "Untitled Collection";
+    }
+    return collection
+  };
+
+
+  wc.addToCollection = function(courseImage){
+    wc.collection.images.push(courseImage);
+  };
+
+  wc.removeFromCollection = function(imageIndex){
+    wc.collection.images.splice(imageIndex, 1);
+  };
+
+  wc.canDeleteCollection = function() {
+    return wc.collection.id ? true : false;
+  };
+
+  wc.deleteCollection = function() {
+    var collection_id = wc.collection.id;
+    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
+    deletePromise.then(function(result) {
+      $location.path('/collections/');
+    }, function(result) {
+      $log.debug("error deleting collection", collection_id);
+    });
+  };
+
+  wc.cancelCollection = function() {
+    $location.path('/collections/');
+  };
+
+  wc.saveCollection = function(){
+    if($routeParams.collectionId){
+      wc.updateCollection();
+    } else {
+      wc.createCollection();
+    }
+  };
+
+  wc.updateCollection = function() {
+    $log.debug("update collection", wc.collection.id);
+    wc.collection.description = wc.collection.description || "No description";
+    wc.collection.course_image_ids = wc.collection.images.map(function(image) {
+      // images could come from the image library, or already be part of the collection
+      // and we want to make sure we're returning the image "id" property, not the collectionimage "id"
+      image_prop_for = {
+        "collectionimages": "course_image_id",
+        "images": "id"
+      };
+      return image[image_prop_for[image.type]];
+    })
+
+    // put to update collection
+    Collection.update({}, wc.collection, function(data){
+      wc.collection = wc.loadActiveCollection();
+    }, function(errorResponse) {
+      $log.debug("error updating collection:", errorResponse);
+    });
+  };
+
+  wc.createCollection = function() {
+    $log.debug("create collection");
+    wc.collection.course_id = AppConfig.course_id;
+    wc.collection.course_image_ids = wc.collection.images.map(function(image){
+      return image.id;
+    });
+
+    // post to save a new collection
+    Collection.save({}, wc.collection, function(data){
+      wc.collection.id = data.id;
+      wc.courseCollections.push(wc.collection);
+      $location.path('/collections/');
+    });
+  };
+
+  Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
+
+  CourseCache.load();
+  Droplet.scope = $scope;
+
+  wc.courseImages = CourseCache.images;
+  wc.courseCollections = CourseCache.collections;
+  wc.Droplet = Droplet;
+  wc.collection = wc.loadActiveCollection();
+  wc.canEdit = AppConfig.perms.edit;
+
+  $scope.$on('$dropletReady', Droplet.whenDropletReady);
+  $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
+  $scope.$on('$dropletError', Droplet.onDropletError);
+  $scope.$on('$dropletFileAdded', function(){
+    wc.Droplet.interface.uploadFiles();
+  });
+  $scope.$on('$dropletUploadComplete', function(event, response, files) {
+    wc.courseImages.push(response);
+  });
 
 }]);
