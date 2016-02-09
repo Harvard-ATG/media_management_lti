@@ -128,22 +128,35 @@ angular.module('media_manager')
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
-  Droplet.scope = $scope;
 
+  wc.dropletInterface = null;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
-  wc.Droplet = Droplet;
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
 
-  $scope.$on('$dropletReady', Droplet.whenDropletReady);
-  $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
-  $scope.$on('$dropletError', Droplet.onDropletError);
-  $scope.$on('$dropletFileAdded', function(){
-    wc.Droplet.interface.uploadFiles();
+  $scope.$on('$dropletReady', function() {
+    Droplet.configure(wc.dropletInterface);
+    $log.debug("Ready: droplet ready", wc.dropletInterface);
   });
-  $scope.$on('$dropletUploadComplete', function(event, response, files) {
+  $scope.$on('$dropletSuccess', function(event, response, files) {
     wc.courseImages.push(response);
+    $log.debug("Success: droplet uploaded file: ", files, response);
+  });
+  $scope.$on('$dropletError', function(event, response) {
+    $log.debug("Error: droplet uploaded file: ", response);
+    alert("Error: file upload failed: " + response);
+  });
+  $scope.$on('$dropletFileAdded', function(event, model){
+    var is_valid = (model.type == wc.dropletInterface.FILE_TYPES.VALID);
+    $log.debug("Notification: droplet file added", model);
+    if (is_valid) {
+      $log.debug("Notfication: uploading files");
+      wc.dropletInterface.uploadFiles();
+    } else {
+      $log.debug("Notification: file added is invalid; NOT uploading with extension: ", model.extension);
+      alert("Error: This file is not valid for upload. Cannot upload file with extension '" + model.extension + "'. File must be one of: " + Droplet.allowedExtensions.join(", "));
+    }
   });
 
 }]);

@@ -1,53 +1,31 @@
 angular.module('media_manager')
 .service('Droplet', ['$timeout', 'AppConfig', function($timeout, AppConfig){
   var ds = this;
-  ds.interface = {};
-  ds.uploadCount = 0;
-  ds.success = false;
-  ds.error = false;
-  ds.scope = undefined;
+  
+  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+  
+  ds.requestHeaders = {
+    'Accept': 'application/json',
+    'Authorization': AppConfig.authorization_header
+  };
 
-  // Listen for when the interface has been configured.
-  ds.whenDropletReady = function() {
+  // Returns the image upload URL.
+  ds.getUploadUrl = function() {
       var request_url = ":base_url/courses/:course_id/images";
       request_url = request_url.replace(':base_url', AppConfig.media_management_api_url);
       request_url = request_url.replace(':course_id', AppConfig.course_id);
-
-      ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif']);
-      ds.interface.setRequestUrl(request_url);
-      ds.interface.setRequestHeaders({
-        'Accept': 'application/json',
-        'Authorization': AppConfig.authorization_header
-      })
-      ds.interface.defineHTTPSuccess([/2.{2}/]);
-      ds.interface.useArray(false);
-      ds.interface.setPostData({"title": "Untitled"})
+      return request_url;
   };
-
-  // Listen for when the files have been successfully uploaded.
-  ds.onDropletSuccess = function(event, response, files) {
-      ds.scope.uploadCount = files.length;
-      ds.scope.success     = true;
-
-      $timeout(function timeout() {
-          ds.scope.success = false;
-      }, 5000);
-
-      console.log("droplet success", event, response, files);
-      ds.scope.$broadcast('$dropletUploadComplete', response, files);
+  
+  // Configures the Droplet *interface* with necessary settings.
+  ds.configure = function(dropletInterface) {
+    dropletInterface.allowedExtensions(ds.allowedExtensions);
+    dropletInterface.setRequestUrl(ds.getUploadUrl());
+    dropletInterface.setRequestHeaders(ds.requestHeaders);
+    dropletInterface.defineHTTPSuccess([/2.{2}/]);
+    dropletInterface.useArray(false);
+    dropletInterface.setPostData({"title": "Untitled"})
+    return dropletInterface;
   };
-
-  // Listen for when the files have failed to upload.
-  ds.onDropletError = function(event, response) {
-      console.log("onDropletError", event, response);
-      ds.scope.error = true;
-
-      $timeout(function timeout() {
-          ds.scope.error = false;
-      }, 5000);
-
-      console.log("droplet error", event, response);
-  };
-
 
 }]);

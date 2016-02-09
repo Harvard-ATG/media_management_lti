@@ -5,11 +5,11 @@
     <h2>Image Library</h2>
     <div class="add-files" style="margin-bottom: 10px">
       <div style="display:inline-block;"><i>Drag & drop</i> images into the library below or</div>
-      <droplet-upload-single ng-model="wc.Droplet.interface" style="display:inline-block;"></droplet-upload-single>
+      <droplet-upload-multiple ng-model="wc.dropletInterface" style="display:inline-block;"></droplet-upload-single>
     </div>
 
-    <section class="droplet workspace-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
-      <droplet ng-model="wc.Droplet.interface">
+    <section class="droplet workspace-library" ng-class="{ uploading: wc.dropletInterface.isUploading() }">
+      <droplet ng-model="wc.dropletInterface">
         <ul class="files">
           <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
             <droplet-thumb ng-model="courseImage"></droplet-thumb>
@@ -22,7 +22,7 @@
           </li>
         </ul>
       </droplet>
-      <!-- <label>Filelist length:</label> {{wc.Droplet.interface.getFiles().length}} -->
+      <!-- <label>Filelist length:</label> {{wc.dropletInterface.getFiles().length}} -->
     </section>
 
     <h2>Collection</h2>
