@@ -29,7 +29,9 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controller: 'ImageController',
     controllerAs: 'ic'
   });
-}]);
+}]).run(function($http) {
+  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+})
 
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
     var br = this;
@@ -204,6 +206,13 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
+    $timeout(function() {
+      var $el = $("#image-collection-panel .panel-body")
+      var el = $el[0];
+      if ($el.css("overflow-x") == "auto") {
+        el.scrollLeft = el.scrollWidth - el.clientWidth;
+      }
+    }, 0, false);
   };
 
   wc.removeFromCollection = function(imageIndex){
@@ -259,7 +268,7 @@ angular.module('media_manager')
 
   wc.createCollection = function() {
     $log.debug("create collection");
-    wc.collection.course_id = 1;
+    wc.collection.course_id = AppConfig.course_id;
     wc.collection.course_image_ids = wc.collection.images.map(function(image){
       return image.id;
     });
@@ -272,109 +281,112 @@ angular.module('media_manager')
     });
   };
 
+  // Fix the collection panel at the top of the screen 
+  wc.onDocumentScroll = (function() {
+    var fixedPosition = false;
+    var fixedCls = 'image-collection-fixed';
+    var fixedSelector = "#image-collection-panel";
+    var offsetSelector = "#image-collection-panel";
+    var offsetTop = null;
+
+    return function(event) {
+      var windowTop = $(window).scrollTop();
+      if (fixedPosition) {
+        if (windowTop < offsetTop) {
+          $(fixedSelector).removeClass(fixedCls);
+          fixedPosition = false;
+        }
+      } else {
+        if (offsetTop === null) {
+          offsetTop = $(offsetSelector).offset().top;
+        }
+        if (offsetTop < windowTop) {
+          $(fixedSelector).addClass(fixedCls);
+          fixedPosition = true;
+        }
+      }
+    };
+  })();
+
+
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
-  Droplet.scope = $scope;
 
+  wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
-  wc.Droplet = Droplet;
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
-
-  $scope.$on('$dropletReady', Droplet.whenDropletReady);
-  $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
-  $scope.$on('$dropletError', Droplet.onDropletError);
-  $scope.$on('$dropletFileAdded', function(){
-    wc.Droplet.interface.uploadFiles();
-  });
-  $scope.$on('$dropletUploadComplete', function(event, response, files) {
-    wc.courseImages.push(response);
-  });
-
-}]);
-
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
+  wc.filesToUpload = 0;
+  wc.notifications = {
+    messages: [],
+    notify: function(type, msg) {
+      if (this.canReset) {
+        this.messages = [];
+        this.canReset = false;
+      }
+      if (!this.isRepeated(msg)) {
+        this.messages.push({"type": type, "content": msg});
+      }
     },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
+    success: function(msg) {
+      this.messages = [{"type": "success", "content": msg}];
+      this.canReset = true;
+    },
+    error: function(msg) {
+      this.messages = [{"type": "danger", "content": msg}];
+      this.canReset = true;
+    },
+    getLast: function() {
+      if (this.messages.length == 0) {
+        return null;
+      }
+      return this.messages[this.messages.length - 1];
+    },
+    isRepeated: function(msg) {
+      if (this.getLast()) {
+        return msg == this.getLast().content;
+      }
+      return false;
     }
-
+  }
+  
+  $scope.$on('$dropletReady', Droplet.onReady);
+  $scope.$on('$dropletError', Droplet.onError(function(event, response) {
+    wc.notifications.error(response);
+  }));
+  $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }, function(event, model, msg) {
+    wc.filesToUpload = Droplet.getTotalValid();
+    wc.notifications.notify("warning", msg);
+  }));
+  $scope.$on('$dropletFileDeleted', Droplet.onFileDeleted(function() {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }));
+  $scope.$on('$dropletSuccess', Droplet.onSuccess(function(event, response, files) {
+      if (angular.isArray(response)) {
+        for(var i = 0; i < response.length; i++) {
+          CourseCache.images.push(response[i]);
+        }
+      } else {
+        CourseCache.images.push(response);
+      }
+      wc.filesToUpload = Droplet.getTotalValid();
+      wc.notifications.success("Images uploaded successfully");
+  }));
+  
+  //$(document).scroll(wc.onDocumentScroll);
 }]);
 
 angular.module('media_manager').service('AppConfig', function() {
-    var config = window.appConfig;
-
-    this.initialConfig = config;
-    this.user_id = config.user_id;
-    this.perms = config.perms;
-    this.context_id = config.context_id;
-    this.course_id = config.course_id;
-    this.media_management_api_url = config.media_management_api_url;
+    this.config = window.appConfig || {};
+    this.perms = this.config.perms;
+    this.course_id = this.config.course_id;
+    this.access_token = this.config.access_token;
+    this.authorization_header = "Token " + this.config.access_token;
+    this.media_management_api_url = this.config.media_management_api_url;
 });
 
 angular.module('media_manager').service('Breadcrumbs', function() {
@@ -536,54 +548,101 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
-.service('Droplet', ['$timeout', 'AppConfig', function($timeout, AppConfig){
+.service('Droplet', ['$timeout', '$log', '$q', 'AppConfig', function($timeout, $log, $q, AppConfig){
   var ds = this;
-  ds.interface = {};
-  ds.uploadCount = 0;
-  ds.success = false;
-  ds.error = false;
-  ds.scope = undefined;
 
-  // Listen for when the interface has been configured.
-  ds.whenDropletReady = function() {
+  ds.interface = null;
+  
+  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+  
+  ds.maximumValidFiles = 10;
+
+  ds.requestHeaders = {
+    'Accept': 'application/json',
+    'Authorization': AppConfig.authorization_header
+  };
+  
+  // Returns the image upload URL.
+  ds.getUploadUrl = function() {
       var request_url = ":base_url/courses/:course_id/images";
       request_url = request_url.replace(':base_url', AppConfig.media_management_api_url);
       request_url = request_url.replace(':course_id', AppConfig.course_id);
-
-      ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif']);
-      ds.interface.setRequestUrl(request_url);
-      ds.interface.setRequestHeaders({'Accept': 'application/json'})
-      ds.interface.defineHTTPSuccess([/2.{2}/]);
-      ds.interface.useArray(false);
-      ds.interface.setPostData({"title": "Untitled"})
+      return request_url;
   };
 
-  // Listen for when the files have been successfully uploaded.
-  ds.onDropletSuccess = function(event, response, files) {
-      ds.scope.uploadCount = files.length;
-      ds.scope.success     = true;
-
-      $timeout(function timeout() {
-          ds.scope.success = false;
-      }, 5000);
-
-      console.log("droplet success", event, response, files);
-      ds.scope.$broadcast('$dropletUploadComplete', response, files);
+  ds.onReady = function() {
+    ds.interface.allowedExtensions(ds.allowedExtensions);
+    ds.interface.setRequestUrl(ds.getUploadUrl());
+    ds.interface.setRequestHeaders(ds.requestHeaders);
+    ds.interface.defineHTTPSuccess([/2.{2}/]);
+    ds.interface.useArray(false);
+    ds.interface.setPostData({"title": "Untitled"})
+    $log.debug("Ready: droplet ready", ds.interface);
   };
 
-  // Listen for when the files have failed to upload.
-  ds.onDropletError = function(event, response) {
-      console.log("onDropletError", event, response);
-      ds.scope.error = true;
-
-      $timeout(function timeout() {
-          ds.scope.error = false;
-      }, 5000);
-
-      console.log("droplet error", event, response);
+  ds.onSuccess = function(callback) {
+    return function(event, response, files) {
+      $log.debug("Success: droplet uploaded file: ", files, response);
+      if (callback) {
+        callback(event, response, files);
+      }
+    };
+  };
+  
+  ds.onError = function(callback) {
+    return function(event, response) {
+      $log.debug("Error: droplet uploaded file: ", response);
+      if(callback) {
+        callback(event, response);
+      }
+    };
   };
 
+  ds.onFileAdded = function(success, error) {
+    return function(event, model) {
+      $log.debug("Notification: droplet file added", model);
+      var total_valid = ds.getTotalValid();
+      var is_valid_type = (model.type == ds.interface.FILE_TYPES.VALID)
+      var is_valid_total = (total_valid <= ds.maximumValidFiles);
+      var msg = "";
+  
+      if (is_valid_type && is_valid_total) {
+        success && success(event, model);
+      } else {
+        $log.debug("Notification: file added is invalid; NOT uploading with extension: ", model.extension);
+        //alert("Error: '" + model.file.name +"' is not valid for upload. Cannot upload file with extension '" + model.extension + "'. File must be one of: " + Droplet.allowedExtensions.join(", "));
+        model.deleteFile();
+        if (!is_valid_total) {
+          msg = "Too many images to upload. You can upload " + ds.maximumValidFiles + " at a time.";
+        } else if (!is_valid_type) {
+          msg = "Invalid image: '" + model.file.name +"'. Cannot upload file with extension '" + model.extension + "'. File extension must be one of: " + ds.allowedExtensions.join(", ")
+        }
+        error && error(event, model, msg);
+      }
+    };
+  };
+  
+  ds.onFileDeleted = function(callback) {
+    return function(event, model) {
+      $log.debug("Notification: droplet file deleted", model);
+      if(callback) {
+        callback(event, model);
+      }
+    };
+  };
 
+  ds.getTotalValid = function() {
+    return ds.interface ? ds.interface.getFiles(ds.interface.FILE_TYPES.VALID).length : 0;
+  };
+
+  ds.uploadFiles = function() {
+    if (ds.interface) {
+      $log.debug("Notification: uploadFiles()")
+      ds.interface.uploadFiles();
+    } else {
+      $log.error("Error: droplet interface not available to upload files");
+    }
+  };
 }]);
 
 angular.module('media_manager')
@@ -694,5 +753,76 @@ angular.module('media_manager')
     return;
   };
 
+
+}]);
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
 
 }]);

@@ -57,6 +57,13 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
+    $timeout(function() {
+      var $el = $("#image-collection-panel .panel-body")
+      var el = $el[0];
+      if ($el.css("overflow-x") == "auto") {
+        el.scrollLeft = el.scrollWidth - el.clientWidth;
+      }
+    }, 0, false);
   };
 
   wc.removeFromCollection = function(imageIndex){
@@ -112,7 +119,7 @@ angular.module('media_manager')
 
   wc.createCollection = function() {
     $log.debug("create collection");
-    wc.collection.course_id = 1;
+    wc.collection.course_id = AppConfig.course_id;
     wc.collection.course_image_ids = wc.collection.images.map(function(image){
       return image.id;
     });
@@ -125,25 +132,101 @@ angular.module('media_manager')
     });
   };
 
+  // Fix the collection panel at the top of the screen 
+  wc.onDocumentScroll = (function() {
+    var fixedPosition = false;
+    var fixedCls = 'image-collection-fixed';
+    var fixedSelector = "#image-collection-panel";
+    var offsetSelector = "#image-collection-panel";
+    var offsetTop = null;
+
+    return function(event) {
+      var windowTop = $(window).scrollTop();
+      if (fixedPosition) {
+        if (windowTop < offsetTop) {
+          $(fixedSelector).removeClass(fixedCls);
+          fixedPosition = false;
+        }
+      } else {
+        if (offsetTop === null) {
+          offsetTop = $(offsetSelector).offset().top;
+        }
+        if (offsetTop < windowTop) {
+          $(fixedSelector).addClass(fixedCls);
+          fixedPosition = true;
+        }
+      }
+    };
+  })();
+
+
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
-  Droplet.scope = $scope;
 
+  wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
-  wc.Droplet = Droplet;
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
-
-  $scope.$on('$dropletReady', Droplet.whenDropletReady);
-  $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
-  $scope.$on('$dropletError', Droplet.onDropletError);
-  $scope.$on('$dropletFileAdded', function(){
-    wc.Droplet.interface.uploadFiles();
-  });
-  $scope.$on('$dropletUploadComplete', function(event, response, files) {
-    wc.courseImages.push(response);
-  });
-
+  wc.filesToUpload = 0;
+  wc.notifications = {
+    messages: [],
+    notify: function(type, msg) {
+      if (this.canReset) {
+        this.messages = [];
+        this.canReset = false;
+      }
+      if (!this.isRepeated(msg)) {
+        this.messages.push({"type": type, "content": msg});
+      }
+    },
+    success: function(msg) {
+      this.messages = [{"type": "success", "content": msg}];
+      this.canReset = true;
+    },
+    error: function(msg) {
+      this.messages = [{"type": "danger", "content": msg}];
+      this.canReset = true;
+    },
+    getLast: function() {
+      if (this.messages.length == 0) {
+        return null;
+      }
+      return this.messages[this.messages.length - 1];
+    },
+    isRepeated: function(msg) {
+      if (this.getLast()) {
+        return msg == this.getLast().content;
+      }
+      return false;
+    }
+  }
+  
+  $scope.$on('$dropletReady', Droplet.onReady);
+  $scope.$on('$dropletError', Droplet.onError(function(event, response) {
+    wc.notifications.error(response);
+  }));
+  $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }, function(event, model, msg) {
+    wc.filesToUpload = Droplet.getTotalValid();
+    wc.notifications.notify("warning", msg);
+  }));
+  $scope.$on('$dropletFileDeleted', Droplet.onFileDeleted(function() {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }));
+  $scope.$on('$dropletSuccess', Droplet.onSuccess(function(event, response, files) {
+      if (angular.isArray(response)) {
+        for(var i = 0; i < response.length; i++) {
+          CourseCache.images.push(response[i]);
+        }
+      } else {
+        CourseCache.images.push(response);
+      }
+      wc.filesToUpload = Droplet.getTotalValid();
+      wc.notifications.success("Images uploaded successfully");
+  }));
+  
+  //$(document).scroll(wc.onDocumentScroll);
 }]);

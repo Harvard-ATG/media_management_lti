@@ -20,9 +20,30 @@ button.btn-unstyled {
 .breadcrumb {
   margin-bottom: 0px;
 }
-.workspace-library {
-  border: 1px solid #ccc;
+.image-library {
+
 }
-.workspace-collection {
-  margin-top: 10px;
+.image-collection-fixed {
+  position: fixed;
+  left: 15px;
+  top: 0;
+  right: 0;
+  z-index: 100;
+}
+.image-collection-fixed .panel-body {
+  height: 130px;
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.drag-and-drop-overlay {
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  z-index: 0;
+  font-size: 36px;
+  color: #fff;
+  opacity: .8;  
+  display: inline-block;
 }
