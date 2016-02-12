@@ -41,7 +41,8 @@ gulp.task('buildVendorJS', function(){
                     'bower_components/angular-xeditable/dist/js/xeditable.js',
                     'bower_components/progressbar.js/dist/progressbar.js',
                     'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-                    'bower_components/ng-droplet/dist/ng-droplet.js'])
+                    'bower_components/ng-droplet/dist/ng-droplet.js',
+                    'bower_components/jquery/dist/jquery.js'])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/app/js'));
 });
