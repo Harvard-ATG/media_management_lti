@@ -75,8 +75,6 @@ section.droplet droplet {
     width: 100%;
     overflow: auto;
     height: auto;
-    min-height: 200px;
-    max-height: 300px;
     background-color: rgba(255, 255, 255, .1);
     margin-top: -5px;
     padding-top: 5px;
@@ -127,12 +125,22 @@ section.droplet droplet.event-dragover comment:after {
 }
 
 section.droplet droplet ul.files {
-    height: 100%;
+    /*height: 100%;*/
     width: 100%;
     overflow-y: auto;
     padding: 5px;
     list-style-type: none;
     transition: all .5s;
+}
+section.droplet droplet ul.files-queued {
+    background-color: #d3d3d3;
+    border: 1px dashed #666;
+    padding: 10px;
+    margin: 10px 5px;
+    min-height: 100px;
+}
+section.droplet droplet ul.files-queued li {
+    z-index: 2;
 }
 
 section.droplet.uploading droplet ul.files {

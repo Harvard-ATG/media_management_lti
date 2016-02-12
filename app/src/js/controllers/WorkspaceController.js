@@ -57,6 +57,11 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
+    var $el = $("#image-collection-panel .panel-body")
+    console.log("add", courseImage, $el.css("overflow-x"));
+    if ($el.css("overflow-x") == "auto") {
+      $el.animate({"scrollLeft": $el.width()});
+    }
   };
 
   wc.removeFromCollection = function(imageIndex){
@@ -125,38 +130,100 @@ angular.module('media_manager')
     });
   };
 
+  wc.onDocumentScroll = (function() {
+    var fixedPosition = false;
+    var fixedCls = 'image-collection-fixed';
+    var fixedSelector = "#image-collection-panel";
+    var offsetSelector = "#image-collection-panel";
+    var offsetTop = null;
+
+    return function(event) {
+      var windowTop = $(window).scrollTop();
+      if (fixedPosition) {
+        if (windowTop < offsetTop) {
+          $(fixedSelector).removeClass(fixedCls);
+          fixedPosition = false;
+        }
+      } else {
+        if (offsetTop === null) {
+          offsetTop = $(offsetSelector).offset().top;
+        }
+        if (offsetTop < windowTop) {
+          $(fixedSelector).addClass(fixedCls);
+          fixedPosition = true;
+        }
+      }
+    };
+  })();
+
+
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
 
-  wc.dropletInterface = null;
+  wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
-
-  $scope.$on('$dropletReady', function() {
-    Droplet.configure(wc.dropletInterface);
-    $log.debug("Ready: droplet ready", wc.dropletInterface);
-  });
-  $scope.$on('$dropletSuccess', function(event, response, files) {
-    wc.courseImages.push(response);
-    $log.debug("Success: droplet uploaded file: ", files, response);
-  });
-  $scope.$on('$dropletError', function(event, response) {
-    $log.debug("Error: droplet uploaded file: ", response);
-    alert("Error: file upload failed: " + response);
-  });
-  $scope.$on('$dropletFileAdded', function(event, model){
-    var is_valid = (model.type == wc.dropletInterface.FILE_TYPES.VALID);
-    $log.debug("Notification: droplet file added", model);
-    if (is_valid) {
-      $log.debug("Notfication: uploading files");
-      wc.dropletInterface.uploadFiles();
-    } else {
-      $log.debug("Notification: file added is invalid; NOT uploading with extension: ", model.extension);
-      alert("Error: This file is not valid for upload. Cannot upload file with extension '" + model.extension + "'. File must be one of: " + Droplet.allowedExtensions.join(", "));
+  wc.filesToUpload = 0;
+  wc.notifications = {
+    messages: [],
+    notify: function(type, msg) {
+      if (this.canReset) {
+        this.messages = [];
+        this.canReset = false;
+      }
+      if (!this.isRepeated(msg)) {
+        this.messages.push({"type": type, "content": msg});
+      }
+    },
+    success: function(msg) {
+      this.messages = [{"type": "success", "content": msg}];
+      this.canReset = true;
+    },
+    error: function(msg) {
+      this.messages = [{"type": "danger", "content": msg}];
+      this.canReset = true;
+    },
+    getLast: function() {
+      if (this.messages.length == 0) {
+        return null;
+      }
+      return this.messages[this.messages.length - 1];
+    },
+    isRepeated: function(msg) {
+      if (this.getLast()) {
+        return msg == this.getLast().content;
+      }
+      return false;
     }
-  });
-
+  }
+  
+  $scope.$on('$dropletReady', Droplet.onReady);
+  $scope.$on('$dropletError', Droplet.onError(function(event, response) {
+    wc.notifications.error(response);
+  }));
+  $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }, function(event, model, msg) {
+    wc.filesToUpload = Droplet.getTotalValid();
+    wc.notifications.notify("warning", msg);
+  }));
+  $scope.$on('$dropletFileDeleted', Droplet.onFileDeleted(function() {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }));
+  $scope.$on('$dropletSuccess', Droplet.onSuccess(function(event, response, files) {
+      if (angular.isArray(response)) {
+        for(var i = 0; i < response.length; i++) {
+          CourseCache.images.push(response[i]);
+        }
+      } else {
+        CourseCache.images.push(response);
+      }
+      wc.filesToUpload = Droplet.getTotalValid();
+      wc.notifications.success("Images uploaded successfully");
+  }));
+  
+  $(document).scroll(wc.onDocumentScroll);
 }]);
