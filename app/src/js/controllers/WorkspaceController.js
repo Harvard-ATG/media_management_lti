@@ -57,11 +57,13 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
-    var $el = $("#image-collection-panel .panel-body")
-    console.log("add", courseImage, $el.css("overflow-x"));
-    if ($el.css("overflow-x") == "auto") {
-      $el.animate({"scrollLeft": $el.width()});
-    }
+    $timeout(function() {
+      var $el = $("#image-collection-panel .panel-body")
+      var el = $el[0];
+      if ($el.css("overflow-x") == "auto") {
+        el.scrollLeft = el.scrollWidth - el.clientWidth;
+      }
+    }, 0, false);
   };
 
   wc.removeFromCollection = function(imageIndex){
@@ -130,6 +132,7 @@ angular.module('media_manager')
     });
   };
 
+  // Fix the collection panel at the top of the screen 
   wc.onDocumentScroll = (function() {
     var fixedPosition = false;
     var fixedCls = 'image-collection-fixed';
@@ -225,5 +228,5 @@ angular.module('media_manager')
       wc.notifications.success("Images uploaded successfully");
   }));
   
-  $(document).scroll(wc.onDocumentScroll);
+  //$(document).scroll(wc.onDocumentScroll);
 }]);

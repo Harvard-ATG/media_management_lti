@@ -180,6 +180,7 @@ section.droplet droplet {
     border-radius: 2px;
     width: 100%;
     overflow: auto;
+    overflow-x: hidden;
     height: auto;
     background-color: rgba(255, 255, 255, .1);
     margin-top: -5px;
@@ -551,12 +552,11 @@ button.btn-unstyled {
   margin-bottom: 0px;
 }
 .image-library {
-  border: 1px solid #ccc;
-  padding: 0 15px;
+
 }
 .image-collection-fixed {
   position: fixed;
-  left: 0;
+  left: 15px;
   top: 0;
   right: 0;
   z-index: 100;
