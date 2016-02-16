@@ -12,6 +12,7 @@ angular.module('media_manager')
                                     'CollectionBehavior',
                                     'ImageLightBox',
                                     'Breadcrumbs',
+                                    'Notifications',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -26,6 +27,7 @@ angular.module('media_manager')
                                       CollectionBehavior,
                                       ImageLightBox,
                                       Breadcrumbs,
+                                      Notifications,
                                       AppConfig){
 
 
@@ -42,9 +44,13 @@ angular.module('media_manager')
   };
 
   wc.loadActiveCollection = function() {
-    var collection;
+    var self = this, collection;
     if($routeParams.collectionId !== undefined){
+      self.isLoadingCollection.status = true;
       collection = Collection.get({id: $routeParams.collectionId});
+      collection.$promise.then(function(collection) {
+        self.isLoadingCollection.status = false;
+      });
     } else {
       //wc.collection = [];
       collection = new Collection();
@@ -97,6 +103,8 @@ angular.module('media_manager')
   };
 
   wc.updateCollection = function() {
+    var self = this;
+
     $log.debug("update collection", wc.collection.id);
     wc.collection.description = wc.collection.description || "No description";
     wc.collection.course_image_ids = wc.collection.images.map(function(image) {
@@ -110,10 +118,26 @@ angular.module('media_manager')
     })
 
     // put to update collection
+    self.isSavingCollection.status = true;
     Collection.update({}, wc.collection, function(data){
-      wc.collection = wc.loadActiveCollection();
+      wc.notifications.clear();
+      var collection = wc.loadActiveCollection();
+      self.isLoadingCollection.status = true;
+      collection.$promise.then(function(collection) {
+        wc.collection = collection;
+      }, function(response) {
+        wc.notifications.error("Error loading collection: " + response);
+      }).finally(function() {
+        self.isLoadingCollection.status = false;
+      });
     }, function(errorResponse) {
-      $log.debug("error updating collection:", errorResponse);
+      $log.debug("Error updating collection:", errorResponse);
+      wc.notifications.error("Error updating collection: " + errorResponse);
+    }).$promise.then(function(data) {
+      $log.debug("Collection updated: ", data)
+      wc.notifications.success("Collection saved.");
+    }).finally(function() {
+      self.isSavingCollection.status = false;
     });
   };
 
@@ -167,45 +191,17 @@ angular.module('media_manager')
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
+  wc.isLoading = CourseCache.isLoading;
+  wc.isSavingCollection = {status:false, msg:"Saving collection..."};
+  wc.isLoadingCollection = {status:false, msg:"Loading collection..."};
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
   wc.filesToUpload = 0;
-  wc.notifications = {
-    messages: [],
-    notify: function(type, msg) {
-      if (this.canReset) {
-        this.messages = [];
-        this.canReset = false;
-      }
-      if (!this.isRepeated(msg)) {
-        this.messages.push({"type": type, "content": msg});
-      }
-    },
-    success: function(msg) {
-      this.messages = [{"type": "success", "content": msg}];
-      this.canReset = true;
-    },
-    error: function(msg) {
-      this.messages = [{"type": "danger", "content": msg}];
-      this.canReset = true;
-    },
-    getLast: function() {
-      if (this.messages.length == 0) {
-        return null;
-      }
-      return this.messages[this.messages.length - 1];
-    },
-    isRepeated: function(msg) {
-      if (this.getLast()) {
-        return msg == this.getLast().content;
-      }
-      return false;
-    }
-  }
+  wc.notifications = Notifications;
   
   $scope.$on('$dropletReady', Droplet.onReady);
   $scope.$on('$dropletError', Droplet.onError(function(event, response) {
-    wc.notifications.error(response);
+    wc.notifications.clear().error(response);
   }));
   $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
     wc.filesToUpload = Droplet.getTotalValid();
@@ -225,7 +221,7 @@ angular.module('media_manager')
         CourseCache.images.push(response);
       }
       wc.filesToUpload = Droplet.getTotalValid();
-      wc.notifications.success("Images uploaded successfully");
+      wc.notifications.clear().success("Images uploaded successfully");
   }));
   
   //$(document).scroll(wc.onDocumentScroll);

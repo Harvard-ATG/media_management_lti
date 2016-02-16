@@ -1,4 +1,4 @@
-angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource'])
+angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
