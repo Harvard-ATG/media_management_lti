@@ -364,6 +364,77 @@ angular.module('media_manager')
   //$(document).scroll(wc.onDocumentScroll);
 }]);
 
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
+
+}]);
+
 angular.module('media_manager').service('AppConfig', function() {
     this.config = window.appConfig || {};
     this.perms = this.config.perms;
@@ -489,7 +560,6 @@ angular.module('media_manager')
 
   this.loadImages = function() {
     var self = this;
-    console.log("loadImages()", this.isLoadingCollections.status)
     this.isLoading.status = true;
     this.isLoadingImages.status = true;
     this.images = Course.getImages({id: AppConfig.course_id});
@@ -497,19 +567,16 @@ angular.module('media_manager')
       self.current_image = images[0];
       self.isLoadingImages.status = false;
       self.isLoading.status = false || self.isLoadingCollections.status;
-      console.log("images done!", self.isLoadingImages.status, self.isLoading.status);
     });
   };
   this.loadCollections = function() {
     var self = this;
-    console.log("loadCollections()", this.isLoadingCollections.status)
     this.isLoading.status = true;
     this.isLoadingCollections.status = true;
     this.collections = Course.getCollections({id: AppConfig.course_id});
     this.collections.$promise.then(function(collections) {
       self.isLoadingCollections.status = false;
       self.isLoading.status = false || self.isLoadingImages.status;
-      console.log("collections done!", self.isLoadingCollections.status, self.isLoading.status);
     });
   };
   this.load = function() {
@@ -809,74 +876,3 @@ angular.module('media_manager').service('Notifications', function() {
     };
     return notify;
 });
-
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
-    }
-
-}]);

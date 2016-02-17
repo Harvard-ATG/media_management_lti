@@ -28,7 +28,6 @@ angular.module('media_manager')
 
   this.loadImages = function() {
     var self = this;
-    console.log("loadImages()", this.isLoadingCollections.status)
     this.isLoading.status = true;
     this.isLoadingImages.status = true;
     this.images = Course.getImages({id: AppConfig.course_id});
@@ -36,19 +35,16 @@ angular.module('media_manager')
       self.current_image = images[0];
       self.isLoadingImages.status = false;
       self.isLoading.status = false || self.isLoadingCollections.status;
-      console.log("images done!", self.isLoadingImages.status, self.isLoading.status);
     });
   };
   this.loadCollections = function() {
     var self = this;
-    console.log("loadCollections()", this.isLoadingCollections.status)
     this.isLoading.status = true;
     this.isLoadingCollections.status = true;
     this.collections = Course.getCollections({id: AppConfig.course_id});
     this.collections.$promise.then(function(collections) {
       self.isLoadingCollections.status = false;
       self.isLoading.status = false || self.isLoadingImages.status;
-      console.log("collections done!", self.isLoadingCollections.status, self.isLoading.status);
     });
   };
   this.load = function() {
