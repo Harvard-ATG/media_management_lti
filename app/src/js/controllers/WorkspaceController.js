@@ -199,6 +199,8 @@ angular.module('media_manager')
   wc.filesToUpload = 0;
   wc.notifications = Notifications;
   
+  wc.notifications.clear();
+  
   $scope.$on('$dropletReady', Droplet.onReady);
   $scope.$on('$dropletError', Droplet.onError(function(event, response) {
     wc.notifications.clear().error(response);
