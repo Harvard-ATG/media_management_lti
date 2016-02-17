@@ -1,8 +1,10 @@
-=Developer Notes=
+Developer Notes
+===============
 
 - Consider Plupload if Droplet doesn't meet our needs: http://www.plupload.com/ (recommended by Josh B.)
 
-===Demo Feedback: February 17, 2016===
+**Demo Feedback: February 17, 2016**
+
 - Issue in Firefox with library images - broken image icon appears in upper left corner. What's that about?
 - Display message to users about which file types/extensions are valid, rather than just telling them on error.
 - Issue with stacking error messages. Avoid stacking error messages (TLT has solved this in a previous sprint).
