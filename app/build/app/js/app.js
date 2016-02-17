@@ -1,4 +1,4 @@
-angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource'])
+angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
@@ -108,6 +108,7 @@ angular.module('media_manager').controller('ListController', [
         lc.canEdit = AppConfig.perms.edit;
         lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
         lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
+        lc.isLoadingCollections = CourseCache.isLoadingCollections;
     }
 ]);
 angular.module('media_manager').controller('MiradorController', [
@@ -146,6 +147,7 @@ angular.module('media_manager')
                                     'CollectionBehavior',
                                     'ImageLightBox',
                                     'Breadcrumbs',
+                                    'Notifications',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -160,6 +162,7 @@ angular.module('media_manager')
                                       CollectionBehavior,
                                       ImageLightBox,
                                       Breadcrumbs,
+                                      Notifications,
                                       AppConfig){
 
 
@@ -176,9 +179,13 @@ angular.module('media_manager')
   };
 
   wc.loadActiveCollection = function() {
-    var collection;
+    var self = this, collection;
     if($routeParams.collectionId !== undefined){
+      self.isLoadingCollection.status = true;
       collection = Collection.get({id: $routeParams.collectionId});
+      collection.$promise.then(function(collection) {
+        self.isLoadingCollection.status = false;
+      });
     } else {
       //wc.collection = [];
       collection = new Collection();
@@ -231,6 +238,8 @@ angular.module('media_manager')
   };
 
   wc.updateCollection = function() {
+    var self = this;
+
     $log.debug("update collection", wc.collection.id);
     wc.collection.description = wc.collection.description || "No description";
     wc.collection.course_image_ids = wc.collection.images.map(function(image) {
@@ -244,10 +253,26 @@ angular.module('media_manager')
     })
 
     // put to update collection
+    self.isSavingCollection.status = true;
     Collection.update({}, wc.collection, function(data){
-      wc.collection = wc.loadActiveCollection();
+      wc.notifications.clear();
+      var collection = wc.loadActiveCollection();
+      self.isLoadingCollection.status = true;
+      collection.$promise.then(function(collection) {
+        wc.collection = collection;
+      }, function(response) {
+        wc.notifications.error("Error loading collection: " + response);
+      }).finally(function() {
+        self.isLoadingCollection.status = false;
+      });
     }, function(errorResponse) {
-      $log.debug("error updating collection:", errorResponse);
+      $log.debug("Error updating collection:", errorResponse);
+      wc.notifications.error("Error updating collection: " + errorResponse);
+    }).$promise.then(function(data) {
+      $log.debug("Collection updated: ", data)
+      wc.notifications.success("Collection saved.");
+    }).finally(function() {
+      self.isSavingCollection.status = false;
     });
   };
 
@@ -301,45 +326,19 @@ angular.module('media_manager')
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
+  wc.isLoading = CourseCache.isLoading;
+  wc.isSavingCollection = {status:false, msg:"Saving collection..."};
+  wc.isLoadingCollection = {status:false, msg:"Loading collection..."};
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
   wc.filesToUpload = 0;
-  wc.notifications = {
-    messages: [],
-    notify: function(type, msg) {
-      if (this.canReset) {
-        this.messages = [];
-        this.canReset = false;
-      }
-      if (!this.isRepeated(msg)) {
-        this.messages.push({"type": type, "content": msg});
-      }
-    },
-    success: function(msg) {
-      this.messages = [{"type": "success", "content": msg}];
-      this.canReset = true;
-    },
-    error: function(msg) {
-      this.messages = [{"type": "danger", "content": msg}];
-      this.canReset = true;
-    },
-    getLast: function() {
-      if (this.messages.length == 0) {
-        return null;
-      }
-      return this.messages[this.messages.length - 1];
-    },
-    isRepeated: function(msg) {
-      if (this.getLast()) {
-        return msg == this.getLast().content;
-      }
-      return false;
-    }
-  }
+  wc.notifications = Notifications;
+  
+  wc.notifications.clear();
   
   $scope.$on('$dropletReady', Droplet.onReady);
   $scope.$on('$dropletError', Droplet.onError(function(event, response) {
-    wc.notifications.error(response);
+    wc.notifications.clear().error(response);
   }));
   $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
     wc.filesToUpload = Droplet.getTotalValid();
@@ -359,10 +358,81 @@ angular.module('media_manager')
         CourseCache.images.push(response);
       }
       wc.filesToUpload = Droplet.getTotalValid();
-      wc.notifications.success("Images uploaded successfully");
+      wc.notifications.clear().success("Images uploaded successfully");
   }));
   
   //$(document).scroll(wc.onDocumentScroll);
+}]);
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
+
 }]);
 
 angular.module('media_manager').service('AppConfig', function() {
@@ -484,23 +554,38 @@ angular.module('media_manager')
   this.images = [];
   this.collections = [];
   this.current_image = {};
-  this.loadImages = function() {
-    if (this.images.length == 0) {
-      this.images = Course.getImages({id: AppConfig.course_id});
-      if(this.images.length > 0){
-        this.current_image = images[0];
-      }
-    }
+  this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
+  this.isLoadingImages = {"status": false, "msg": "Loading images..."};
+  this.isLoading = {"status": false, "msg": "Loading..."};
 
+  this.loadImages = function() {
+    var self = this;
+    this.isLoading.status = true;
+    this.isLoadingImages.status = true;
+    this.images = Course.getImages({id: AppConfig.course_id});
+    this.images.$promise.then(function(images) {
+      self.current_image = images[0];
+      self.isLoadingImages.status = false;
+      self.isLoading.status = false || self.isLoadingCollections.status;
+    });
   };
   this.loadCollections = function() {
-    if (this.collections.length == 0) {
-      this.collections = Course.getCollections({id: AppConfig.course_id});
-    }
+    var self = this;
+    this.isLoading.status = true;
+    this.isLoadingCollections.status = true;
+    this.collections = Course.getCollections({id: AppConfig.course_id});
+    this.collections.$promise.then(function(collections) {
+      self.isLoadingCollections.status = false;
+      self.isLoading.status = false || self.isLoadingImages.status;
+    });
   };
   this.load = function() {
-    this.loadImages();
-    this.loadCollections();
+    if (this.images.length == 0) {
+      this.loadImages();
+    }
+    if (this.collections.length == 0) {
+      this.loadCollections();
+    }
   };
   this.getCollectionById = function(id) {
     for (var i = 0; i < this.collections.length; i++) {
@@ -737,73 +822,57 @@ angular.module('media_manager')
 
 }]);
 
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
+angular.module('media_manager').service('Notifications', function() {
+    var notify = {
+        TYPE: {
+          INFO:"info",
+          WARNING:"warning",
+          SUCCESS:"success",
+          ERROR:"danger"
         },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
+        messages: [],
+        notify: function(type, msg) {
+          if (this.canReset) {
+            this.clear();
+            this.canReset = false;
+          }
+          if (!this.isRepeated(msg)) {
+            this.messages.push({"type": type, "content": msg});
+          }
+          return this;
+        },
+        info: function(msg) {
+          return this.notify(this.TYPE.INFO, msg);
+        },
+        warn: function(msg) {
+          return this.notify(this.TYPE.WARNING, msg);
+        },
+        success: function(msg) {
+          return this.notify(this.TYPE.SUCCESS, msg);
+        },
+        error: function(msg) {
+          return this.notify(this.TYPE.ERROR, msg);
+        },
+        getLast: function() {
+          if (this.messages.length == 0) {
+            return null;
+          }
+          return this.messages[this.messages.length - 1];
+        },
+        isRepeated: function(msg) {
+          if (this.getLast()) {
+            return msg == this.getLast().content;
+          }
+          return false;
+        },
+        clear: function() {
+          this.messages = [];
+          return this;
+        },
+        clearOnNext: function() {
+          this.canReset = true;
+          return this;
         }
-
-    }
-
-}]);
+    };
+    return notify;
+});

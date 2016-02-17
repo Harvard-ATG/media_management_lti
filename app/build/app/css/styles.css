@@ -568,6 +568,10 @@ button.btn-unstyled {
   overflow-x: auto;
   overflow-y: hidden;
 }
+#image-collection-panel .panel-body {
+  position: relative;
+  min-height: 100px;
+}
 .drag-and-drop-overlay {
   position: absolute;
   top: 30%;
@@ -577,4 +581,8 @@ button.btn-unstyled {
   color: #fff;
   opacity: .8;  
   display: inline-block;
+}
+.notifications {
+  margin: 1em 0;
+
 }
