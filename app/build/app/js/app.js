@@ -1,4 +1,4 @@
-angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource'])
+angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
@@ -29,7 +29,9 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controller: 'ImageController',
     controllerAs: 'ic'
   });
-}]);
+}]).run(function($http) {
+  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+})
 
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
     var br = this;
@@ -121,6 +123,7 @@ angular.module('media_manager').controller('ListController', [
         lc.canEdit = AppConfig.perms.edit;
         lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
         lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
+        lc.isLoadingCollections = CourseCache.isLoadingCollections;
     }
 ]);
 angular.module('media_manager').controller('MiradorController', [
@@ -159,6 +162,7 @@ angular.module('media_manager')
                                     'CollectionBehavior',
                                     'ImageLightBox',
                                     'Breadcrumbs',
+                                    'Notifications',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -173,6 +177,7 @@ angular.module('media_manager')
                                       CollectionBehavior,
                                       ImageLightBox,
                                       Breadcrumbs,
+                                      Notifications,
                                       AppConfig){
 
 
@@ -189,9 +194,13 @@ angular.module('media_manager')
   };
 
   wc.loadActiveCollection = function() {
-    var collection;
+    var self = this, collection;
     if($routeParams.collectionId !== undefined){
+      self.isLoadingCollection.status = true;
       collection = Collection.get({id: $routeParams.collectionId});
+      collection.$promise.then(function(collection) {
+        self.isLoadingCollection.status = false;
+      });
     } else {
       //wc.collection = [];
       collection = new Collection();
@@ -204,6 +213,13 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
+    $timeout(function() {
+      var $el = $("#image-collection-panel .panel-body")
+      var el = $el[0];
+      if ($el.css("overflow-x") == "auto") {
+        el.scrollLeft = el.scrollWidth - el.clientWidth;
+      }
+    }, 0, false);
   };
 
   wc.removeFromCollection = function(imageIndex){
@@ -237,6 +253,8 @@ angular.module('media_manager')
   };
 
   wc.updateCollection = function() {
+    var self = this;
+
     $log.debug("update collection", wc.collection.id);
     wc.collection.description = wc.collection.description || "No description";
     wc.collection.course_image_ids = wc.collection.images.map(function(image) {
@@ -250,10 +268,26 @@ angular.module('media_manager')
     })
 
     // put to update collection
+    self.isSavingCollection.status = true;
     Collection.update({}, wc.collection, function(data){
-      wc.collection = wc.loadActiveCollection();
+      wc.notifications.clear();
+      var collection = wc.loadActiveCollection();
+      self.isLoadingCollection.status = true;
+      collection.$promise.then(function(collection) {
+        wc.collection = collection;
+      }, function(response) {
+        wc.notifications.error("Error loading collection: " + response);
+      }).finally(function() {
+        self.isLoadingCollection.status = false;
+      });
     }, function(errorResponse) {
-      $log.debug("error updating collection:", errorResponse);
+      $log.debug("Error updating collection:", errorResponse);
+      wc.notifications.error("Error updating collection: " + errorResponse);
+    }).$promise.then(function(data) {
+      $log.debug("Collection updated: ", data)
+      wc.notifications.success("Collection saved.");
+    }).finally(function() {
+      self.isSavingCollection.status = false;
     });
   };
 
@@ -272,27 +306,77 @@ angular.module('media_manager')
     });
   };
 
+  // Fix the collection panel at the top of the screen 
+  wc.onDocumentScroll = (function() {
+    var fixedPosition = false;
+    var fixedCls = 'image-collection-fixed';
+    var fixedSelector = "#image-collection-panel";
+    var offsetSelector = "#image-collection-panel";
+    var offsetTop = null;
+
+    return function(event) {
+      var windowTop = $(window).scrollTop();
+      if (fixedPosition) {
+        if (windowTop < offsetTop) {
+          $(fixedSelector).removeClass(fixedCls);
+          fixedPosition = false;
+        }
+      } else {
+        if (offsetTop === null) {
+          offsetTop = $(offsetSelector).offset().top;
+        }
+        if (offsetTop < windowTop) {
+          $(fixedSelector).addClass(fixedCls);
+          fixedPosition = true;
+        }
+      }
+    };
+  })();
+
+
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
-  Droplet.scope = $scope;
 
+  wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
-  wc.Droplet = Droplet;
+  wc.isLoading = CourseCache.isLoading;
+  wc.isSavingCollection = {status:false, msg:"Saving collection..."};
+  wc.isLoadingCollection = {status:false, msg:"Loading collection..."};
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
-
-  $scope.$on('$dropletReady', Droplet.whenDropletReady);
-  $scope.$on('$dropletSuccess', Droplet.onDropletSuccess);
-  $scope.$on('$dropletError', Droplet.onDropletError);
-  $scope.$on('$dropletFileAdded', function(){
-    wc.Droplet.interface.uploadFiles();
-  });
-  $scope.$on('$dropletUploadComplete', function(event, response, files) {
-    wc.courseImages.push(response);
-  });
-
+  wc.filesToUpload = 0;
+  wc.notifications = Notifications;
+  
+  wc.notifications.clear();
+  
+  $scope.$on('$dropletReady', Droplet.onReady);
+  $scope.$on('$dropletError', Droplet.onError(function(event, response) {
+    wc.notifications.clear().error(response);
+  }));
+  $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }, function(event, model, msg) {
+    wc.filesToUpload = Droplet.getTotalValid();
+    wc.notifications.notify("warning", msg);
+  }));
+  $scope.$on('$dropletFileDeleted', Droplet.onFileDeleted(function() {
+    wc.filesToUpload = Droplet.getTotalValid();
+  }));
+  $scope.$on('$dropletSuccess', Droplet.onSuccess(function(event, response, files) {
+      if (angular.isArray(response)) {
+        for(var i = 0; i < response.length; i++) {
+          CourseCache.images.push(response[i]);
+        }
+      } else {
+        CourseCache.images.push(response);
+      }
+      wc.filesToUpload = Droplet.getTotalValid();
+      wc.notifications.clear().success("Images uploaded successfully");
+  }));
+  
+  //$(document).scroll(wc.onDocumentScroll);
 }]);
 
 angular.module('media_manager')
@@ -367,14 +451,12 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager').service('AppConfig', function() {
-    var config = window.appConfig;
-
-    this.initialConfig = config;
-    this.user_id = config.user_id;
-    this.perms = config.perms;
-    this.context_id = config.context_id;
-    this.course_id = config.course_id;
-    this.media_management_api_url = config.media_management_api_url;
+    this.config = window.appConfig || {};
+    this.perms = this.config.perms;
+    this.course_id = this.config.course_id;
+    this.access_token = this.config.access_token;
+    this.authorization_header = "Token " + this.config.access_token;
+    this.media_management_api_url = this.config.media_management_api_url;
 });
 
 angular.module('media_manager').service('Breadcrumbs', function() {
@@ -487,23 +569,38 @@ angular.module('media_manager')
   this.images = [];
   this.collections = [];
   this.current_image = {};
-  this.loadImages = function() {
-    if (this.images.length == 0) {
-      this.images = Course.getImages({id: AppConfig.course_id});
-      if(this.images.length > 0){
-        this.current_image = images[0];
-      }
-    }
+  this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
+  this.isLoadingImages = {"status": false, "msg": "Loading images..."};
+  this.isLoading = {"status": false, "msg": "Loading..."};
 
+  this.loadImages = function() {
+    var self = this;
+    this.isLoading.status = true;
+    this.isLoadingImages.status = true;
+    this.images = Course.getImages({id: AppConfig.course_id});
+    this.images.$promise.then(function(images) {
+      self.current_image = images[0];
+      self.isLoadingImages.status = false;
+      self.isLoading.status = false || self.isLoadingCollections.status;
+    });
   };
   this.loadCollections = function() {
-    if (this.collections.length == 0) {
-      this.collections = Course.getCollections({id: AppConfig.course_id});
-    }
+    var self = this;
+    this.isLoading.status = true;
+    this.isLoadingCollections.status = true;
+    this.collections = Course.getCollections({id: AppConfig.course_id});
+    this.collections.$promise.then(function(collections) {
+      self.isLoadingCollections.status = false;
+      self.isLoading.status = false || self.isLoadingImages.status;
+    });
   };
   this.load = function() {
-    this.loadImages();
-    this.loadCollections();
+    if (this.images.length == 0) {
+      this.loadImages();
+    }
+    if (this.collections.length == 0) {
+      this.loadCollections();
+    }
   };
   this.getCollectionById = function(id) {
     for (var i = 0; i < this.collections.length; i++) {
@@ -536,54 +633,101 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
-.service('Droplet', ['$timeout', 'AppConfig', function($timeout, AppConfig){
+.service('Droplet', ['$timeout', '$log', '$q', 'AppConfig', function($timeout, $log, $q, AppConfig){
   var ds = this;
-  ds.interface = {};
-  ds.uploadCount = 0;
-  ds.success = false;
-  ds.error = false;
-  ds.scope = undefined;
 
-  // Listen for when the interface has been configured.
-  ds.whenDropletReady = function() {
+  ds.interface = null;
+  
+  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+  
+  ds.maximumValidFiles = 10;
+
+  ds.requestHeaders = {
+    'Accept': 'application/json',
+    'Authorization': AppConfig.authorization_header
+  };
+  
+  // Returns the image upload URL.
+  ds.getUploadUrl = function() {
       var request_url = ":base_url/courses/:course_id/images";
       request_url = request_url.replace(':base_url', AppConfig.media_management_api_url);
       request_url = request_url.replace(':course_id', AppConfig.course_id);
-
-      ds.interface.allowedExtensions(['png', 'jpg', 'bmp', 'gif']);
-      ds.interface.setRequestUrl(request_url);
-      ds.interface.setRequestHeaders({'Accept': 'application/json'})
-      ds.interface.defineHTTPSuccess([/2.{2}/]);
-      ds.interface.useArray(false);
-      ds.interface.setPostData({"title": "Untitled"})
+      return request_url;
   };
 
-  // Listen for when the files have been successfully uploaded.
-  ds.onDropletSuccess = function(event, response, files) {
-      ds.scope.uploadCount = files.length;
-      ds.scope.success     = true;
-
-      $timeout(function timeout() {
-          ds.scope.success = false;
-      }, 5000);
-
-      console.log("droplet success", event, response, files);
-      ds.scope.$broadcast('$dropletUploadComplete', response, files);
+  ds.onReady = function() {
+    ds.interface.allowedExtensions(ds.allowedExtensions);
+    ds.interface.setRequestUrl(ds.getUploadUrl());
+    ds.interface.setRequestHeaders(ds.requestHeaders);
+    ds.interface.defineHTTPSuccess([/2.{2}/]);
+    ds.interface.useArray(false);
+    ds.interface.setPostData({"title": "Untitled"})
+    $log.debug("Ready: droplet ready", ds.interface);
   };
 
-  // Listen for when the files have failed to upload.
-  ds.onDropletError = function(event, response) {
-      console.log("onDropletError", event, response);
-      ds.scope.error = true;
-
-      $timeout(function timeout() {
-          ds.scope.error = false;
-      }, 5000);
-
-      console.log("droplet error", event, response);
+  ds.onSuccess = function(callback) {
+    return function(event, response, files) {
+      $log.debug("Success: droplet uploaded file: ", files, response);
+      if (callback) {
+        callback(event, response, files);
+      }
+    };
+  };
+  
+  ds.onError = function(callback) {
+    return function(event, response) {
+      $log.debug("Error: droplet uploaded file: ", response);
+      if(callback) {
+        callback(event, response);
+      }
+    };
   };
 
+  ds.onFileAdded = function(success, error) {
+    return function(event, model) {
+      $log.debug("Notification: droplet file added", model);
+      var total_valid = ds.getTotalValid();
+      var is_valid_type = (model.type == ds.interface.FILE_TYPES.VALID)
+      var is_valid_total = (total_valid <= ds.maximumValidFiles);
+      var msg = "";
+  
+      if (is_valid_type && is_valid_total) {
+        success && success(event, model);
+      } else {
+        $log.debug("Notification: file added is invalid; NOT uploading with extension: ", model.extension);
+        //alert("Error: '" + model.file.name +"' is not valid for upload. Cannot upload file with extension '" + model.extension + "'. File must be one of: " + Droplet.allowedExtensions.join(", "));
+        model.deleteFile();
+        if (!is_valid_total) {
+          msg = "Too many images to upload. You can upload " + ds.maximumValidFiles + " at a time.";
+        } else if (!is_valid_type) {
+          msg = "Invalid image: '" + model.file.name +"'. Cannot upload file with extension '" + model.extension + "'. File extension must be one of: " + ds.allowedExtensions.join(", ")
+        }
+        error && error(event, model, msg);
+      }
+    };
+  };
+  
+  ds.onFileDeleted = function(callback) {
+    return function(event, model) {
+      $log.debug("Notification: droplet file deleted", model);
+      if(callback) {
+        callback(event, model);
+      }
+    };
+  };
 
+  ds.getTotalValid = function() {
+    return ds.interface ? ds.interface.getFiles(ds.interface.FILE_TYPES.VALID).length : 0;
+  };
+
+  ds.uploadFiles = function() {
+    if (ds.interface) {
+      $log.debug("Notification: uploadFiles()")
+      ds.interface.uploadFiles();
+    } else {
+      $log.error("Error: droplet interface not available to upload files");
+    }
+  };
 }]);
 
 angular.module('media_manager')
@@ -696,3 +840,58 @@ angular.module('media_manager')
 
 
 }]);
+
+angular.module('media_manager').service('Notifications', function() {
+    var notify = {
+        TYPE: {
+          INFO:"info",
+          WARNING:"warning",
+          SUCCESS:"success",
+          ERROR:"danger"
+        },
+        messages: [],
+        notify: function(type, msg) {
+          if (this.canReset) {
+            this.clear();
+            this.canReset = false;
+          }
+          if (!this.isRepeated(msg)) {
+            this.messages.push({"type": type, "content": msg});
+          }
+          return this;
+        },
+        info: function(msg) {
+          return this.notify(this.TYPE.INFO, msg);
+        },
+        warn: function(msg) {
+          return this.notify(this.TYPE.WARNING, msg);
+        },
+        success: function(msg) {
+          return this.notify(this.TYPE.SUCCESS, msg);
+        },
+        error: function(msg) {
+          return this.notify(this.TYPE.ERROR, msg);
+        },
+        getLast: function() {
+          if (this.messages.length == 0) {
+            return null;
+          }
+          return this.messages[this.messages.length - 1];
+        },
+        isRepeated: function(msg) {
+          if (this.getLast()) {
+            return msg == this.getLast().content;
+          }
+          return false;
+        },
+        clear: function() {
+          this.messages = [];
+          return this;
+        },
+        clearOnNext: function() {
+          this.canReset = true;
+          return this;
+        }
+    };
+    return notify;
+});

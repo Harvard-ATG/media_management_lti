@@ -180,9 +180,8 @@ section.droplet droplet {
     border-radius: 2px;
     width: 100%;
     overflow: auto;
+    overflow-x: hidden;
     height: auto;
-    min-height: 200px;
-    max-height: 300px;
     background-color: rgba(255, 255, 255, .1);
     margin-top: -5px;
     padding-top: 5px;
@@ -233,12 +232,22 @@ section.droplet droplet.event-dragover comment:after {
 }
 
 section.droplet droplet ul.files {
-    height: 100%;
+    /*height: 100%;*/
     width: 100%;
     overflow-y: auto;
     padding: 5px;
     list-style-type: none;
     transition: all .5s;
+}
+section.droplet droplet ul.files-queued {
+    background-color: #d3d3d3;
+    border: 1px dashed #666;
+    padding: 10px;
+    margin: 10px 5px;
+    min-height: 100px;
+}
+section.droplet droplet ul.files-queued li {
+    z-index: 2;
 }
 
 section.droplet.uploading droplet ul.files {
@@ -542,9 +551,38 @@ button.btn-unstyled {
 .breadcrumb {
   margin-bottom: 0px;
 }
-.workspace-library {
-  border: 1px solid #ccc;
+.image-library {
+
 }
-.workspace-collection {
-  margin-top: 10px;
+.image-collection-fixed {
+  position: fixed;
+  left: 15px;
+  top: 0;
+  right: 0;
+  z-index: 100;
+}
+.image-collection-fixed .panel-body {
+  height: 130px;
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+#image-collection-panel .panel-body {
+  position: relative;
+  min-height: 100px;
+}
+.drag-and-drop-overlay {
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  z-index: 0;
+  font-size: 36px;
+  color: #fff;
+  opacity: .8;  
+  display: inline-block;
+}
+.notifications {
+  margin: 1em 0;
+
 }

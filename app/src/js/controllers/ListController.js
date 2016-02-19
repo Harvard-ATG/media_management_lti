@@ -19,5 +19,6 @@ angular.module('media_manager').controller('ListController', [
         lc.canEdit = AppConfig.perms.edit;
         lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
         lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
+        lc.isLoadingCollections = CourseCache.isLoadingCollections;
     }
 ]);

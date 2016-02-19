@@ -5,9 +5,11 @@
     <input ng-model="query" type="text" name="query" class="form-control" placeholder="Search for Collection" aria-label="Search for Collection" />
   </div>
   <div class="col-md-9">
-    <a class="btn btn-primary pull-right" ng-href="/#/workspace">+ Collection</a>
+    <div ng-if="lc.canEdit"><a class="btn btn-primary pull-right" ng-href="/#/workspace">+ Collection</a></div>
   </div>
 </div>
+
+<span us-spinner="{top:200}" spinner-on="lc.isLoadingCollections.status"></span>
 
 <ul class="list-group">
   <li class="list-group-item clearfix" ng-repeat="collection in lc.collections | filter:query">
@@ -29,3 +31,4 @@
     </div>
   </li>
 </ul>
+

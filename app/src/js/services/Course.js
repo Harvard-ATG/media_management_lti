@@ -22,23 +22,38 @@ angular.module('media_manager')
   this.images = [];
   this.collections = [];
   this.current_image = {};
-  this.loadImages = function() {
-    if (this.images.length == 0) {
-      this.images = Course.getImages({id: AppConfig.course_id});
-      if(this.images.length > 0){
-        this.current_image = images[0];
-      }
-    }
+  this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
+  this.isLoadingImages = {"status": false, "msg": "Loading images..."};
+  this.isLoading = {"status": false, "msg": "Loading..."};
 
+  this.loadImages = function() {
+    var self = this;
+    this.isLoading.status = true;
+    this.isLoadingImages.status = true;
+    this.images = Course.getImages({id: AppConfig.course_id});
+    this.images.$promise.then(function(images) {
+      self.current_image = images[0];
+      self.isLoadingImages.status = false;
+      self.isLoading.status = false || self.isLoadingCollections.status;
+    });
   };
   this.loadCollections = function() {
-    if (this.collections.length == 0) {
-      this.collections = Course.getCollections({id: AppConfig.course_id});
-    }
+    var self = this;
+    this.isLoading.status = true;
+    this.isLoadingCollections.status = true;
+    this.collections = Course.getCollections({id: AppConfig.course_id});
+    this.collections.$promise.then(function(collections) {
+      self.isLoadingCollections.status = false;
+      self.isLoading.status = false || self.isLoadingImages.status;
+    });
   };
   this.load = function() {
-    this.loadImages();
-    this.loadCollections();
+    if (this.images.length == 0) {
+      this.loadImages();
+    }
+    if (this.collections.length == 0) {
+      this.loadCollections();
+    }
   };
   this.getCollectionById = function(id) {
     for (var i = 0; i < this.collections.length; i++) {
