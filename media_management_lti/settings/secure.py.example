@@ -1,6 +1,6 @@
-# The secure.py file stores environment specific settings and secrets.  It is 
+# The secure.py file stores environment specific settings and secrets.  It is
 # generated during deployment to AWS based on settings stored in s3.  Using the
-# below secure settings in combination with project defaults should be 
+# below secure settings in combination with project defaults should be
 # sufficient to get you started.  Make sure you copy this file over as is to
 # secure.py before running `vagrant up`.
 
@@ -10,5 +10,11 @@ SECURE_SETTINGS = {
     'db_default_name': 'media_management_lti',
     'db_default_user': 'media_management_lti',
     'db_default_password': 'media_management_lti',
-    'media_management_api_url': 'http://localhost:8000',
+    'media_management_api_url': 'http://localhost:8000/api',
+
+    # These credentials must be manually created/obtained from the API.
+    'media_management_api_credentials': {
+        "client_id": "",
+        "client_secret": "",
+    },
 }
