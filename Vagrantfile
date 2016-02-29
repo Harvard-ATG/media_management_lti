@@ -17,6 +17,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   config.ssh.username = 'root'
   config.ssh.private_key_path = 'insecure_key'
+  config.puppet_install.puppet_version = :latest
 
   # Provisioning
   # -------------
@@ -26,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 #                   puppet module install puppetlabs-stdlib --force;"
 # end
 
-# config.vm.provision 'puppet' do |puppet|
-#   puppet.manifests_path = "vagrant/manifests"
-# end
+ config.vm.provision 'puppet' do |puppet|
+   puppet.manifests_path = "vagrant/manifests"
+ end
 end
