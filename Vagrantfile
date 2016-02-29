@@ -13,7 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "docker" do |d|
     d.build_dir = "."
     d.has_ssh = true
-    d.ports = [ '127.010.1:8888:8080' ]
+    d.ports = [ '127.0.0.1:8888:8080' ]
   end
   config.ssh.username = 'root'
   config.ssh.private_key_path = 'insecure_key'
