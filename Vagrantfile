@@ -12,10 +12,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Our EC2 instances run ubuntu 14.04 (trusty)
   config.vm.provider "docker" do |d|
     d.cmd = ["/sbin/my_init", "--enable-insecure-key"]
-    d.image = 'phusion:baseimage'
+    d.image = 'phusion/baseimage'
     d.has_ssh = true
   end
   config.ssh.username = 'root'
+  config.ssh.private_key_path = 'phusion.key'
   
 
 
@@ -38,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # If true, then any SSH connections made will enable agent forwarding.
   # Default value: false
 
-  config.ssh.forward_agent = true
+ # config.ssh.forward_agent = true
 
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is
