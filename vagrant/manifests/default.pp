@@ -247,3 +247,4 @@ PS1="${debian_chroot:+($debian_chroot)}\u@\h:\w\$(parse_git_branch) $ "
     require => Exec['create-virtualenv'],
 }
 
+2016-02-29 22:00:22 +0000 Puppet (err): Unable to set ownership to puppet:puppet for log file: /tmp/vagrant-puppet/manifests-00a28150b4e8ae487ef7b222bc4d679b/default.pp
