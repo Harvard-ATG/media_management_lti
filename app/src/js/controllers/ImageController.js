@@ -22,18 +22,6 @@ angular.module('media_manager')
     crumbed = true;
   }
 
-  ic.metachanged = false;
-  $scope.$watch(function watch(scope){
-    return CourseCache.current_image;
-  }, function handleChange(newval, oldval){
-    if(newval.id == oldval.id){
-      ic.metachanged = true;
-    } else {
-      resetBreadcrumb();
-      ic.metachanged = false;
-    }
-  });
-
   ic.save = function(){
     var image = CourseCache.current_image;
     Image.update({}, image, function success(data){
