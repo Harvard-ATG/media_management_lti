@@ -27,6 +27,20 @@
                 </div>
                 <input type="button" class="btn btn-primary" value="Upload Files" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
                 <label>Total files to upload:</label> {{wc.filesToUpload}}
+                
+                <div style="margin-top: 20px">
+                    <div class="btn-group" uib-dropdown>
+                        <button id="sort_images_button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                          Sort Images <span class="caret"></span>
+                        </button>
+                        <ul uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                            <li role="menuitem" ng-repeat="choice in wc.sortChoices">
+                                <a href="#" ng-click="wc.onClickSortLibrary($event, choice)">{{choice.label}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
                 <ul class="files">
                   <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
                     <droplet-thumb ng-model="courseImage"></droplet-thumb>
