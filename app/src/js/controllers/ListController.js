@@ -20,5 +20,10 @@ angular.module('media_manager').controller('ListController', [
         lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
         lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
         lc.isLoadingCollections = CourseCache.isLoadingCollections;
+
+        lc.dragControlListeners = {
+
+        };
+
     }
 ]);
