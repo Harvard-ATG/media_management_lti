@@ -53,5 +53,21 @@ button.btn-unstyled {
 }
 .notifications {
   margin: 1em 0;
+}
 
+table.files {
+  border-collapse: collapse;
+  width: 100%;
+}
+table.files thead {
+  border-bottom: 1px solid #ccc;
+}
+table.files th, table.files td {
+  padding: 5px;
+}
+table.files tr:hover {
+  background-color: #efefef;
+}
+table.files td > button {
+  margin-left: 10px;
 }

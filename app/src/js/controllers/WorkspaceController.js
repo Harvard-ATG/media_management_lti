@@ -187,7 +187,7 @@ angular.module('media_manager')
     $event.preventDefault();
     wc.sortLibrary(choice);
   };
-  
+
   wc.sortLibrary = function(choice) {
     CourseCache.updateSort(choice.name, choice.dir).sortImages();
   };
@@ -197,6 +197,7 @@ angular.module('media_manager')
 
   CourseCache.load();
 
+  wc.layout = "gallery";
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
