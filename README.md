@@ -1,5 +1,7 @@
 ### Quickstart
 
+[![Join the chat at https://gitter.im/Harvard-ATG/media_management_lti](https://badges.gitter.im/Harvard-ATG/media_management_lti.svg)](https://gitter.im/Harvard-ATG/media_management_lti?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ```sh
 $ cp settings/media_management_lti/secure.py.example settings/media_management_lti/secure.py
 $ vagrant up
