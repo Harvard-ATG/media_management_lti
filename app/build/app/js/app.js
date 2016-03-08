@@ -1,4 +1,4 @@
-angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner'])
+angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
@@ -38,7 +38,7 @@ angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope
     $scope.crumbs = Breadcrumbs.crumbs;
 }]);
 angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope){
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
   var ic = this;
 
   ic.imageBehavior = ImageBehavior;
@@ -64,8 +64,20 @@ angular.module('media_manager')
   $scope.$watch(function watch(scope){
     return CourseCache.current_image;
   }, function handleChange(newval, oldval){
-    resetBreadcrumb();
+    if(newval.id != oldval.id){
+      resetBreadcrumb();
+    }
   });
+
+  ic.save = function(){
+
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
 
   ic.next = function(){
     if(ic.index + 1 < CourseCache.images.length){
@@ -109,8 +121,14 @@ angular.module('media_manager').controller('ListController', [
         lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
         lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
         lc.isLoadingCollections = CourseCache.isLoadingCollections;
+
+        lc.dragControlListeners = {
+
+        };
+
     }
 ]);
+
 angular.module('media_manager').controller('MiradorController', [
     '$scope',
     '$routeParams',
