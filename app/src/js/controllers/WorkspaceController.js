@@ -13,6 +13,7 @@ angular.module('media_manager')
                                     'ImageLightBox',
                                     'Breadcrumbs',
                                     'Notifications',
+                                    'Preferences',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -28,6 +29,7 @@ angular.module('media_manager')
                                       ImageLightBox,
                                       Breadcrumbs,
                                       Notifications,
+                                      Preferences,
                                       AppConfig){
 
 
@@ -187,7 +189,7 @@ angular.module('media_manager')
     $event.preventDefault();
     wc.sortLibrary(choice);
   };
-  
+
   wc.sortLibrary = function(choice) {
     CourseCache.updateSort(choice.name, choice.dir).sortImages();
   };
@@ -197,6 +199,7 @@ angular.module('media_manager')
 
   CourseCache.load();
 
+  wc.layout = Preferences.get(Preferences.UI_WORKSPACE_LAYOUT);
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
@@ -242,6 +245,10 @@ angular.module('media_manager')
       wc.filesToUpload = Droplet.getTotalValid();
       wc.notifications.clear().success("Images uploaded successfully");
   }));
+
+  $scope.$watch('wc.layout', function(newVal, oldVal) {
+    Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
+  })
   
   //$(document).scroll(wc.onDocumentScroll);
 }]);

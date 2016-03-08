@@ -29,7 +29,13 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controller: 'ImageController',
     controllerAs: 'ic'
   });
-}]).run(function($http) {
+}])
+.filter("asDate", function () {
+    return function (input) {
+        return new Date(input);
+    }
+})
+.run(function($http) {
   $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
 })
 
@@ -148,6 +154,7 @@ angular.module('media_manager')
                                     'ImageLightBox',
                                     'Breadcrumbs',
                                     'Notifications',
+                                    'Preferences',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -163,6 +170,7 @@ angular.module('media_manager')
                                       ImageLightBox,
                                       Breadcrumbs,
                                       Notifications,
+                                      Preferences,
                                       AppConfig){
 
 
@@ -322,7 +330,7 @@ angular.module('media_manager')
     $event.preventDefault();
     wc.sortLibrary(choice);
   };
-  
+
   wc.sortLibrary = function(choice) {
     CourseCache.updateSort(choice.name, choice.dir).sortImages();
   };
@@ -332,6 +340,7 @@ angular.module('media_manager')
 
   CourseCache.load();
 
+  wc.layout = Preferences.get(Preferences.UI_WORKSPACE_LAYOUT);
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
@@ -377,6 +386,10 @@ angular.module('media_manager')
       wc.filesToUpload = Droplet.getTotalValid();
       wc.notifications.clear().success("Images uploaded successfully");
   }));
+
+  $scope.$watch('wc.layout', function(newVal, oldVal) {
+    Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
+  })
   
   //$(document).scroll(wc.onDocumentScroll);
 }]);
@@ -966,4 +979,59 @@ angular.module('media_manager').service('Notifications', function() {
         }
     };
     return notify;
+});
+
+angular.module('media_manager').service('Preferences', function() {
+    var pr = this;
+    var default_prefs = {
+        ui: {
+            workspace: {
+                layout: "gallery"
+            }
+        }
+    };
+    
+    pr.prefs = default_prefs;
+    pr.UI_WORKSPACE_LAYOUT = "ui.workspace.layout";
+    
+    // Returns the value for a given key.
+    pr.get = function(key) {
+        var val, path, i;
+        if (typeof key == "undefined") {
+            return pr.prefs;
+        }
+
+        if (key.indexOf('.') == -1) {
+            val = pr.prefs[key];
+        } else {
+            for(path = key.split('.'), val = pr.prefs[path[0]], i = 1; i < path.length; i++) {
+                if (!val.hasOwnProperty(path[i])) {
+                    throw "Error looking up preference. No such key exists: " + key;
+                }
+                val = val[path[i]];
+            }
+        }
+        return val;
+    };
+    
+    // Sets the value for a given key.
+    pr.set = function(key, value) {
+        var path, obj, i, k;
+        if (typeof key == "undefined") {
+            throw "Error setting preference key/value. Key parameter is *required*."
+        }
+
+        if (key.indexOf('.') == -1) {
+            pr.prefs[key] = value;
+        } else {
+            path = key.split('.');
+            obj = pr.prefs;
+            for(i = 0; i < path.length - 1; i++) {
+                k = path[i];
+                obj = obj[k] || {};
+            }
+            obj[path[path.length-1]] = value;
+        }
+    };
+    
 });
