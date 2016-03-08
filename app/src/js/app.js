@@ -37,4 +37,4 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
 })
 .run(function($http) {
   $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
-})
+});
