@@ -27,15 +27,64 @@
                 </div>
                 <input type="button" class="btn btn-primary" value="Upload Files" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
                 <label>Total files to upload:</label> {{wc.filesToUpload}}
-                <ul class="files">
-                  <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
-                    <droplet-thumb ng-model="courseImage"></droplet-thumb>
-                    <div class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
-                    <div class="resize-overlay" ng-click="wc.imageView(courseImage.id)">
-                      <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                
+                <div style="margin-top: 20px">
+                    <div class="btn-group pull-left" uib-dropdown>
+                        <button id="sort_images_button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                          Sort Images <span class="caret"></span>
+                        </button>
+                        <ul uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                            <li role="menuitem" ng-repeat="choice in wc.sortChoices">
+                                <a href="#" ng-click="wc.onClickSortLibrary($event, choice)">{{choice.label}}</a>
+                            </li>
+                        </ul>
                     </div>
-                  </li>
-                </ul>
+                    <div class="pull-left" style="margin-left: 20px;">
+                        Layout:
+                        <div class="btn-group" role="group" aria-label="layout">
+                            <label class="btn btn-default" ng-model="wc.layout" uib-btn-radio="'gallery'" uncheckable>Gallery</label>
+                            <label class="btn btn-default" ng-model="wc.layout" uib-btn-radio="'list'" uncheckable>List</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="clear:both; margin-top: 10px;" ng-show="wc.courseImages.length > 0">
+                    <ul class="files" ng-if="wc.layout == 'gallery'">
+                      <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
+                        <droplet-thumb ng-model="courseImage"></droplet-thumb>
+                        <div class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
+                        <div class="resize-overlay" ng-click="wc.imageView(courseImage.id)">
+                          <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                        </div>
+                      </li>
+                    </ul>
+                    <table class="files" ng-if="wc.layout == 'list'">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Date Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="courseImage in wc.courseImages track by $index">
+                                <td>{{$index + 1}}</td>
+                                <td>
+                                    <droplet-thumb ng-model="courseImage"></droplet-thumb>
+                                </td>
+                                <td>{{courseImage.title}}</td>
+                                <td>{{courseImage.created | asDate | date:"MM/dd/yyyy 'at' h:mma"}}</td>
+                                <td>
+                                    <button class="btn btn-default" ng-click="wc.imageView(courseImage.id)">View Image</div>
+                                    <button class="btn btn-primary" ng-click="wc.addToCollection(courseImage)">Add to Collection</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
               </droplet>
             </section>
         </div>
