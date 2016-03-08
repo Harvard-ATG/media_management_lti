@@ -25,13 +25,35 @@ angular.module('media_manager')
   this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
   this.isLoadingImages = {"status": false, "msg": "Loading images..."};
   this.isLoading = {"status": false, "msg": "Loading..."};
+  this.compareImages = null;
+  this.sortType = null;
 
+  this.addImage = function(image_object) {
+    this.images.push(image_object);
+    this.sortImages();
+  };
+  this.removeImage = function(image_id) {
+    var remove_at_idx = -1;
+    for(var i = 0, images = this.images, len = this.images.length; i < len; i++) {
+        if (images[i].id == image_id) {
+            remove_at_idx = i;
+            break;
+        }
+    }
+    if (remove_at_idx >= 0) {
+        this.current_image = this.getPrevImage(image_id);
+        this.images.splice(remove_at_idx, 1);
+        return true;
+    }
+    return false;
+  };
   this.loadImages = function() {
     var self = this;
     this.isLoading.status = true;
     this.isLoadingImages.status = true;
     this.images = Course.getImages({id: AppConfig.course_id});
     this.images.$promise.then(function(images) {
+      self.sortImages();
       self.current_image = images[0];
       self.isLoadingImages.status = false;
       self.isLoading.status = false || self.isLoadingCollections.status;
@@ -81,6 +103,72 @@ angular.module('media_manager')
           return this.images[0];
         }
       }
+    }
+    return null;
+  };
+  this.updateSort = function(sortType, sortDir) {
+    var make_numeric_compare = function(prop, dir) {
+      return function(a, b) {
+        var a_num = Number(a[prop]);
+        var b_num = Number(b[prop]);
+        if (isNaN(a_num) || isNaN(b_num)) {
+          return 0;
+        }
+        return dir ? a_num - b_num : b_num - a_num;
+      };
+    };
+    var make_date_compare = function(prop, dir) {
+      return function(a, b) {
+        var a_date = Date.parse(a[prop]);
+        var b_date = Date.parse(b[prop]);
+        if (isNaN(a_date) || isNaN(b_date)) {
+          return 0;
+        }
+        return dir ? a_date - b_date : b_date - a_date;
+      };
+    };
+    var make_str_compare = function(prop, dir) {
+      return function(a, b) {
+        var a_str = a[prop].toLowerCase().trim();
+        var b_str = b[prop].toLowerCase().trim();
+        if (a_str == b_str) {
+          return 0;
+        }
+        return dir ? (a_str < b_str ? -1 : 1) : (b_str < a_str ? -1 : 1);
+      };
+    };
+    var lookup_sort = {
+      "created": function(dir) {
+        return make_date_compare("created", dir);
+      },
+      "updated": function(dir) {
+        return make_date_compare("updated", dir);
+      },
+      "title": function(dir) {
+        return make_str_compare("title", dir);
+      },
+      "sort_order": function(dir) {
+        return make_numeric_compare("sort_order", dir);
+      }
+    };
+
+    if (!lookup_sort.hasOwnProperty(sortType)) {
+      throw "Invalid sort type: " + sortType;
+    }
+    if (sortDir != "asc" && sortDir != "desc") {
+      throw "Invalid sort dir: " + sortDir;
+    }
+
+    this.sortType = sortType;
+    this.compareImages = lookup_sort[sortType](sortDir == "asc" ? true : false);
+    
+    
+    return this;
+  };
+  this.sortImages = function() {
+    var compare = this.compareImages;
+    if (compare) {
+      this.images.sort(compare);
     }
   };
 }]);
