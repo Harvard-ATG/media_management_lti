@@ -1,0 +1,5 @@
+<div ng-controller="NotificationsController">
+	<div ng-repeat="message in notifications.messages" class="notifications">
+		<div class="alert alert-{{message.type}}" role="alert">{{message.content}}</div>
+	</div>
+</div>

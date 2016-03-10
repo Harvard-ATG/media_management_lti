@@ -1,0 +1,18 @@
+.image-collection-fixed {
+  position: fixed;
+  left: 15px;
+  top: 0;
+  right: 0;
+  z-index: 100;
+}
+.image-collection-fixed .panel-body {
+  height: 130px;
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+#image-collection-panel .panel-body {
+  position: relative;
+  min-height: 100px;
+}

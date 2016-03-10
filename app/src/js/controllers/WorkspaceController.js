@@ -78,20 +78,6 @@ angular.module('media_manager')
     wc.collection.images.splice(imageIndex, 1);
   };
 
-  wc.canDeleteCollection = function() {
-    return wc.collection.id ? true : false;
-  };
-
-  wc.deleteCollection = function() {
-    var collection_id = wc.collection.id;
-    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
-    deletePromise.then(function(result) {
-      $location.path('/collections/');
-    }, function(result) {
-      $log.debug("error deleting collection", collection_id);
-    });
-  };
-
   wc.cancelCollection = function() {
     $location.path('/collections/');
   };
