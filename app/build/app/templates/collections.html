@@ -1,0 +1,34 @@
+<div data-ng-include data-src="'/static/app/templates/breadcrumbs.html'"></div>
+
+<div class="row header-bar">
+  <div class="col-md-3">
+    <input ng-model="query" type="text" name="query" class="form-control" placeholder="Search for Collection" aria-label="Search for Collection" />
+  </div>
+  <div class="col-md-9">
+    <div ng-if="lc.canEdit"><a class="btn btn-primary pull-right" ng-href="/#/workspace">+ Collection</a></div>
+  </div>
+</div>
+
+<span us-spinner="{top:200}" spinner-on="lc.isLoadingCollections.status"></span>
+
+<ul class="list-group">
+  <li class="list-group-item clearfix" ng-repeat="collection in lc.collections | filter:query">
+    <div ng-if="lc.canEdit">
+      <div class="btn-group dropdown pull-right" uib-dropdown="" is-open="status.isopen" style="">
+        <button id="single-button" type="button" class="btn btn-default btn-sm dropdown-toggle" uib-dropdown-toggle="" ng-disabled="disabled" aria-haspopup="true" aria-expanded="false">
+          <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+          <span class="caret"></span>
+        </button>
+        <ul uib-dropdown-menu="" role="menu" aria-labelledby="single-button" class="dropdown-menu">
+          <li role="menuitem"><a ng-href="/#/workspace/{{ collection.id }}">Edit</a></li>
+          <li role="menuitem"><a href="javascript:;" ng-click="lc.deleteCollectionModal(collection.id)">Delete</a></li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <a href="/#/mirador/{{ collection.id }}" style="font-size: 16px">{{ collection.title }}</a>
+      <span class="badge">{{ collection.images.length }}</span>
+    </div>
+  </li>
+</ul>
+

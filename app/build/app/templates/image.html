@@ -1,0 +1,25 @@
+<div data-ng-include data-src="'/static/app/templates/breadcrumbs.html'"></div>
+
+<div class="modal-header">
+    <h3 class="modal-title"><span editable-text="ic.CourseCache.current_image.title" onbeforesave="ic.save()">{{ ic.CourseCache.current_image.title || "Click to add a Title" }}</span></h3>
+    <pp><span editable-text="ic.CourseCache.current_image.description" onbeforesave="ic.save()">{{ ic.CourseCache.current_image.description || "Click to add a Description" }}</span></pp>
+    <div>
+      <button class="btn btn-danger pull-right" type="button" ng-click="ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id)">Delete</button>
+    </div>
+</div>
+<div class="modal-body">
+  <div class="text-center">
+    {{ ic.index + 1 }} / {{ ic.CourseCache.images.length }}
+  </div>
+  <div class="text-center">
+    <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="ic.prev()">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="ic.next()">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    </button>
+  </div>
+  <img style="display: block; margin-left: auto; margin-right: auto; max-height: 400px;" ng-src="{{ ic.CourseCache.current_image.image_url }}"/>
+</div>
+<div class="modal-footer">
+</div>
