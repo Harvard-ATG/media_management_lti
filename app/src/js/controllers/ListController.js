@@ -4,12 +4,14 @@ angular.module('media_manager').controller('ListController', [
     'CollectionBehavior',
     'AppConfig',
     'Breadcrumbs',
+    'Collection',
     function(
     $scope,
     CourseCache,
     CollectionBehavior,
     AppConfig,
-    Breadcrumbs) {
+    Breadcrumbs,
+    Collection) {
         var lc = this;
 
         Breadcrumbs.home();
@@ -22,7 +24,17 @@ angular.module('media_manager').controller('ListController', [
         lc.isLoadingCollections = CourseCache.isLoadingCollections;
 
         lc.dragControlListeners = {
+          orderChanged: function(event){
 
+            lc.collections.forEach(function(item, index, arr){
+              var newsort = index + 1;
+              if(item.sort_order !== newsort){
+                arr[index].sort_order = newsort;
+                Collection.update({id: item.id}, arr[index]);
+              }
+            });
+
+          }
         };
 
     }
