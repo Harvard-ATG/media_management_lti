@@ -1,0 +1,12 @@
+body {
+  /*margin-top: -5em; /* adding margin-top to use vertical empty area in iframe */
+  padding-top: 0;
+  margin-left: .5em;
+}
+.content {
+  position: relative;
+  top: 76px;
+}
+.header-bar {
+  margin: 20px 0;
+}

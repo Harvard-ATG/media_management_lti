@@ -15,12 +15,12 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controllerAs: 'wc'
   })
   .when('/collections', {
-    templateUrl: "/static/app/templates/collectionList.html",
-    controller: 'ListController',
+    templateUrl: "/static/app/templates/collections.html",
+    controller: 'CollectionsController',
     controllerAs: 'lc'
   })
   .when('/mirador/:collectionId', {
-    templateUrl: "/static/app/templates/miradorView.html",
+    templateUrl: "/static/app/templates/mirador.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
   })
@@ -28,7 +28,12 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     templateUrl: "/static/app/templates/image.html",
     controller: 'ImageController',
     controllerAs: 'ic'
-  });
+  })
+  .when('/error/:errorCode', {
+    templateUrl: "/static/app/templates/error.html",
+    controller: 'ErrorController',
+    controllerAs: 'er'
+  })
 }])
 .filter("asDate", function () {
     return function (input) {
@@ -40,9 +45,45 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
 });
 
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
-    var br = this;
     $scope.crumbs = Breadcrumbs.crumbs;
 }]);
+
+angular.module('media_manager').controller('CollectionsController', [
+    '$scope',
+    'CourseCache',
+    'CollectionBehavior',
+    'AppConfig',
+    'Breadcrumbs',
+    function(
+    $scope,
+    CourseCache,
+    CollectionBehavior,
+    AppConfig,
+    Breadcrumbs) {
+        var lc = this;
+
+        Breadcrumbs.home();
+        CourseCache.load();
+
+        lc.collections = CourseCache.collections;
+        lc.canEdit = AppConfig.perms.edit;
+        lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
+        lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
+        lc.isLoadingCollections = CourseCache.isLoadingCollections;
+    }
+]);
+
+angular.module('media_manager').controller('ErrorController', ['$scope', '$routeParams', function($scope, $routeParams) {
+    var errorCodes = {
+        1: "Your session has expired. Please re-launch the tool." // access token expired
+    };
+    var code = $routeParams.errorCode;
+    var msg = (code in errorCodes) ? errorCodes[code] : null;
+
+    $scope.errorCode = code;
+    $scope.errorMsg = msg;
+}]);
+
 angular.module('media_manager')
 .controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
   var ic = this;
@@ -96,30 +137,6 @@ angular.module('media_manager')
 
 }]);
 
-angular.module('media_manager').controller('ListController', [
-    '$scope',
-    'CourseCache',
-    'CollectionBehavior',
-    'AppConfig',
-    'Breadcrumbs',
-    function(
-    $scope,
-    CourseCache,
-    CollectionBehavior,
-    AppConfig,
-    Breadcrumbs) {
-        var lc = this;
-
-        Breadcrumbs.home();
-        CourseCache.load();
-
-        lc.collections = CourseCache.collections;
-        lc.canEdit = AppConfig.perms.edit;
-        lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
-        lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
-        lc.isLoadingCollections = CourseCache.isLoadingCollections;
-    }
-]);
 angular.module('media_manager').controller('MiradorController', [
     '$scope',
     '$routeParams',
@@ -142,6 +159,10 @@ function(
     
     Breadcrumbs.home().addCrumb("Mirador", $location.url());
 }]);
+angular.module('media_manager').controller('NotificationsController', ['$rootScope', '$scope', 'Notifications', function($rootScope, $scope, Notifications) {
+    $scope.notifications = Notifications;
+}]);
+
 angular.module('media_manager')
 .controller('WorkspaceController', ['$scope',
                                     '$timeout',
@@ -220,20 +241,6 @@ angular.module('media_manager')
 
   wc.removeFromCollection = function(imageIndex){
     wc.collection.images.splice(imageIndex, 1);
-  };
-
-  wc.canDeleteCollection = function() {
-    return wc.collection.id ? true : false;
-  };
-
-  wc.deleteCollection = function() {
-    var collection_id = wc.collection.id;
-    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
-    deletePromise.then(function(result) {
-      $location.path('/collections/');
-    }, function(result) {
-      $log.debug("error deleting collection", collection_id);
-    });
   };
 
   wc.cancelCollection = function() {
@@ -536,7 +543,7 @@ angular.module('media_manager')
         var deferredDelete = $q.defer();
         var modalInstance = $uibModal.open({
             animation: false,
-            templateUrl: '/static/app/templates/confirmDelete.html',
+            templateUrl: '/static/app/templates/modalConfirmDelete.html',
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var collection = CourseCache.getCollectionById(id);
@@ -863,7 +870,7 @@ angular.module('media_manager')
         var deferredDelete = $q.defer();
         var modalInstance = $uibModal.open({
             animation: false,
-            templateUrl: '/static/app/templates/confirmDelete.html',
+            templateUrl: '/static/app/templates/modalConfirmDelete.html',
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var image = CourseCache.getImageById(id);
