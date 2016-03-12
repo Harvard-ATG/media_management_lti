@@ -579,10 +579,20 @@ button.btn-unstyled {
   z-index: 0;
   font-size: 36px;
   color: #fff;
-  opacity: .8;  
+  opacity: .8;
   display: inline-block;
 }
 .notifications {
   margin: 1em 0;
 
+}
+
+.collection-drag-handle {
+  font-size: 1.2em;
+  padding-top:.1em;
+  padding-right:.3em;
+}
+
+.collection-edit-button {
+  border: none;
 }

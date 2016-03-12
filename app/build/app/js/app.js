@@ -105,12 +105,14 @@ angular.module('media_manager').controller('ListController', [
     'CollectionBehavior',
     'AppConfig',
     'Breadcrumbs',
+    'Collection',
     function(
     $scope,
     CourseCache,
     CollectionBehavior,
     AppConfig,
-    Breadcrumbs) {
+    Breadcrumbs,
+    Collection) {
         var lc = this;
 
         Breadcrumbs.home();
@@ -123,7 +125,17 @@ angular.module('media_manager').controller('ListController', [
         lc.isLoadingCollections = CourseCache.isLoadingCollections;
 
         lc.dragControlListeners = {
+          orderChanged: function(event){
 
+            lc.collections.forEach(function(item, index, arr){
+              var newsort = index + 1;
+              if(item.sort_order !== newsort){
+                arr[index].sort_order = newsort;
+                Collection.update({id: item.id}, arr[index]);
+              }
+            });
+
+          }
         };
 
     }
@@ -380,77 +392,6 @@ angular.module('media_manager')
   }));
   
   //$(document).scroll(wc.onDocumentScroll);
-}]);
-
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
-    }
-
 }]);
 
 angular.module('media_manager').service('AppConfig', function() {
@@ -894,3 +835,74 @@ angular.module('media_manager').service('Notifications', function() {
     };
     return notify;
 });
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
+
+}]);
