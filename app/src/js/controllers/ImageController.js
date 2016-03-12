@@ -29,6 +29,14 @@ angular.module('media_manager')
       resetBreadcrumb();
     }
   });
+  ic.save = function(){
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
 
   ic.save = function(){
 

@@ -13,6 +13,7 @@ angular.module('media_manager')
                                     'ImageLightBox',
                                     'Breadcrumbs',
                                     'Notifications',
+                                    'Preferences',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -28,6 +29,7 @@ angular.module('media_manager')
                                       ImageLightBox,
                                       Breadcrumbs,
                                       Notifications,
+                                      Preferences,
                                       AppConfig){
 
 
@@ -74,20 +76,6 @@ angular.module('media_manager')
 
   wc.removeFromCollection = function(imageIndex){
     wc.collection.images.splice(imageIndex, 1);
-  };
-
-  wc.canDeleteCollection = function() {
-    return wc.collection.id ? true : false;
-  };
-
-  wc.deleteCollection = function() {
-    var collection_id = wc.collection.id;
-    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
-    deletePromise.then(function(result) {
-      $location.path('/collections/');
-    }, function(result) {
-      $log.debug("error deleting collection", collection_id);
-    });
   };
 
   wc.cancelCollection = function() {
@@ -182,12 +170,22 @@ angular.module('media_manager')
       }
     };
   })();
+  
+  wc.onClickSortLibrary = function($event, choice) {
+    $event.preventDefault();
+    wc.sortLibrary(choice);
+  };
+
+  wc.sortLibrary = function(choice) {
+    CourseCache.updateSort(choice.name, choice.dir).sortImages();
+  };
 
 
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
 
+  wc.layout = Preferences.get(Preferences.UI_WORKSPACE_LAYOUT);
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
@@ -198,7 +196,15 @@ angular.module('media_manager')
   wc.canEdit = AppConfig.perms.edit;
   wc.filesToUpload = 0;
   wc.notifications = Notifications;
+  wc.sortChoices = [
+    {'label': 'Newest to Oldest', 'name': 'created', 'dir': 'desc'},
+    {'label': 'Oldest to Newest', 'name': 'created', 'dir': 'asc'},
+    //{'label': 'Last Updated', 'name': 'updated', 'dir': 'desc'},
+    {'label': 'Title', 'name': 'title', 'dir': 'asc'},
+  ];
   
+  wc.sortLibrary(wc.sortChoices[0]);
+
   wc.notifications.clear();
   
   $scope.$on('$dropletReady', Droplet.onReady);
@@ -217,14 +223,18 @@ angular.module('media_manager')
   $scope.$on('$dropletSuccess', Droplet.onSuccess(function(event, response, files) {
       if (angular.isArray(response)) {
         for(var i = 0; i < response.length; i++) {
-          CourseCache.images.push(response[i]);
+          CourseCache.addImage(response[i]);
         }
       } else {
-        CourseCache.images.push(response);
+        CourseCache.addImage(response);
       }
       wc.filesToUpload = Droplet.getTotalValid();
       wc.notifications.clear().success("Images uploaded successfully");
   }));
+
+  $scope.$watch('wc.layout', function(newVal, oldVal) {
+    Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
+  })
   
   //$(document).scroll(wc.onDocumentScroll);
 }]);

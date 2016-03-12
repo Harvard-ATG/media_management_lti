@@ -15,12 +15,12 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controllerAs: 'wc'
   })
   .when('/collections', {
-    templateUrl: "/static/app/templates/collectionList.html",
-    controller: 'ListController',
+    templateUrl: "/static/app/templates/collections.html",
+    controller: 'CollectionsController',
     controllerAs: 'lc'
   })
   .when('/mirador/:collectionId', {
-    templateUrl: "/static/app/templates/miradorView.html",
+    templateUrl: "/static/app/templates/mirador.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
   })
@@ -28,78 +28,27 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     templateUrl: "/static/app/templates/image.html",
     controller: 'ImageController',
     controllerAs: 'ic'
-  });
-}]).run(function($http) {
-  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+  })
+  .when('/error/:errorCode', {
+    templateUrl: "/static/app/templates/error.html",
+    controller: 'ErrorController',
+    controllerAs: 'er'
+  })
+}])
+.filter("asDate", function () {
+    return function (input) {
+        return new Date(input);
+    }
 })
+.run(function($http) {
+  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+});
 
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
-    var br = this;
     $scope.crumbs = Breadcrumbs.crumbs;
 }]);
-angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
-  var ic = this;
 
-  ic.imageBehavior = ImageBehavior;
-  ic.CourseCache = CourseCache;
-  ic.image = CourseCache.getImageById($routeParams.imageId);
-  ic.index = 0;
-  CourseCache.images.forEach(function(img, index){
-    if(img.id == $routeParams.imageId){
-      ic.image = img;
-      ic.index = index;
-    }
-  });
-
-  var crumbed = false;
-  var resetBreadcrumb = function(){
-    if(crumbed){
-      Breadcrumbs.popCrumb();
-    }
-    Breadcrumbs.addCrumb("Image " + CourseCache.current_image.id, $location.url());
-    crumbed = true;
-  }
-
-  $scope.$watch(function watch(scope){
-    return CourseCache.current_image;
-  }, function handleChange(newval, oldval){
-    if(newval.id != oldval.id){
-      resetBreadcrumb();
-    }
-  });
-
-  ic.save = function(){
-
-    var image = CourseCache.current_image;
-    Image.update({}, image, function success(data){
-
-    }, function failure(errorResponse) {
-      $log.debug("error updating image:", errorResponse);
-    });
-  };
-
-  ic.next = function(){
-    if(ic.index + 1 < CourseCache.images.length){
-      ic.index++;
-      ic.image = CourseCache.images[ic.index];
-      CourseCache.current_image = CourseCache.images[ic.index];
-      resetBreadcrumb();
-    }
-  };
-
-  ic.prev = function(){
-    if(ic.index > 0){
-      ic.index--;
-      ic.image = CourseCache.images[ic.index];
-      CourseCache.current_image = CourseCache.images[ic.index];
-      resetBreadcrumb();
-    }
-  }
-
-}]);
-
-angular.module('media_manager').controller('ListController', [
+angular.module('media_manager').controller('CollectionsController', [
     '$scope',
     'CourseCache',
     'CollectionBehavior',
@@ -141,6 +90,87 @@ angular.module('media_manager').controller('ListController', [
     }
 ]);
 
+angular.module('media_manager').controller('ErrorController', ['$scope', '$routeParams', function($scope, $routeParams) {
+    var errorCodes = {
+        1: "Your session has expired. Please re-launch the tool." // access token expired
+    };
+    var code = $routeParams.errorCode;
+    var msg = (code in errorCodes) ? errorCodes[code] : null;
+
+    $scope.errorCode = code;
+    $scope.errorMsg = msg;
+}]);
+
+angular.module('media_manager')
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
+  var ic = this;
+
+  ic.imageBehavior = ImageBehavior;
+  ic.CourseCache = CourseCache;
+  ic.image = CourseCache.getImageById($routeParams.imageId);
+  ic.index = 0;
+  CourseCache.images.forEach(function(img, index){
+    if(img.id == $routeParams.imageId){
+      ic.image = img;
+      ic.index = index;
+    }
+  });
+
+  var crumbed = false;
+  var resetBreadcrumb = function(){
+    if(crumbed){
+      Breadcrumbs.popCrumb();
+    }
+    Breadcrumbs.addCrumb("Image " + CourseCache.current_image.id, $location.url());
+    crumbed = true;
+  }
+
+  $scope.$watch(function watch(scope){
+    return CourseCache.current_image;
+  }, function handleChange(newval, oldval){
+    if(newval.id != oldval.id){
+      resetBreadcrumb();
+    }
+  });
+  ic.save = function(){
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
+
+  ic.save = function(){
+
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
+
+  ic.next = function(){
+    if(ic.index + 1 < CourseCache.images.length){
+      ic.index++;
+      ic.image = CourseCache.images[ic.index];
+      CourseCache.current_image = CourseCache.images[ic.index];
+      resetBreadcrumb();
+    }
+  };
+
+  ic.prev = function(){
+    if(ic.index > 0){
+      ic.index--;
+      ic.image = CourseCache.images[ic.index];
+      CourseCache.current_image = CourseCache.images[ic.index];
+      resetBreadcrumb();
+    }
+  }
+
+}]);
+
 angular.module('media_manager').controller('MiradorController', [
     '$scope',
     '$routeParams',
@@ -163,6 +193,10 @@ function(
     
     Breadcrumbs.home().addCrumb("Mirador", $location.url());
 }]);
+angular.module('media_manager').controller('NotificationsController', ['$rootScope', '$scope', 'Notifications', function($rootScope, $scope, Notifications) {
+    $scope.notifications = Notifications;
+}]);
+
 angular.module('media_manager')
 .controller('WorkspaceController', ['$scope',
                                     '$timeout',
@@ -178,6 +212,7 @@ angular.module('media_manager')
                                     'ImageLightBox',
                                     'Breadcrumbs',
                                     'Notifications',
+                                    'Preferences',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -193,6 +228,7 @@ angular.module('media_manager')
                                       ImageLightBox,
                                       Breadcrumbs,
                                       Notifications,
+                                      Preferences,
                                       AppConfig){
 
 
@@ -239,20 +275,6 @@ angular.module('media_manager')
 
   wc.removeFromCollection = function(imageIndex){
     wc.collection.images.splice(imageIndex, 1);
-  };
-
-  wc.canDeleteCollection = function() {
-    return wc.collection.id ? true : false;
-  };
-
-  wc.deleteCollection = function() {
-    var collection_id = wc.collection.id;
-    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
-    deletePromise.then(function(result) {
-      $location.path('/collections/');
-    }, function(result) {
-      $log.debug("error deleting collection", collection_id);
-    });
   };
 
   wc.cancelCollection = function() {
@@ -347,12 +369,22 @@ angular.module('media_manager')
       }
     };
   })();
+  
+  wc.onClickSortLibrary = function($event, choice) {
+    $event.preventDefault();
+    wc.sortLibrary(choice);
+  };
+
+  wc.sortLibrary = function(choice) {
+    CourseCache.updateSort(choice.name, choice.dir).sortImages();
+  };
 
 
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
 
+  wc.layout = Preferences.get(Preferences.UI_WORKSPACE_LAYOUT);
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
@@ -363,7 +395,15 @@ angular.module('media_manager')
   wc.canEdit = AppConfig.perms.edit;
   wc.filesToUpload = 0;
   wc.notifications = Notifications;
+  wc.sortChoices = [
+    {'label': 'Newest to Oldest', 'name': 'created', 'dir': 'desc'},
+    {'label': 'Oldest to Newest', 'name': 'created', 'dir': 'asc'},
+    //{'label': 'Last Updated', 'name': 'updated', 'dir': 'desc'},
+    {'label': 'Title', 'name': 'title', 'dir': 'asc'},
+  ];
   
+  wc.sortLibrary(wc.sortChoices[0]);
+
   wc.notifications.clear();
   
   $scope.$on('$dropletReady', Droplet.onReady);
@@ -382,16 +422,91 @@ angular.module('media_manager')
   $scope.$on('$dropletSuccess', Droplet.onSuccess(function(event, response, files) {
       if (angular.isArray(response)) {
         for(var i = 0; i < response.length; i++) {
-          CourseCache.images.push(response[i]);
+          CourseCache.addImage(response[i]);
         }
       } else {
-        CourseCache.images.push(response);
+        CourseCache.addImage(response);
       }
       wc.filesToUpload = Droplet.getTotalValid();
       wc.notifications.clear().success("Images uploaded successfully");
   }));
+
+  $scope.$watch('wc.layout', function(newVal, oldVal) {
+    Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
+  })
   
   //$(document).scroll(wc.onDocumentScroll);
+}]);
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
+
 }]);
 
 angular.module('media_manager').service('AppConfig', function() {
@@ -462,7 +577,7 @@ angular.module('media_manager')
         var deferredDelete = $q.defer();
         var modalInstance = $uibModal.open({
             animation: false,
-            templateUrl: '/static/app/templates/confirmDelete.html',
+            templateUrl: '/static/app/templates/modalConfirmDelete.html',
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var collection = CourseCache.getCollectionById(id);
@@ -516,13 +631,35 @@ angular.module('media_manager')
   this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
   this.isLoadingImages = {"status": false, "msg": "Loading images..."};
   this.isLoading = {"status": false, "msg": "Loading..."};
+  this.compareImages = null;
+  this.sortType = null;
 
+  this.addImage = function(image_object) {
+    this.images.push(image_object);
+    this.sortImages();
+  };
+  this.removeImage = function(image_id) {
+    var remove_at_idx = -1;
+    for(var i = 0, images = this.images, len = this.images.length; i < len; i++) {
+        if (images[i].id == image_id) {
+            remove_at_idx = i;
+            break;
+        }
+    }
+    if (remove_at_idx >= 0) {
+        this.current_image = this.getPrevImage(image_id);
+        this.images.splice(remove_at_idx, 1);
+        return true;
+    }
+    return false;
+  };
   this.loadImages = function() {
     var self = this;
     this.isLoading.status = true;
     this.isLoadingImages.status = true;
     this.images = Course.getImages({id: AppConfig.course_id});
     this.images.$promise.then(function(images) {
+      self.sortImages();
       self.current_image = images[0];
       self.isLoadingImages.status = false;
       self.isLoading.status = false || self.isLoadingCollections.status;
@@ -572,6 +709,72 @@ angular.module('media_manager')
           return this.images[0];
         }
       }
+    }
+    return null;
+  };
+  this.updateSort = function(sortType, sortDir) {
+    var make_numeric_compare = function(prop, dir) {
+      return function(a, b) {
+        var a_num = Number(a[prop]);
+        var b_num = Number(b[prop]);
+        if (isNaN(a_num) || isNaN(b_num)) {
+          return 0;
+        }
+        return dir ? a_num - b_num : b_num - a_num;
+      };
+    };
+    var make_date_compare = function(prop, dir) {
+      return function(a, b) {
+        var a_date = Date.parse(a[prop]);
+        var b_date = Date.parse(b[prop]);
+        if (isNaN(a_date) || isNaN(b_date)) {
+          return 0;
+        }
+        return dir ? a_date - b_date : b_date - a_date;
+      };
+    };
+    var make_str_compare = function(prop, dir) {
+      return function(a, b) {
+        var a_str = a[prop].toLowerCase().trim();
+        var b_str = b[prop].toLowerCase().trim();
+        if (a_str == b_str) {
+          return 0;
+        }
+        return dir ? (a_str < b_str ? -1 : 1) : (b_str < a_str ? -1 : 1);
+      };
+    };
+    var lookup_sort = {
+      "created": function(dir) {
+        return make_date_compare("created", dir);
+      },
+      "updated": function(dir) {
+        return make_date_compare("updated", dir);
+      },
+      "title": function(dir) {
+        return make_str_compare("title", dir);
+      },
+      "sort_order": function(dir) {
+        return make_numeric_compare("sort_order", dir);
+      }
+    };
+
+    if (!lookup_sort.hasOwnProperty(sortType)) {
+      throw "Invalid sort type: " + sortType;
+    }
+    if (sortDir != "asc" && sortDir != "desc") {
+      throw "Invalid sort dir: " + sortDir;
+    }
+
+    this.sortType = sortType;
+    this.compareImages = lookup_sort[sortType](sortDir == "asc" ? true : false);
+    
+    
+    return this;
+  };
+  this.sortImages = function() {
+    var compare = this.compareImages;
+    if (compare) {
+      this.images.sort(compare);
     }
   };
 }]);
@@ -678,7 +881,11 @@ angular.module('media_manager')
 .factory('Image', ['$resource', 'AppConfig', function($resource, AppConfig){
   var host = AppConfig.media_management_api_url;
   return $resource(host + '/images/:id',
-    { id: '@id'}
+    { id: '@id'}, {
+      'update': {
+        method:'PUT'
+      }
+    }
   );
 }]);
 
@@ -689,19 +896,7 @@ angular.module('media_manager')
     service.actuallyDeleteImage = function(id) {
         var image = new Image({ id: id });
         return image.$delete(function() {
-            var remove_at_idx = -1;
-            var images = CourseCache.images;
-            for(var idx = 0; idx < images.length; idx++) {
-                if (images[idx].id == id) {
-                    remove_at_idx = idx;
-                    break;
-                }
-            }
-            if (remove_at_idx >= 0) {
-                $log.debug("removing image id ", id, " from cache at index", remove_at_idx);
-                images.splice(remove_at_idx, 1);
-                CourseCache.current_image = CourseCache.getPrevImage(id);
-            }
+            CourseCache.removeImage(id);
         });
     };
 
@@ -709,13 +904,11 @@ angular.module('media_manager')
         var deferredDelete = $q.defer();
         var modalInstance = $uibModal.open({
             animation: false,
-            templateUrl: '/static/app/templates/confirmDelete.html',
+            templateUrl: '/static/app/templates/modalConfirmDelete.html',
             controller: ['$scope', function($scope) {
                 var cd = this;
-                console.log("id: " + id);
-                console.log(CourseCache.images);
                 var image = CourseCache.getImageById(id);
-                console.log(image);
+                console.log("id:", id, "image:", image, "images:", CourseCache.images);
                 cd.confirm_msg = "Are you sure you want to delete image " + image.title + " (ID:" + image.id + ")? ";
                 cd.ok = function() {
                     var deletePromise = service.actuallyDeleteImage(id);
@@ -836,73 +1029,57 @@ angular.module('media_manager').service('Notifications', function() {
     return notify;
 });
 
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
+angular.module('media_manager').service('Preferences', function() {
+    var pr = this;
+    var default_prefs = {
+        ui: {
+            workspace: {
+                layout: "gallery"
+            }
+        }
+    };
+    
+    pr.prefs = default_prefs;
+    pr.UI_WORKSPACE_LAYOUT = "ui.workspace.layout";
+    
+    // Returns the value for a given key.
+    pr.get = function(key) {
+        var val, path, i;
+        if (typeof key == "undefined") {
+            return pr.prefs;
         }
 
-    }
+        if (key.indexOf('.') == -1) {
+            val = pr.prefs[key];
+        } else {
+            for(path = key.split('.'), val = pr.prefs[path[0]], i = 1; i < path.length; i++) {
+                if (!val.hasOwnProperty(path[i])) {
+                    throw "Error looking up preference. No such key exists: " + key;
+                }
+                val = val[path[i]];
+            }
+        }
+        return val;
+    };
+    
+    // Sets the value for a given key.
+    pr.set = function(key, value) {
+        var path, obj, i, k;
+        if (typeof key == "undefined") {
+            throw "Error setting preference key/value. Key parameter is *required*."
+        }
 
-}]);
+        if (key.indexOf('.') == -1) {
+            pr.prefs[key] = value;
+        } else {
+            path = key.split('.');
+            obj = pr.prefs;
+            for(i = 0; i < path.length - 1; i++) {
+                k = path[i];
+                obj = obj[k] || {};
+            }
+            obj[path[path.length-1]] = value;
+        }
+    };
+    
+});

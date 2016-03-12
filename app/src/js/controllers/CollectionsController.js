@@ -1,4 +1,4 @@
-angular.module('media_manager').controller('ListController', [
+angular.module('media_manager').controller('CollectionsController', [
     '$scope',
     'CourseCache',
     'CollectionBehavior',

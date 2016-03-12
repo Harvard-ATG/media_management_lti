@@ -1,12 +1,56 @@
+body {
+  /*margin-top: -5em; /* adding margin-top to use vertical empty area in iframe */
+  padding-top: 0;
+  margin-left: .5em;
+}
+.content {
+  position: relative;
+  top: 76px;
+}
+.header-bar {
+  margin: 20px 0;
+}
+
+.breadcrumb {
+  margin-bottom: 0px;
+}
+.image-collection-fixed {
+  position: fixed;
+  left: 15px;
+  top: 0;
+  right: 0;
+  z-index: 100;
+}
+.image-collection-fixed .panel-body {
+  height: 130px;
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+#image-collection-panel .panel-body {
+  position: relative;
+  min-height: 100px;
+}
+.collection-drag-handle {
+  font-size: 1.2em;
+  padding-top:.1em;
+  padding-right:.3em;
+}
+
+.collection-edit-button {
+  border: none;
+}
+
 /*
  * Base structure
  */
 
-/* Move down content because we have a fixed navbar that is 50px tall */
+/* Move down content because we have a fixed navbar that is 50px tall 
 body {
   padding-top: 50px;
 }
-
+*/
 
 /*
  * Global add-ons
@@ -231,7 +275,7 @@ section.droplet droplet.event-dragover comment:after {
     content: "...And Drop!";
 }
 
-section.droplet droplet ul.files {
+ul.files {
     /*height: 100%;*/
     width: 100%;
     overflow-y: auto;
@@ -259,7 +303,7 @@ section.droplet.uploading droplet ul.files {
     pointer-events: none;
 }
 
-section.droplet droplet ul.files li {
+ul.files li {
     width: 100px;
     height: 100px;
     padding: 1px;
@@ -529,70 +573,32 @@ section.droplet input.droplet-multiple {
     margin-top: 5px;
 }
 
-.content {
-  position: relative;
-  top: 76px;
-}
-a.unlink {
-  color: inherit;
-}
-a.unlink:hover {
-  color: inherit;
-  text-decoration: none;
-  cursor: pointer;
-}
-button.btn-unstyled {
-  border: none;
-  background: none;
-}
-.header-bar {
-  margin: 20px 0;
-}
-.breadcrumb {
-  margin-bottom: 0px;
-}
-.image-library {
-
-}
-.image-collection-fixed {
-  position: fixed;
-  left: 15px;
-  top: 0;
-  right: 0;
-  z-index: 100;
-}
-.image-collection-fixed .panel-body {
-  height: 130px;
+table.files {
+  border-collapse: collapse;
   width: 100%;
-  white-space: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
 }
-#image-collection-panel .panel-body {
-  position: relative;
-  min-height: 100px;
+table.files thead {
+  border-bottom: 1px solid #ccc;
 }
-.drag-and-drop-overlay {
+table.files th, table.files td {
+  padding: 5px;
+}
+table.files tr:hover {
+  background-color: #efefef;
+}
+table.files td > button {
+  margin-left: 10px;
+}
+.library-drag-area {
   position: absolute;
   top: 30%;
   left: 40%;
   z-index: 0;
   font-size: 36px;
   color: #fff;
-  opacity: .8;
   display: inline-block;
 }
+
 .notifications {
   margin: 1em 0;
-
-}
-
-.collection-drag-handle {
-  font-size: 1.2em;
-  padding-top:.1em;
-  padding-right:.3em;
-}
-
-.collection-edit-button {
-  border: none;
 }

@@ -1,0 +1,25 @@
+table.files {
+  border-collapse: collapse;
+  width: 100%;
+}
+table.files thead {
+  border-bottom: 1px solid #ccc;
+}
+table.files th, table.files td {
+  padding: 5px;
+}
+table.files tr:hover {
+  background-color: #efefef;
+}
+table.files td > button {
+  margin-left: 10px;
+}
+.library-drag-area {
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  z-index: 0;
+  font-size: 36px;
+  color: #fff;
+  display: inline-block;
+}
