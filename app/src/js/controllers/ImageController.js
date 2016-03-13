@@ -47,6 +47,12 @@ angular.module('media_manager')
       CourseCache.current_image = CourseCache.images[ic.index];
       resetBreadcrumb();
     }
-  }
+  };
+
+  ic.newLabel = '';
+  ic.newValue = '';
+  ic.saveMeta = function(){
+    ic.image.metadata.push({'label': ic.newLabel})
+  };
 
 }]);
