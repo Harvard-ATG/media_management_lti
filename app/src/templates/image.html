@@ -4,12 +4,17 @@
     <h3 class="modal-title"><span editable-text="ic.CourseCache.current_image.title" onbeforesave="ic.save()">{{ ic.CourseCache.current_image.title || "Click to add a Title" }}</span></h3>
     <pp><span editable-text="ic.CourseCache.current_image.description" onbeforesave="ic.save()">{{ ic.CourseCache.current_image.description || "Click to add a Description" }}</span></pp>
     <ul class="list-unstyled">
-      <li ng-repeat="meta in ic.metadata track by $index">
-        {{ meta.label }}: {{ meta.value }}
+      <li ng-repeat="meta in ic.image.metadata track by $index">
+        <strong editable-text="meta.label" onbeforesave="">{{ meta.label }}</strong>:
+        <span editable-text="meta.value" onbeforesave="">{{ meta.value || "No Value" }}</span>
       </li>
-      <li>
-        <strong editable-text="ic.newLabel" onbeforesave="ic.saveMeta()">{{ ic.newLabel || "New Label" }}</strong>:
-        <span editable-text="ic.newValue" onbeforesave="ic.saveMeta()">{{ ic.newValue || "New Value" }}</span>
+      <li ng-hide="ic.editNewMetadata">
+        <button class="btn btn-link" ng-click="ic.showNewMetadata()">New Metadata</button>
+      </li>
+      <li ng-show="ic.editNewMetadata">
+        <form ng-submit="ic.saveMetadata()">
+          <input type="text" ng-model="ic.newLabel"/>: <input type="text" ng-model="ic.newValue"/> <button class="btn btn-default" type="submit">save</button>
+        </form>
       </li>
     </ul>
     <div>

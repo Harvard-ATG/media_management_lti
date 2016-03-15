@@ -5,6 +5,7 @@ angular.module('media_manager')
   ic.imageBehavior = ImageBehavior;
   ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
+
   ic.index = 0;
   CourseCache.images.forEach(function(img, index){
     if(img.id == $routeParams.imageId){
@@ -51,8 +52,30 @@ angular.module('media_manager')
 
   ic.newLabel = '';
   ic.newValue = '';
-  ic.saveMeta = function(){
-    ic.image.metadata.push({'label': ic.newLabel})
+  ic.saveMetadata = function(label){
+    if(label){
+
+    } else {
+      if(ic.newLabel){
+        if(ic.image.metadata == null) {
+          ic.image.metadata = [];
+        }
+        ic.image.metadata.push({'label': ic.newLabel, 'value': ic.newValue});
+        Image.update({}, ic.image, function success(data){
+          ic.newLabel = '';
+          ic.newValue = '';
+          ic.editNewMetadata = false;
+        }, function failure(errorResponse) {
+          $log.debug("error updating image:", errorResponse);
+          ic.image.metadata.pop();
+        });
+      }
+    }
+  };
+
+  ic.editNewMetadata = false;
+  ic.showNewMetadata = function(){
+    ic.editNewMetadata = true;
   };
 
 }]);
