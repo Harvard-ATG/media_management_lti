@@ -91,6 +91,7 @@ angular.module('media_manager')
   ic.imageBehavior = ImageBehavior;
   ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
+
   ic.index = 0;
   CourseCache.images.forEach(function(img, index){
     if(img.id == $routeParams.imageId){
@@ -133,7 +134,45 @@ angular.module('media_manager')
       CourseCache.current_image = CourseCache.images[ic.index];
       resetBreadcrumb();
     }
-  }
+  };
+
+  ic.newLabel = '';
+  ic.newValue = '';
+  ic.saveMetadata = function(label, value){
+    if(label !== undefined && value !== undefined){
+      ic.image.metadata.forEach(function(item, index, arr){
+        if(item.label == label){
+          arr[index].label = label;
+          arr[index].value = value;
+          Image.update({}, ic.image, function success(data){
+
+          }, function failure(errorResponse){
+            $log.debug("error updating image:", errorResponse);
+          });
+        }
+      });
+    } else {
+      if(ic.newLabel){
+        if(ic.image.metadata == null) {
+          ic.image.metadata = [];
+        }
+        ic.image.metadata.push({'label': ic.newLabel, 'value': ic.newValue});
+        Image.update({}, ic.image, function success(data){
+          ic.newLabel = '';
+          ic.newValue = '';
+          ic.editNewMetadata = false;
+        }, function failure(errorResponse) {
+          $log.debug("error updating image:", errorResponse);
+          ic.image.metadata.pop();
+        });
+      }
+    }
+  };
+
+  ic.editNewMetadata = false;
+  ic.showNewMetadata = function(){
+    ic.editNewMetadata = true;
+  };
 
 }]);
 
@@ -590,7 +629,7 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
-.service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
+.service('CourseCache', ['Course', 'AppConfig', 'Image', function(Course, AppConfig, Image){
   this.images = [];
   this.collections = [];
   this.current_image = {};
@@ -659,6 +698,9 @@ angular.module('media_manager')
   };
   this.getImageById = function(id){
     var that = this;
+    if(that.images.length === 0){
+      that.current_image = Image.get({id: id});
+    }
     this.images.forEach(function(item){
       if(item.id == id){
         that.current_image = item;
@@ -733,8 +775,8 @@ angular.module('media_manager')
 
     this.sortType = sortType;
     this.compareImages = lookup_sort[sortType](sortDir == "asc" ? true : false);
-    
-    
+
+
     return this;
   };
   this.sortImages = function() {
