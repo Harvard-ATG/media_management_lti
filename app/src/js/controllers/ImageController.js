@@ -23,7 +23,24 @@ angular.module('media_manager')
     crumbed = true;
   }
 
+  $scope.$watch(function watch(scope){
+    return CourseCache.current_image;
+  }, function handleChange(newval, oldval){
+    if(newval.id != oldval.id){
+      resetBreadcrumb();
+    }
+  });
   ic.save = function(){
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
+
+  ic.save = function(){
+
     var image = CourseCache.current_image;
     Image.update({}, image, function success(data){
 

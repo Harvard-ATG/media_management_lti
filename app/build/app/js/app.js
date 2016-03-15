@@ -1,4 +1,4 @@
-angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner'])
+angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable'])
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
@@ -54,12 +54,16 @@ angular.module('media_manager').controller('CollectionsController', [
     'CollectionBehavior',
     'AppConfig',
     'Breadcrumbs',
+    'Collection',
+    '$q',
     function(
     $scope,
     CourseCache,
     CollectionBehavior,
     AppConfig,
-    Breadcrumbs) {
+    Breadcrumbs,
+    Collection,
+    $q) {
         var lc = this;
 
         Breadcrumbs.home();
@@ -70,6 +74,34 @@ angular.module('media_manager').controller('CollectionsController', [
         lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
         lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
         lc.isLoadingCollections = CourseCache.isLoadingCollections;
+
+        var dragEnabled = true;
+        lc.dragControlListeners = {
+          accept: function (sourceItemHandleScope, destSortableScope) {
+            return dragEnabled;
+          },
+          orderChanged: function(event){
+            // disable ordering
+            dragEnabled = false;
+
+            var updates = [];
+            lc.collections.forEach(function(item, index, arr){
+              var d = $q.defer();
+              var newsort = index + 1;
+              if(item.sort_order != newsort){
+                arr[index].sort_order = newsort;
+                updates.push(Collection.update({id: item.id}, arr[index]).$promise);
+
+              }
+            });
+            $q.all(updates).then(function(){
+              // enable ordering
+              dragEnabled = true;
+            });
+
+          }
+        };
+
     }
 ]);
 
@@ -109,7 +141,24 @@ angular.module('media_manager')
     crumbed = true;
   }
 
+  $scope.$watch(function watch(scope){
+    return CourseCache.current_image;
+  }, function handleChange(newval, oldval){
+    if(newval.id != oldval.id){
+      resetBreadcrumb();
+    }
+  });
   ic.save = function(){
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
+
+  ic.save = function(){
+
     var image = CourseCache.current_image;
     Image.update({}, image, function success(data){
 
