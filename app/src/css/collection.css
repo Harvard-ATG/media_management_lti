@@ -16,3 +16,12 @@
   position: relative;
   min-height: 100px;
 }
+.collection-drag-handle {
+  font-size: 1.2em;
+  padding-top:.1em;
+  padding-right:.3em;
+}
+
+.collection-edit-button {
+  border: none;
+}
