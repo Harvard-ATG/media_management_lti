@@ -5,8 +5,8 @@
     <pp><span editable-text="ic.CourseCache.current_image.description" onbeforesave="ic.save()">{{ ic.CourseCache.current_image.description || "Click to add a Description" }}</span></pp>
     <ul class="list-unstyled">
       <li ng-repeat="meta in ic.image.metadata track by $index">
-        <strong editable-text="meta.label" onbeforesave="ic.saveMetadata(meta.label, meta.value)">{{ meta.label || "No Value" }}</strong>:
-        <span editable-text="meta.value" onbeforesave="ic.saveMetadata(meta.label, meta.value)">{{ meta.value || "No Value" }}</span>
+        <strong editable-text="meta.label" onbeforesave="ic.saveMetadata(meta.label, meta.value, $index)">{{ meta.label || "No Value" }}</strong>:
+        <span editable-text="meta.value" onbeforesave="ic.saveMetadata(meta.label, meta.value, $index)">{{ meta.value || "No Value" }}</span>
       </li>
       <li ng-hide="ic.editNewMetadata">
         <button class="btn btn-link" ng-click="ic.showNewMetadata()">New Metadata</button>
