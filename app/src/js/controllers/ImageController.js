@@ -60,7 +60,11 @@ angular.module('media_manager')
   ic.newLabel = '';
   ic.newValue = '';
   ic.saveMetadata = function(label, value, index){
-    if(index == undefined){
+    console.log("saveMetadata");
+    if(index !== undefined){
+      console.log(index);
+      console.log(ic.image.metadata);
+
       ic.image.metadata[index].label = label;
       ic.image.metadata[index].value = value;
       Image.update({}, ic.image, function success(data){
@@ -70,6 +74,7 @@ angular.module('media_manager')
       });
 
     } else {
+
       if(ic.newLabel){
         if(ic.image.metadata == null) {
           ic.image.metadata = [];
