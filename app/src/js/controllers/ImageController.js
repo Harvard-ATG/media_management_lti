@@ -60,13 +60,15 @@ angular.module('media_manager')
   ic.newLabel = '';
   ic.newValue = '';
   ic.saveMetadata = function(label, value, index){
-    console.log("saveMetadata");
     if(index !== undefined){
-      console.log(index);
-      console.log(ic.image.metadata);
 
-      ic.image.metadata[index].label = label;
-      ic.image.metadata[index].value = value;
+      if(label === '' && value === ''){
+        ic.image.metadata.splice(index, 1);
+      } else {
+        ic.image.metadata[index].label = label;
+        ic.image.metadata[index].value = value;
+      }
+
       Image.update({}, ic.image, function success(data){
 
       }, function failure(errorResponse){
@@ -96,5 +98,10 @@ angular.module('media_manager')
   ic.showNewMetadata = function(){
     ic.editNewMetadata = true;
   };
+
+  ic.deleteMetadata = function(index, form){
+    ic.saveMetadata('', '', index);
+    form.$cancel();
+  }
 
 }]);
