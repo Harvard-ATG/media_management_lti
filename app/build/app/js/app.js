@@ -1,4 +1,7 @@
 angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable'])
+.run(function(editableOptions){
+  editableOptions.theme = 'bs3';
+})
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
@@ -157,16 +160,6 @@ angular.module('media_manager')
     });
   };
 
-  ic.save = function(){
-
-    var image = CourseCache.current_image;
-    Image.update({}, image, function success(data){
-
-    }, function failure(errorResponse) {
-      $log.debug("error updating image:", errorResponse);
-    });
-  };
-
   ic.next = function(){
     if(ic.index + 1 < CourseCache.images.length){
       ic.index++;
@@ -187,20 +180,24 @@ angular.module('media_manager')
 
   ic.newLabel = '';
   ic.newValue = '';
-  ic.saveMetadata = function(label, value){
-    if(label !== undefined && value !== undefined){
-      ic.image.metadata.forEach(function(item, index, arr){
-        if(item.label == label){
-          arr[index].label = label;
-          arr[index].value = value;
-          Image.update({}, ic.image, function success(data){
+  ic.saveMetadata = function(label, value, index){
+    if(index !== undefined){
 
-          }, function failure(errorResponse){
-            $log.debug("error updating image:", errorResponse);
-          });
-        }
+      if(label === '' && value === ''){
+        ic.image.metadata.splice(index, 1);
+      } else {
+        ic.image.metadata[index].label = label;
+        ic.image.metadata[index].value = value;
+      }
+
+      Image.update({}, ic.image, function success(data){
+
+      }, function failure(errorResponse){
+        $log.debug("error updating image:", errorResponse);
       });
+
     } else {
+
       if(ic.newLabel){
         if(ic.image.metadata == null) {
           ic.image.metadata = [];
@@ -222,6 +219,14 @@ angular.module('media_manager')
   ic.showNewMetadata = function(){
     ic.editNewMetadata = true;
   };
+  ic.hideNewMetadata = function(){
+    ic.editNewMetadata = false;  
+  };
+
+  ic.deleteMetadata = function(index, form){
+    ic.saveMetadata('', '', index);
+    form.$cancel();
+  }
 
 }]);
 
@@ -502,6 +507,22 @@ angular.module('media_manager')
     replace: true,
     template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
 
+  };
+}]);
+
+angular.module('media_manager')
+.directive('focus', ['$parse', '$timeout', function($parse, $timeout){
+  return {
+    link: function(scope, element, attrs){
+      var model = $parse(attrs.focus);
+      scope.$watch(model, function(value){
+        if(value){
+          $timeout(function(){
+            element[0].focus();
+          }, 100);
+        }
+      });
+    }
   };
 }]);
 
