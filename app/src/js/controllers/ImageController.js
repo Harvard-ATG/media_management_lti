@@ -98,6 +98,9 @@ angular.module('media_manager')
   ic.showNewMetadata = function(){
     ic.editNewMetadata = true;
   };
+  ic.hideNewMetadata = function(){
+    ic.editNewMetadata = false;  
+  };
 
   ic.deleteMetadata = function(index, form){
     ic.saveMetadata('', '', index);

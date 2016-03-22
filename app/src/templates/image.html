@@ -43,7 +43,14 @@
       </li>
       <li ng-show="ic.editNewMetadata">
         <form ng-submit="ic.saveMetadata()">
-          <input type="text" ng-model="ic.newLabel"/>: <input type="text" ng-model="ic.newValue"/> <button class="btn btn-default" type="submit">save</button>
+          <input type="text" ng-model="ic.newLabel" focus="ic.editNewMetadata"/>:
+          <input type="text" ng-model="ic.newValue"/>
+          <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-ok"></span>
+          </button>
+          <button type="button" class="btn btn-default" ng-click="ic.hideNewMetadata()">
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
         </form>
       </li>
     </ul>
