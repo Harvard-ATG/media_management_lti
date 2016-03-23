@@ -244,12 +244,13 @@ function(
     Breadcrumbs
 ) {
     var mr = this;
+
     var miradorUrl = "/mirador/:collection_id";
     miradorUrl = miradorUrl.replace(':collection_id', $routeParams.collectionId);
     
     mr.canRead = AppConfig.perms.read;
     mr.iframeSrc =  miradorUrl;
-    
+
     Breadcrumbs.home().addCrumb("Mirador", $location.url());
 }]);
 angular.module('media_manager').controller('NotificationsController', ['$rootScope', '$scope', 'Notifications', function($rootScope, $scope, Notifications) {
@@ -584,6 +585,38 @@ angular.module('media_manager')
 
 }]);
 
+angular.module('media_manager')
+.directive('resizableIframe', function () {
+
+    var calculateHeight = function(element) {
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var offsetTop = element[0].offsetTop || 0;
+        var height = windowHeight - offsetTop;
+        return height;
+    };
+
+    var resize = function(element) {
+        var height_px = calculateHeight(element) + "px";
+        element.css('height', height_px);
+    };
+
+    return {
+        // This directive automatically resizes the iframe to fill the screen.
+        link: function ($scope, element, attrs) {
+            var onResize = function() {
+                resize(element);
+            };
+
+            $(window).on('resize', onResize);
+            
+            $scope.$on('$destroy', function() {
+                $(window).off('resize', onResize);
+            });
+            
+            resize(element);
+        }
+    };
+});
 angular.module('media_manager').service('AppConfig', function() {
     this.config = window.appConfig || {};
     this.perms = this.config.perms;
