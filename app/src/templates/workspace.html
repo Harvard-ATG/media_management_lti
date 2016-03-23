@@ -8,7 +8,7 @@
         <div class="notifications" ng-show="wc.notifications.messages.length > 0" ng-repeat="message in wc.notifications.messages track by $index">
           <div class="alert alert-{{message.type}}" role="alert">{{message.content}}</div>
         </div>
-    
+
         <div class="panel panel-default" style="margin-top: 1em">
           <div class="panel-heading">
             <h3 class="panel-title">Image Library</h3>
@@ -58,7 +58,7 @@
                       </div>
                   </div>
               </div>
-              
+
               <div style="clear:both; margin-top: 10px;" ng-show="wc.courseImages.length > 0">
                   <ul class="files" ng-if="wc.layout == 'gallery'">
                     <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
@@ -101,7 +101,12 @@
 
         <div id="image-collection-panel" class="panel panel-default">
           <div class="panel-heading">
-            <h3 class="panel-title">Collection <span editable-text="wc.collection.title">{{ wc.collection.title }}</span></h3>
+            <h3 class="panel-title">Collection:
+              <button class="btn btn-sm btn-link" ng-click="collectionTitleForm.$show()" ng-hide="collectionTitleForm.$visible">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+              </button>
+              <span editable-text="wc.collection.title" e-form="collectionTitleForm">{{ wc.collection.title }}</span>
+            </h3>
           </div>
           <div class="panel-body">
             <div ng-show="wc.isLoadingCollection.status || wc.isSavingCollection.status">

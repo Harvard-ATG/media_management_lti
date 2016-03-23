@@ -5,6 +5,7 @@ angular.module('media_manager')
   ic.imageBehavior = ImageBehavior;
   ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
+
   ic.index = 0;
   CourseCache.images.forEach(function(img, index){
     if(img.id == $routeParams.imageId){
@@ -38,16 +39,6 @@ angular.module('media_manager')
     });
   };
 
-  ic.save = function(){
-
-    var image = CourseCache.current_image;
-    Image.update({}, image, function success(data){
-
-    }, function failure(errorResponse) {
-      $log.debug("error updating image:", errorResponse);
-    });
-  };
-
   ic.next = function(){
     if(ic.index + 1 < CourseCache.images.length){
       ic.index++;
@@ -64,6 +55,56 @@ angular.module('media_manager')
       CourseCache.current_image = CourseCache.images[ic.index];
       resetBreadcrumb();
     }
+  };
+
+  ic.newLabel = '';
+  ic.newValue = '';
+  ic.saveMetadata = function(label, value, index){
+    if(index !== undefined){
+
+      if(label === '' && value === ''){
+        ic.image.metadata.splice(index, 1);
+      } else {
+        ic.image.metadata[index].label = label;
+        ic.image.metadata[index].value = value;
+      }
+
+      Image.update({}, ic.image, function success(data){
+
+      }, function failure(errorResponse){
+        $log.debug("error updating image:", errorResponse);
+      });
+
+    } else {
+
+      if(ic.newLabel){
+        if(ic.image.metadata == null) {
+          ic.image.metadata = [];
+        }
+        ic.image.metadata.push({'label': ic.newLabel, 'value': ic.newValue});
+        Image.update({}, ic.image, function success(data){
+          ic.newLabel = '';
+          ic.newValue = '';
+          ic.editNewMetadata = false;
+        }, function failure(errorResponse) {
+          $log.debug("error updating image:", errorResponse);
+          ic.image.metadata.pop();
+        });
+      }
+    }
+  };
+
+  ic.editNewMetadata = false;
+  ic.showNewMetadata = function(){
+    ic.editNewMetadata = true;
+  };
+  ic.hideNewMetadata = function(){
+    ic.editNewMetadata = false;  
+  };
+
+  ic.deleteMetadata = function(index, form){
+    ic.saveMetadata('', '', index);
+    form.$cancel();
   }
 
 }]);
