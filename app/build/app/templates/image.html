@@ -4,7 +4,7 @@
     <h3 class="modal-title"><span editable-text="ic.CourseCache.current_image.title" onbeforesave="ic.save()">{{ ic.CourseCache.current_image.title || "Click to add a Title" }}</span></h3>
     <pp><span editable-text="ic.CourseCache.current_image.description" onbeforesave="ic.save()">{{ ic.CourseCache.current_image.description || "Click to add a Description" }}</span></pp>
     <div>
-      <button class="btn btn-danger pull-right" type="button" ng-click="ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id)">Delete</button>
+      <button class="btn btn-danger pull-right" type="button" ng-click="ic.deleteImage()">new Delete</button>
     </div>
 </div>
 <div class="modal-body">

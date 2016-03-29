@@ -184,6 +184,14 @@ angular.module('media_manager')
     }
   }
 
+  ic.deleteImage = function(){
+    ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
+      if(ic.index == ic.CourseCache.images.length){
+        ic.index--;
+      };
+    });
+  };
+
 }]);
 
 angular.module('media_manager').controller('MiradorController', [
@@ -953,7 +961,6 @@ angular.module('media_manager')
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var image = CourseCache.getImageById(id);
-                console.log("id:", id, "image:", image, "images:", CourseCache.images);
                 cd.confirm_msg = "Are you sure you want to delete image " + image.title + " (ID:" + image.id + ")? ";
                 cd.ok = function() {
                     var deletePromise = service.actuallyDeleteImage(id);
