@@ -10,6 +10,11 @@ body {
 .header-bar {
   margin: 20px 0;
 }
+/* this overwrites the xeditable stylized editable fields */ 
+.editable {
+  border-bottom: none;
+  color: inherit;
+}
 
 .breadcrumb {
   margin-bottom: 0px;

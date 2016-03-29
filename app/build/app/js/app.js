@@ -1,4 +1,7 @@
 angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable'])
+.run(function(editableOptions){
+  editableOptions.theme = 'bs3';
+})
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
@@ -123,6 +126,7 @@ angular.module('media_manager')
   ic.imageBehavior = ImageBehavior;
   ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
+
   ic.index = 0;
   CourseCache.images.forEach(function(img, index){
     if(img.id == $routeParams.imageId){
@@ -156,16 +160,6 @@ angular.module('media_manager')
     });
   };
 
-  ic.save = function(){
-
-    var image = CourseCache.current_image;
-    Image.update({}, image, function success(data){
-
-    }, function failure(errorResponse) {
-      $log.debug("error updating image:", errorResponse);
-    });
-  };
-
   ic.next = function(){
     if(ic.index + 1 < CourseCache.images.length){
       ic.index++;
@@ -182,6 +176,56 @@ angular.module('media_manager')
       CourseCache.current_image = CourseCache.images[ic.index];
       resetBreadcrumb();
     }
+  };
+
+  ic.newLabel = '';
+  ic.newValue = '';
+  ic.saveMetadata = function(label, value, index){
+    if(index !== undefined){
+
+      if(label === '' && value === ''){
+        ic.image.metadata.splice(index, 1);
+      } else {
+        ic.image.metadata[index].label = label;
+        ic.image.metadata[index].value = value;
+      }
+
+      Image.update({}, ic.image, function success(data){
+
+      }, function failure(errorResponse){
+        $log.debug("error updating image:", errorResponse);
+      });
+
+    } else {
+
+      if(ic.newLabel){
+        if(ic.image.metadata == null) {
+          ic.image.metadata = [];
+        }
+        ic.image.metadata.push({'label': ic.newLabel, 'value': ic.newValue});
+        Image.update({}, ic.image, function success(data){
+          ic.newLabel = '';
+          ic.newValue = '';
+          ic.editNewMetadata = false;
+        }, function failure(errorResponse) {
+          $log.debug("error updating image:", errorResponse);
+          ic.image.metadata.pop();
+        });
+      }
+    }
+  };
+
+  ic.editNewMetadata = false;
+  ic.showNewMetadata = function(){
+    ic.editNewMetadata = true;
+  };
+  ic.hideNewMetadata = function(){
+    ic.editNewMetadata = false;  
+  };
+
+  ic.deleteMetadata = function(index, form){
+    ic.saveMetadata('', '', index);
+    form.$cancel();
   }
 
 }]);
@@ -200,12 +244,13 @@ function(
     Breadcrumbs
 ) {
     var mr = this;
+
     var miradorUrl = "/mirador/:collection_id";
     miradorUrl = miradorUrl.replace(':collection_id', $routeParams.collectionId);
     
     mr.canRead = AppConfig.perms.read;
     mr.iframeSrc =  miradorUrl;
-    
+
     Breadcrumbs.home().addCrumb("Mirador", $location.url());
 }]);
 angular.module('media_manager').controller('NotificationsController', ['$rootScope', '$scope', 'Notifications', function($rootScope, $scope, Notifications) {
@@ -467,6 +512,22 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
+.directive('focus', ['$parse', '$timeout', function($parse, $timeout){
+  return {
+    link: function(scope, element, attrs){
+      var model = $parse(attrs.focus);
+      scope.$watch(model, function(value){
+        if(value){
+          $timeout(function(){
+            element[0].focus();
+          }, 100);
+        }
+      });
+    }
+  };
+}]);
+
+angular.module('media_manager')
 .directive('progressbar', [function () {
     return {
 
@@ -524,6 +585,38 @@ angular.module('media_manager')
 
 }]);
 
+angular.module('media_manager')
+.directive('resizableIframe', function () {
+
+    var calculateHeight = function(element) {
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var offsetTop = element[0].offsetTop || 0;
+        var height = windowHeight - offsetTop;
+        return height;
+    };
+
+    var resize = function(element) {
+        var height_px = calculateHeight(element) + "px";
+        element.css('height', height_px);
+    };
+
+    return {
+        // This directive automatically resizes the iframe to fill the screen.
+        link: function ($scope, element, attrs) {
+            var onResize = function() {
+                resize(element);
+            };
+
+            $(window).on('resize', onResize);
+            
+            $scope.$on('$destroy', function() {
+                $(window).off('resize', onResize);
+            });
+            
+            resize(element);
+        }
+    };
+});
 angular.module('media_manager').service('AppConfig', function() {
     this.config = window.appConfig || {};
     this.perms = this.config.perms;
@@ -639,7 +732,7 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
-.service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
+.service('CourseCache', ['Course', 'AppConfig', 'Image', function(Course, AppConfig, Image){
   this.images = [];
   this.collections = [];
   this.current_image = {};
@@ -708,6 +801,9 @@ angular.module('media_manager')
   };
   this.getImageById = function(id){
     var that = this;
+    if(that.images.length === 0){
+      that.current_image = Image.get({id: id});
+    }
     this.images.forEach(function(item){
       if(item.id == id){
         that.current_image = item;
@@ -782,8 +878,8 @@ angular.module('media_manager')
 
     this.sortType = sortType;
     this.compareImages = lookup_sort[sortType](sortDir == "asc" ? true : false);
-    
-    
+
+
     return this;
   };
   this.sortImages = function() {
