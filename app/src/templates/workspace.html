@@ -8,7 +8,7 @@
         <div class="notifications" ng-show="wc.notifications.messages.length > 0" ng-repeat="message in wc.notifications.messages track by $index">
           <div class="alert alert-{{message.type}}" role="alert">{{message.content}}</div>
         </div>
-    
+
         <div class="panel panel-default" style="margin-top: 1em">
           <div class="panel-heading">
             <h3 class="panel-title">Image Library</h3>
@@ -58,7 +58,7 @@
                       </div>
                   </div>
               </div>
-              
+
               <div style="clear:both; margin-top: 10px;" ng-show="wc.courseImages.length > 0">
                   <ul class="files" ng-if="wc.layout == 'gallery'">
                     <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
@@ -110,10 +110,12 @@
             <h5>Step 3: Select images from the image library to add to this collection.</h5>
             <hr>
             <div ng-show="wc.collection.images.length == 0">Empty collection</div>
-            <ul class="list-inline">
-              <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images track by $index">
-                <droplet-thumb ng-model="collectionImage"></droplet-thumb>
-                <div class="overlay" ng-click="wc.removeFromCollection($index)">-</div>
+            <ul class="list-inline" as-sortable="wc.dragControlListeners1" ng-model="wc.collection.images">
+              <li ng-repeat="collectionImage in wc.collection.images" as-sortable-item>
+                <div as-sortable-item-handle>
+                  <droplet-thumb ng-model="collectionImage"></droplet-thumb>
+                  <div class="overlay" ng-click="wc.removeFromCollection(collectionImage.id)">-</div>
+                </div>
               </li>
             </ul>
           </div>
