@@ -43,39 +43,16 @@ angular.module('media_manager')
       return dragEnabled;
     },
     orderChanged: function(event){
-      
-    }
-  };
-
-
-  /*
-    accept: function (sourceItemHandleScope, destSortableScope) {
-      console.log("accept");
-      return dragEnabled;
-    },
-    orderChanged: function(event){
-      console.log("orderChanged");
-      // disable ordering
       dragEnabled = false;
 
       var updates = [];
-      lc.collections.forEach(function(item, index, arr){
-        var d = $q.defer();
+      wc.collection.images.forEach(function(item, index, arr){
         var newsort = index + 1;
-        if(item.sort_order != newsort){
-          arr[index].sort_order = newsort;
-          updates.push(Collection.update({id: item.id}, arr[index]).$promise);
-
-        }
+        wc.collection.images[index].sort_order = newsort;
       });
-      $q.all(updates).then(function(){
-        // enable ordering
-        dragEnabled = true;
-      });
-
+      dragEnabled = true;
     }
   };
-  */
 
   wc.imageView = function(id){
     $location.path('/image/' + id);
