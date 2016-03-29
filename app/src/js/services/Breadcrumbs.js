@@ -11,6 +11,6 @@ angular.module('media_manager').service('Breadcrumbs', function() {
     this.home = function() {
         this.crumbs = angular.copy(default_crumbs);
         return this;
-    }
+    };
     this.home();
 });

@@ -70,7 +70,10 @@ angular.module('media_manager')
     ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
       if(ic.index == ic.CourseCache.images.length){
         ic.index--;
-      };
+      }
+      if(ic.CourseCache.images.length == 0){
+        $location.path(Breadcrumbs.crumbs[Breadcrumbs.crumbs.length - 1].route);
+      }
     });
   };
 
