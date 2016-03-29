@@ -11,7 +11,6 @@ body {
   margin: 20px 0;
 }
 
-
 ul.list-inline .as-sortable-item,
 ul.list-inline .as-sortable-placeholder {
   display: inline-block;
@@ -37,5 +36,8 @@ ul.list-inline .as-sortable-placeholder {
     opacity: .8;
 }
 
-.as-sortable-hidden {
+/* this overwrites the xeditable stylized editable fields */
+.editable {
+  border-bottom: none;
+  color: inherit;
 }

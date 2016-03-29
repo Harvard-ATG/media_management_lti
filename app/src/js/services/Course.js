@@ -18,7 +18,7 @@ angular.module('media_manager')
 }]);
 
 angular.module('media_manager')
-.service('CourseCache', ['Course', 'AppConfig', function(Course, AppConfig){
+.service('CourseCache', ['Course', 'AppConfig', 'Image', function(Course, AppConfig, Image){
   this.images = [];
   this.collections = [];
   this.current_image = {};
@@ -87,6 +87,9 @@ angular.module('media_manager')
   };
   this.getImageById = function(id){
     var that = this;
+    if(that.images.length === 0){
+      that.current_image = Image.get({id: id});
+    }
     this.images.forEach(function(item){
       if(item.id == id){
         that.current_image = item;
@@ -161,8 +164,8 @@ angular.module('media_manager')
 
     this.sortType = sortType;
     this.compareImages = lookup_sort[sortType](sortDir == "asc" ? true : false);
-    
-    
+
+
     return this;
   };
   this.sortImages = function() {

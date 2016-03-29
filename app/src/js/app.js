@@ -1,4 +1,7 @@
 angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable'])
+.run(function(editableOptions){
+  editableOptions.theme = 'bs3';
+})
 .config(['$routeProvider', function($routeProvider){
   $routeProvider
   .when('/', {
