@@ -41,6 +41,9 @@ angular.module('media_manager')
   wc.dragControlListeners1 = {
     accept: function(sourceItemHandleScope, destSortableScope){
       return dragEnabled;
+    },
+    orderChanged: function(event){
+      
     }
   };
 
@@ -116,8 +119,16 @@ angular.module('media_manager')
     }, 0, false);
   };
 
-  wc.removeFromCollection = function(imageIndex){
-    wc.collection.images.splice(imageIndex, 1);
+  wc.removeFromCollection = function(id){
+    // note this needs to be a forEach/search instead of a splice because
+    // ng-sortable won't work with "track by $index" enabled on the ng-repeat
+    // https://github.com/a5hik/ng-sortable/issues/221
+    wc.collection.images.forEach(function(item, index, arr){
+      if(item.id == id){
+        wc.collection.images.splice(index, 1);
+        return false;
+      }
+    });
   };
 
   wc.cancelCollection = function() {
