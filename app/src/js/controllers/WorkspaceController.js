@@ -88,6 +88,11 @@ angular.module('media_manager')
       self.isLoadingCollection.status = true;
       collection = Collection.get({id: $routeParams.collectionId});
       collection.$promise.then(function(collection) {
+        wc.collection.images.sort(function(a, b){
+          var x = a['sort_order'];
+          var y = b['sort_order'];
+          return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
         self.isLoadingCollection.status = false;
       });
     } else {
@@ -112,7 +117,6 @@ angular.module('media_manager')
   };
 
   wc.removeFromCollection = function(imageIndex){
-    console.log("removeFromCollection");
     wc.collection.images.splice(imageIndex, 1);
   };
 
