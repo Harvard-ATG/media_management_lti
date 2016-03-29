@@ -17,7 +17,6 @@ angular.module('media_manager')
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var image = CourseCache.getImageById(id);
-                console.log("id:", id, "image:", image, "images:", CourseCache.images);
                 cd.confirm_msg = "Are you sure you want to delete image " + image.title + " (ID:" + image.id + ")? ";
                 cd.ok = function() {
                     var deletePromise = service.actuallyDeleteImage(id);

@@ -66,4 +66,12 @@ angular.module('media_manager')
     }
   }
 
+  ic.deleteImage = function(){
+    ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
+      if(ic.index == ic.CourseCache.images.length){
+        ic.index--;
+      };
+    });
+  };
+
 }]);
