@@ -498,125 +498,6 @@ angular.module('media_manager')
   //$(document).scroll(wc.onDocumentScroll);
 }]);
 
-angular.module('media_manager')
-.directive('dropletThumb', [function(){
-  return {
-    scope: {
-      image: '=ngModel'
-    },
-    restrict: 'EA',
-    replace: true,
-    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
-
-  };
-}]);
-
-angular.module('media_manager')
-.directive('focus', ['$parse', '$timeout', function($parse, $timeout){
-  return {
-    link: function(scope, element, attrs){
-      var model = $parse(attrs.focus);
-      scope.$watch(model, function(value){
-        if(value){
-          $timeout(function(){
-            element[0].focus();
-          }, 100);
-        }
-      });
-    }
-  };
-}]);
-
-angular.module('media_manager')
-.directive('progressbar', [function () {
-    return {
-
-        /**
-         * @property restrict
-         * @type {String}
-         */
-        restrict: 'A',
-
-        /**
-         * @property scope
-         * @type {Object}
-         */
-        scope: {
-            model: '=ngModel'
-        },
-
-        /**
-         * @property ngModel
-         * @type {String}
-         */
-        require: 'ngModel',
-
-        /**
-         * @method link
-         * @param scope {Object}
-         * @param element {Object}
-         * @return {void}
-         */
-        link: function link(scope, element) {
-
-            var progressBar = new ProgressBar.Path(element[0], {
-                strokeWidth: 2
-            });
-
-            scope.$watch('model', function() {
-
-                progressBar.animate(scope.model / 100, {
-                    duration: 1000
-                });
-
-            });
-
-            scope.$on('$dropletSuccess', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-            scope.$on('$dropletError', function onSuccess() {
-                progressBar.animate(0);
-            });
-
-        }
-
-    }
-
-}]);
-
-angular.module('media_manager')
-.directive('resizableIframe', function () {
-
-    var calculateHeight = function(element) {
-        var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-        var offsetTop = element[0].offsetTop || 0;
-        var height = windowHeight - offsetTop;
-        return height;
-    };
-
-    var resize = function(element) {
-        var height_px = calculateHeight(element) + "px";
-        element.css('height', height_px);
-    };
-
-    return {
-        // This directive automatically resizes the iframe to fill the screen.
-        link: function ($scope, element, attrs) {
-            var onResize = function() {
-                resize(element);
-            };
-
-            $(window).on('resize', onResize);
-            
-            $scope.$on('$destroy', function() {
-                $(window).off('resize', onResize);
-            });
-            
-            resize(element);
-        }
-    };
-});
 angular.module('media_manager').service('AppConfig', function() {
     this.config = window.appConfig || {};
     this.perms = this.config.perms;
@@ -628,7 +509,7 @@ angular.module('media_manager').service('AppConfig', function() {
 
 angular.module('media_manager').service('Breadcrumbs', function() {
     var br = this;
-    var default_crumbs = [{"text": "List Collections", "route": "/"}];
+    var default_crumbs = [{"text": "Course Collections", "route": "/"}];
     this.crumbs = [];
     this.addCrumb = function(text, route) {
         this.crumbs.push({"text": text, "route": route});
@@ -1193,4 +1074,124 @@ angular.module('media_manager').service('Preferences', function() {
         }
     };
     
+});
+
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('focus', ['$parse', '$timeout', function($parse, $timeout){
+  return {
+    link: function(scope, element, attrs){
+      var model = $parse(attrs.focus);
+      scope.$watch(model, function(value){
+        if(value){
+          $timeout(function(){
+            element[0].focus();
+          }, 100);
+        }
+      });
+    }
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
+
+}]);
+
+angular.module('media_manager')
+.directive('resizableIframe', function () {
+
+    var calculateHeight = function(element) {
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var offsetTop = element[0].offsetTop || 0;
+        var height = windowHeight - offsetTop;
+        return height;
+    };
+
+    var resize = function(element) {
+        var height_px = calculateHeight(element) + "px";
+        element.css('height', height_px);
+    };
+
+    return {
+        // This directive automatically resizes the iframe to fill the screen.
+        link: function ($scope, element, attrs) {
+            var onResize = function() {
+                resize(element);
+            };
+
+            $(window).on('resize', onResize);
+            
+            $scope.$on('$destroy', function() {
+                $(window).off('resize', onResize);
+            });
+            
+            resize(element);
+        }
+    };
 });
