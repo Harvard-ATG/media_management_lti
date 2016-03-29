@@ -10,7 +10,33 @@ body {
 .header-bar {
   margin: 20px 0;
 }
-/* this overwrites the xeditable stylized editable fields */ 
+
+ul.list-inline .as-sortable-item,
+ul.list-inline .as-sortable-placeholder {
+  display: inline-block;
+  min-height: 20px;
+  float: left;
+}
+
+.as-sortable-item, .as-sortable-placeholder {
+
+}
+
+.as-sortable-item-handle {
+  cursor: move;
+}
+
+.as-sortable-placeholder {
+    border: 1px dashed darkgrey;
+    box-sizing: border-box;
+    background-color: #dbdbdb;
+}
+
+.as-sortable-drag {
+    opacity: .8;
+}
+
+/* this overwrites the xeditable stylized editable fields */
 .editable {
   border-bottom: none;
   color: inherit;
