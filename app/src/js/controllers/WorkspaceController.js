@@ -35,6 +35,8 @@ angular.module('media_manager')
 
   wc.imagelb = ImageLightBox;
 
+  wc.hideLibrary = true;
+
   wc.imageView = function(id){
     $location.path('/image/' + id);
   };
@@ -156,7 +158,7 @@ angular.module('media_manager')
     });
   };
 
-  // Fix the collection panel at the top of the screen 
+  // Fix the collection panel at the top of the screen
   wc.onDocumentScroll = (function() {
     var fixedPosition = false;
     var fixedCls = 'image-collection-fixed';
@@ -182,7 +184,7 @@ angular.module('media_manager')
       }
     };
   })();
-  
+
   wc.onClickSortLibrary = function($event, choice) {
     $event.preventDefault();
     wc.sortLibrary(choice);
@@ -214,11 +216,11 @@ angular.module('media_manager')
     //{'label': 'Last Updated', 'name': 'updated', 'dir': 'desc'},
     {'label': 'Title', 'name': 'title', 'dir': 'asc'},
   ];
-  
+
   wc.sortLibrary(wc.sortChoices[0]);
 
   wc.notifications.clear();
-  
+
   $scope.$on('$dropletReady', Droplet.onReady);
   $scope.$on('$dropletError', Droplet.onError(function(event, response) {
     wc.notifications.clear().error(response);
@@ -243,6 +245,9 @@ angular.module('media_manager')
       wc.filesToUpload = Droplet.getTotalValid();
       wc.notifications.clear().success("Images uploaded successfully");
   }));
-  
+
+  $scope.$watch('wc.layout', function(newVal, oldVal) {
+    Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
+  });
   //$(document).scroll(wc.onDocumentScroll);
 }]);
