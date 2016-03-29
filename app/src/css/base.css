@@ -12,12 +12,15 @@ body {
 }
 
 
-
+ul.list-inline .as-sortable-item,
+ul.list-inline .as-sortable-placeholder {
+  display: inline-block;
+  min-height: 20px;
+  float: left;
+}
 
 .as-sortable-item, .as-sortable-placeholder {
-    min-height: 20px;
-    display: inline-block;
-    float: left;
+
 }
 
 .as-sortable-item-handle {

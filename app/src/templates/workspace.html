@@ -112,7 +112,7 @@
             <div ng-show="wc.collection.images.length == 0">Empty collection</div>
             <ul class="list-inline" as-sortable="wc.dragControlListeners1" ng-model="wc.collection.images">
               <li ng-repeat="collectionImage in wc.collection.images" as-sortable-item>
-                <div as-sortable-item-handle>
+                <div style="position:relative" as-sortable-item-handle>
                   <droplet-thumb ng-model="collectionImage"></droplet-thumb>
                   <div class="overlay" ng-click="wc.removeFromCollection(collectionImage.id)">-</div>
                 </div>

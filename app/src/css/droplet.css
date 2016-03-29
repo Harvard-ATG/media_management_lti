@@ -277,8 +277,8 @@ div.resize-overlay {
   transform: scale(0.5);
 }
 
-li div.overlay:hover,
-li div.resize-overlay:hover {
+div.overlay:hover,
+div.resize-overlay:hover {
     background-color: rgba(0, 0, 0, .45);
 }
 
