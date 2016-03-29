@@ -38,7 +38,7 @@ angular.module('media_manager')
   wc.imagelb = ImageLightBox;
 
   var dragEnabled = true;
-  wc.dragControlListeners1 = {
+  wc.dragControlListeners = {
     accept: function(sourceItemHandleScope, destSortableScope){
       return dragEnabled;
     },
