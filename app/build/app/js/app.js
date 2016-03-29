@@ -47,6 +47,125 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
   $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
 });
 
+angular.module('media_manager')
+.directive('dropletThumb', [function(){
+  return {
+    scope: {
+      image: '=ngModel'
+    },
+    restrict: 'EA',
+    replace: true,
+    template: '<img style="background-image: url({{ image.thumb_url || image.image_url }})" class="droplet-preview" />',
+
+  };
+}]);
+
+angular.module('media_manager')
+.directive('focus', ['$parse', '$timeout', function($parse, $timeout){
+  return {
+    link: function(scope, element, attrs){
+      var model = $parse(attrs.focus);
+      scope.$watch(model, function(value){
+        if(value){
+          $timeout(function(){
+            element[0].focus();
+          }, 100);
+        }
+      });
+    }
+  };
+}]);
+
+angular.module('media_manager')
+.directive('progressbar', [function () {
+    return {
+
+        /**
+         * @property restrict
+         * @type {String}
+         */
+        restrict: 'A',
+
+        /**
+         * @property scope
+         * @type {Object}
+         */
+        scope: {
+            model: '=ngModel'
+        },
+
+        /**
+         * @property ngModel
+         * @type {String}
+         */
+        require: 'ngModel',
+
+        /**
+         * @method link
+         * @param scope {Object}
+         * @param element {Object}
+         * @return {void}
+         */
+        link: function link(scope, element) {
+
+            var progressBar = new ProgressBar.Path(element[0], {
+                strokeWidth: 2
+            });
+
+            scope.$watch('model', function() {
+
+                progressBar.animate(scope.model / 100, {
+                    duration: 1000
+                });
+
+            });
+
+            scope.$on('$dropletSuccess', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+            scope.$on('$dropletError', function onSuccess() {
+                progressBar.animate(0);
+            });
+
+        }
+
+    }
+
+}]);
+
+angular.module('media_manager')
+.directive('resizableIframe', function () {
+
+    var calculateHeight = function(element) {
+        var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var offsetTop = element[0].offsetTop || 0;
+        var height = windowHeight - offsetTop;
+        return height;
+    };
+
+    var resize = function(element) {
+        var height_px = calculateHeight(element) + "px";
+        element.css('height', height_px);
+    };
+
+    return {
+        // This directive automatically resizes the iframe to fill the screen.
+        link: function ($scope, element, attrs) {
+            var onResize = function() {
+                resize(element);
+            };
+
+            $(window).on('resize', onResize);
+            
+            $scope.$on('$destroy', function() {
+                $(window).off('resize', onResize);
+            });
+            
+            resize(element);
+        }
+    };
+});
 angular.module('media_manager').controller('BreadcrumbsController', ['$rootScope', '$scope', 'Breadcrumbs', function($rootScope, $scope, Breadcrumbs) {
     $scope.crumbs = Breadcrumbs.crumbs;
 }]);
@@ -227,6 +346,17 @@ angular.module('media_manager')
     ic.saveMetadata('', '', index);
     form.$cancel();
   }
+
+  ic.deleteImage = function(){
+    ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
+      if(ic.index == ic.CourseCache.images.length){
+        ic.index--;
+      }
+      if(ic.CourseCache.images.length == 0){
+        $location.path(Breadcrumbs.crumbs[Breadcrumbs.crumbs.length - 1].route);
+      }
+    });
+  };
 
 }]);
 
@@ -550,7 +680,7 @@ angular.module('media_manager').service('Breadcrumbs', function() {
     this.home = function() {
         this.crumbs = angular.copy(default_crumbs);
         return this;
-    }
+    };
     this.home();
 });
 
@@ -930,7 +1060,6 @@ angular.module('media_manager')
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var image = CourseCache.getImageById(id);
-                console.log("id:", id, "image:", image, "images:", CourseCache.images);
                 cd.confirm_msg = "Are you sure you want to delete image " + image.title + " (ID:" + image.id + ")? ";
                 cd.ok = function() {
                     var deletePromise = service.actuallyDeleteImage(id);
