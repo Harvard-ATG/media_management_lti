@@ -657,7 +657,7 @@ button.btn-unstyled {
   z-index: 0;
   font-size: 36px;
   color: #fff;
-  opacity: .8;  
+  opacity: .8;
   display: inline-block;
 }
 .notifications {
@@ -679,4 +679,30 @@ table.files tr:hover {
 }
 table.files td > button {
   margin-left: 10px;
+}
+
+
+
+.row div {
+  height: 200px;
+
+    -webkit-transition: width 0.4s ease, margin 0.4s ease;
+    -moz-transition: width 0.4s ease, margin 0.4s ease;
+    -o-transition: width 0.4s ease, margin 0.4s ease;
+    transition: width 0.4s ease, margin 0.4s ease;
+}
+
+.col-md-0 {
+    width: 0px;
+    float: left;
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    min-height: 1px;
+}
+
+.row div + div {
+    margin-left: 0;
+    padding: 0px;
+
 }
