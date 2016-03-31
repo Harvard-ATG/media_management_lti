@@ -28,10 +28,12 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         BUILD_SRC = os.path.join(settings.BASE_DIR, 'app', 'build')
         BUILD_DST = os.path.join(settings.STATIC_ROOT, 'app', 'build')
 
-        popen_args = {
-            'cwd': APP_CWD,
-            'shell': True,
-        }
+        popen_args = { 
+            'cwd': APP_CWD, 
+            'shell': True, 
+        } 
+
+        # Install the dependencies and build the JS
         for cmd in (NPM_INSTALL, BOWER_INSTALL, GULP_BUILD):
             print "Running cmd [%s] with args [%s]" % (cmd, popen_args)
             child = subprocess.Popen([cmd], **popen_args)
@@ -39,8 +41,9 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             if child.returncode != 0:
                 raise Exception("Command failed [%s] with return code [%s]" % (cmd, child.returncode))
 
+        # Copy the build files to the STATIC_ROOT 
         if os.path.exists(BUILD_DST):
             shutil.rmtree(BUILD_DST)
         shutil.copytree(BUILD_SRC, BUILD_DST)
-        
+
         return []
