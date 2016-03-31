@@ -18,3 +18,4 @@ http_static
 node_modules
 bower_components
 /app/build/*
+!/app/build/empty
