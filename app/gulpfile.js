@@ -2,10 +2,8 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
-var Server = require('karma').Server;
-var jshint = require('gulp-jshint');
-var connect = require('gulp-connect');
-var exec = require('child_process').exec;
+//var Server = require('karma').Server;
+//var jshint = require('gulp-jshint');
 
 gulp.task('moveHTML', function(){
   gulp.src('src/index.html')
@@ -82,12 +80,6 @@ gulp.task('watch', function(){
   gulp.watch('src/css/**/*.css', ['buildCSS', 's']);
   gulp.watch('src/**/*.html', ['moveHTML', 's']);
   gulp.watch('bower_components/**/*.js', ['buildVendor', 's']);
-});
-
-gulp.task('s', function(){
-  exec([
-    'say -v Whisper "building"'
-  ]);
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);

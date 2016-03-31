@@ -155,13 +155,13 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'http_static'))
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-	os.path.join(BASE_DIR, 'app/build'),
+    os.path.join(BASE_DIR, 'app/build'),
 ]
+STATICFILES_STORAGE = 'media_management_lti.staticfiles.StaticFilesStorage'
 
 # Logging
 # https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging
