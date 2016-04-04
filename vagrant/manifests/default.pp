@@ -156,6 +156,21 @@ exec {'create-project-db':
     logoutput => true,
 }
 
+# Install NodeJS and NPM
+
+package {'nodejs':
+    ensure => latest,
+    require => Exec['apt-get-update'],
+}
+package {'nodejs-legacy':
+    ensure => latest,
+    require => Package['nodejs']
+}
+package {'npm':
+    ensure => latest,
+    require => Package['nodejs']
+}
+
 # Ensure github.com ssh public key is in the .ssh/known_hosts file so
 # pip won't try to prompt on the terminal to accept it
 file {'/home/vagrant/.ssh':
