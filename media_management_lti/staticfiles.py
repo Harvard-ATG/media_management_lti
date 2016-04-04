@@ -17,11 +17,11 @@ BOWER_INSTALL = 'bower install'
 GULP_BUILD = 'gulp build'
 
 # Setup directory paths
-NODE_MODULES_DIR = os.path.join(settings.BASE_DIR, 'app', 'node_modules')
-NODE_MODULES_BIN_DIR = os.path.join(NODE_MODULES_DIR, '.bin')
 APP_BASE_DIR = os.path.join(settings.BASE_DIR, 'app')
-BUILD_SRC = os.path.join(settings.BASE_DIR, 'app', 'build')
-BUILD_DST = os.path.join(settings.STATIC_ROOT, 'app', 'build')
+NODE_MODULES_DIR = os.path.join(APP_BASE_DIR, 'node_modules')
+NODE_MODULES_BIN_DIR = os.path.join(NODE_MODULES_DIR, '.bin')
+BUILD_SRC = os.path.join(APP_BASE_DIR, 'build')
+BUILD_DST = os.path.join(APP_BASE_DIR, 'build')
 
 
 class StaticFilesStorage(storage.StaticFilesStorage):
@@ -112,9 +112,10 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         # Make the paths relative instead of absolute in the same way that they
         # are in the application (i.e. "app/js/vendor.js").
         build_manifest = {}
+        base_path = "%s/" % APP_BASE_DIR
         for original_path, hashed_path in hashed_files.iteritems():
-            src = original_path.replace(BUILD_SRC+"/", '')
-            dst = hashed_path.replace(BUILD_SRC+"/", '')
+            src = original_path.replace(base_path, '')
+            dst = hashed_path.replace(base_path, '')
             build_manifest[src] = dst
         
         # Write the JSON file with the mappings
