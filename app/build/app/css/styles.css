@@ -684,8 +684,6 @@ table.files td > button {
 
 
 .row div {
-  height: 200px;
-
     -webkit-transition: width 0.4s ease, margin 0.4s ease;
     -moz-transition: width 0.4s ease, margin 0.4s ease;
     -o-transition: width 0.4s ease, margin 0.4s ease;
