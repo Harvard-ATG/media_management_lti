@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var sort = require('gulp-sort');
+var del = require('del');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
 //var Server = require('karma').Server;
@@ -33,7 +34,7 @@ gulp.task('buildCSS', function(){
     .pipe(concat('styles.css'))
     //.pipe(minifycss())
     .pipe(gulp.dest('build/app/css'));
-})
+});
 
 gulp.task('buildVendorJS', function(){
   return gulp.src(['bower_components/jquery/dist/jquery.js',
@@ -70,7 +71,11 @@ gulp.task('moveVendorFonts', function(){
 
 gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
 
-gulp.task('build', ['moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
+gulp.task('clean', function() {
+  return del(['build/build.json']) // created by "manage.py collectstatic"
+});
+
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 
 gulp.task('connect', function(){
   connect.server({
