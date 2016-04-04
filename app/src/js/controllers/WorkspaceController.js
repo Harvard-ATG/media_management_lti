@@ -13,6 +13,7 @@ angular.module('media_manager')
                                     'ImageLightBox',
                                     'Breadcrumbs',
                                     'Notifications',
+                                    'Preferences',
                                     'AppConfig',
                                     function($scope,
                                       $timeout,
@@ -28,6 +29,7 @@ angular.module('media_manager')
                                       ImageLightBox,
                                       Breadcrumbs,
                                       Notifications,
+                                      Preferences,
                                       AppConfig){
 
 
@@ -36,6 +38,23 @@ angular.module('media_manager')
   wc.imagelb = ImageLightBox;
 
   wc.hideLibrary = true;
+
+  var dragEnabled = true;
+  wc.dragControlListeners = {
+    accept: function(sourceItemHandleScope, destSortableScope){
+      return dragEnabled;
+    },
+    orderChanged: function(event){
+      dragEnabled = false;
+
+      var updates = [];
+      wc.collection.images.forEach(function(item, index, arr){
+        var newsort = index + 1;
+        wc.collection.images[index].sort_order = newsort;
+      });
+      dragEnabled = true;
+    }
+  };
 
   wc.imageView = function(id){
     $location.path('/image/' + id);
@@ -51,6 +70,11 @@ angular.module('media_manager')
       self.isLoadingCollection.status = true;
       collection = Collection.get({id: $routeParams.collectionId});
       collection.$promise.then(function(collection) {
+        wc.collection.images.sort(function(a, b){
+          var x = a['sort_order'];
+          var y = b['sort_order'];
+          return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
         self.isLoadingCollection.status = false;
       });
     } else {
@@ -74,21 +98,15 @@ angular.module('media_manager')
     }, 0, false);
   };
 
-  wc.removeFromCollection = function(imageIndex){
-    wc.collection.images.splice(imageIndex, 1);
-  };
-
-  wc.canDeleteCollection = function() {
-    return wc.collection.id ? true : false;
-  };
-
-  wc.deleteCollection = function() {
-    var collection_id = wc.collection.id;
-    var deletePromise = CollectionBehavior.deleteCollectionModal(collection_id);
-    deletePromise.then(function(result) {
-      $location.path('/collections/');
-    }, function(result) {
-      $log.debug("error deleting collection", collection_id);
+  wc.removeFromCollection = function(id){
+    // note this needs to be a forEach/search instead of a splice because
+    // ng-sortable won't work with "track by $index" enabled on the ng-repeat
+    // https://github.com/a5hik/ng-sortable/issues/221
+    wc.collection.images.forEach(function(item, index, arr){
+      if(item.id == id){
+        wc.collection.images.splice(index, 1);
+        return false;
+      }
     });
   };
 
@@ -199,7 +217,7 @@ angular.module('media_manager')
 
   CourseCache.load();
 
-  wc.layout = "gallery";
+  wc.layout = Preferences.get(Preferences.UI_WORKSPACE_LAYOUT);
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
   wc.courseCollections = CourseCache.collections;
@@ -249,5 +267,6 @@ angular.module('media_manager')
   $scope.$watch('wc.layout', function(newVal, oldVal) {
     Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
   });
+
   //$(document).scroll(wc.onDocumentScroll);
 }]);

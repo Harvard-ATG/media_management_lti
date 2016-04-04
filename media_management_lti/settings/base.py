@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/
 """
 
 import os
+import json
 import logging
 from .secure import SECURE_SETTINGS
 
@@ -155,13 +156,13 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'http_static'))
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-	os.path.join(BASE_DIR, 'app/build'),
+    os.path.join(BASE_DIR, 'app/build'),
 ]
+STATICFILES_STORAGE = 'media_management_lti.staticfiles.StaticFilesStorage'
 
 # Logging
 # https://docs.djangoproject.com/en/1.8/topics/logging/#configuring-logging
@@ -239,6 +240,19 @@ LTI_SETUP = {
         }
     }
 }
+
+# Loads the application build JSON file.
+# This file maps JS/CSS build file names to their hashed version. For example:
+#     app.js -> app-123efg.js
+#     vendor.js -> app-456abc.js
+#
+# This is used by HTML templates/templatetags to generate the correct static URLs.
+APP_BUILD_JSON = None
+APP_BUILD_JSON_FILE = os.path.join(BASE_DIR, 'app', 'build', 'build.json')
+if os.path.exists(APP_BUILD_JSON_FILE):
+    with open(APP_BUILD_JSON_FILE, 'r') as f:
+        APP_BUILD_JSON = json.loads(f.read())
+
 
 # Add LTI oauth credentials (for django-auth-lti)
 LTI_OAUTH_CREDENTIALS = SECURE_SETTINGS.get("lti_oauth_credentials", {"mykey":"mysecret"})

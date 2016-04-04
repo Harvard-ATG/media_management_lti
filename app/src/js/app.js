@@ -18,12 +18,12 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controllerAs: 'wc'
   })
   .when('/collections', {
-    templateUrl: "/static/app/templates/collectionList.html",
-    controller: 'ListController',
+    templateUrl: "/static/app/templates/collections.html",
+    controller: 'CollectionsController',
     controllerAs: 'lc'
   })
   .when('/mirador/:collectionId', {
-    templateUrl: "/static/app/templates/miradorView.html",
+    templateUrl: "/static/app/templates/mirador.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
   })
@@ -31,7 +31,12 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     templateUrl: "/static/app/templates/image.html",
     controller: 'ImageController',
     controllerAs: 'ic'
-  });
+  })
+  .when('/error/:errorCode', {
+    templateUrl: "/static/app/templates/error.html",
+    controller: 'ErrorController',
+    controllerAs: 'er'
+  })
 }])
 .filter("asDate", function () {
     return function (input) {
@@ -40,4 +45,4 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
 })
 .run(function($http) {
   $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
-})
+});

@@ -1,10 +1,11 @@
 angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope){
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
   var ic = this;
 
   ic.imageBehavior = ImageBehavior;
   ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
+
   ic.index = 0;
   CourseCache.images.forEach(function(img, index){
     if(img.id == $routeParams.imageId){
@@ -25,8 +26,18 @@ angular.module('media_manager')
   $scope.$watch(function watch(scope){
     return CourseCache.current_image;
   }, function handleChange(newval, oldval){
-    resetBreadcrumb();
+    if(newval.id != oldval.id){
+      resetBreadcrumb();
+    }
   });
+  ic.save = function(){
+    var image = CourseCache.current_image;
+    Image.update({}, image, function success(data){
+
+    }, function failure(errorResponse) {
+      $log.debug("error updating image:", errorResponse);
+    });
+  };
 
   ic.next = function(){
     if(ic.index + 1 < CourseCache.images.length){
@@ -44,6 +55,67 @@ angular.module('media_manager')
       CourseCache.current_image = CourseCache.images[ic.index];
       resetBreadcrumb();
     }
+  };
+
+  ic.newLabel = '';
+  ic.newValue = '';
+  ic.saveMetadata = function(label, value, index){
+    if(index !== undefined){
+
+      if(label === '' && value === ''){
+        ic.image.metadata.splice(index, 1);
+      } else {
+        ic.image.metadata[index].label = label;
+        ic.image.metadata[index].value = value;
+      }
+
+      Image.update({}, ic.image, function success(data){
+
+      }, function failure(errorResponse){
+        $log.debug("error updating image:", errorResponse);
+      });
+
+    } else {
+
+      if(ic.newLabel){
+        if(ic.image.metadata == null) {
+          ic.image.metadata = [];
+        }
+        ic.image.metadata.push({'label': ic.newLabel, 'value': ic.newValue});
+        Image.update({}, ic.image, function success(data){
+          ic.newLabel = '';
+          ic.newValue = '';
+          ic.editNewMetadata = false;
+        }, function failure(errorResponse) {
+          $log.debug("error updating image:", errorResponse);
+          ic.image.metadata.pop();
+        });
+      }
+    }
+  };
+
+  ic.editNewMetadata = false;
+  ic.showNewMetadata = function(){
+    ic.editNewMetadata = true;
+  };
+  ic.hideNewMetadata = function(){
+    ic.editNewMetadata = false;  
+  };
+
+  ic.deleteMetadata = function(index, form){
+    ic.saveMetadata('', '', index);
+    form.$cancel();
   }
+
+  ic.deleteImage = function(){
+    ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
+      if(ic.index == ic.CourseCache.images.length){
+        ic.index--;
+      }
+      if(ic.CourseCache.images.length == 0){
+        $location.path(Breadcrumbs.crumbs[Breadcrumbs.crumbs.length - 1].route);
+      }
+    });
+  };
 
 }]);

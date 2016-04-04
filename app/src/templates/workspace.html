@@ -1,3 +1,5 @@
+<h4>Edit Collection {{ wc.collection.title }}</h4>
+
 <div data-ng-include data-src="'/static/app/templates/breadcrumbs.html'"></div>
 
 <div ng-if="wc.canEdit" class="container-fluid">
@@ -13,9 +15,7 @@
   </div>
 
   <div class="row">
-
-      <div ng-include="'/static/app/templates/collectionPanel.html'" ng-class="wc.hideLibrary ? 'col-md-12' : 'col-md-6'"></div>
-      <div ng-include="'/static/app/templates/library.html'" ng-class="wc.hideLibrary ? 'col-md-0' : 'col-md-6'" ng-hide="wc.hideLibrary"></div>
-
+    <div ng-include="'/static/app/templates/collectionPanel.html'" ng-class="wc.hideLibrary ? 'col-md-12' : 'col-md-6'"></div>
+    <div ng-include="'/static/app/templates/library.html'" ng-class="wc.hideLibrary ? 'col-md-0' : 'col-md-6'" ng-hide="wc.hideLibrary"></div>
   </div>
 </div>

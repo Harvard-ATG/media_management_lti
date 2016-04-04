@@ -1,10 +1,11 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var sort = require('gulp-sort');
+var del = require('del');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
-var Server = require('karma').Server;
-var jshint = require('gulp-jshint');
-var connect = require('gulp-connect');
+//var Server = require('karma').Server;
+//var jshint = require('gulp-jshint');
 
 gulp.task('moveHTML', function(){
   gulp.src('src/index.html')
@@ -15,11 +16,13 @@ gulp.task('moveHTML', function(){
 
 gulp.task('moveVendorSrc', function(){
   return gulp.src('src/vendor/**/*')
+    .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
 });
 
 gulp.task('buildJS', function(){
   return gulp.src('src/js/**/*.js')
+    .pipe(sort())
     .pipe(concat('app.js'))
     //.pipe(uglify())
     .pipe(gulp.dest('build/app/js'));
@@ -27,10 +30,11 @@ gulp.task('buildJS', function(){
 
 gulp.task('buildCSS', function(){
   return gulp.src('src/css/**/*.css')
+    .pipe(sort())
     .pipe(concat('styles.css'))
     //.pipe(minifycss())
     .pipe(gulp.dest('build/app/css'));
-})
+});
 
 gulp.task('buildVendorJS', function(){
   return gulp.src(['bower_components/angular/angular.js',
@@ -54,7 +58,8 @@ gulp.task('buildVendorJS', function(){
 gulp.task('buildVendorCSS', function(){
   return gulp.src(['bower_components/bootstrap/dist/css/bootstrap.css',
                     'bower_components/angular-xeditable/dist/css/xeditable.css',
-                    'bower_components/angular-bootstrap/ui-bootstrap-csp.css'])
+                    'bower_components/angular-bootstrap/ui-bootstrap-csp.css',
+                    'bower_components/ng-sortable/dist/ng-sortable.min.css'])
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('build/app/css'));
 });
@@ -66,7 +71,11 @@ gulp.task('moveVendorFonts', function(){
 
 gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
 
-gulp.task('build', ['moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
+gulp.task('clean', function() {
+  return del(['build/build.json']) // created by "manage.py collectstatic"
+});
+
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 
 gulp.task('connect', function(){
   connect.server({
@@ -76,10 +85,10 @@ gulp.task('connect', function(){
 });
 
 gulp.task('watch', function(){
-  gulp.watch('src/js/**/*.js', ['buildJS']);
-  gulp.watch('src/css/**/*.css', ['buildCSS']);
-  gulp.watch('src/**/*.html', ['moveHTML']);
-  gulp.watch('bower_components/**/*.js', ['buildVendor']);
+  gulp.watch('src/js/**/*.js', ['buildJS', 's']);
+  gulp.watch('src/css/**/*.css', ['buildCSS', 's']);
+  gulp.watch('src/**/*.html', ['moveHTML', 's']);
+  gulp.watch('bower_components/**/*.js', ['buildVendor', 's']);
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);

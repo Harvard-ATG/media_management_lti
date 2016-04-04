@@ -125,7 +125,7 @@ section.droplet droplet.event-dragover comment:after {
     content: "...And Drop!";
 }
 
-section.droplet droplet ul.files {
+ul.files {
     /*height: 100%;*/
     width: 100%;
     overflow-y: auto;
@@ -153,7 +153,7 @@ section.droplet.uploading droplet ul.files {
     pointer-events: none;
 }
 
-section.droplet droplet ul.files li {
+ul.files li {
     width: 100px;
     height: 100px;
     padding: 1px;
@@ -277,8 +277,8 @@ div.resize-overlay {
   transform: scale(0.5);
 }
 
-li div.overlay:hover,
-li div.resize-overlay:hover {
+div.overlay:hover,
+div.resize-overlay:hover {
     background-color: rgba(0, 0, 0, .45);
 }
 
