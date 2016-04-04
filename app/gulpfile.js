@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var sort = require('gulp-sort');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
 //var Server = require('karma').Server;
@@ -14,11 +15,13 @@ gulp.task('moveHTML', function(){
 
 gulp.task('moveVendorSrc', function(){
   return gulp.src('src/vendor/**/*')
+    .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
 });
 
 gulp.task('buildJS', function(){
   return gulp.src('src/js/**/*.js')
+    .pipe(sort())
     .pipe(concat('app.js'))
     //.pipe(uglify())
     .pipe(gulp.dest('build/app/js'));
@@ -26,6 +29,7 @@ gulp.task('buildJS', function(){
 
 gulp.task('buildCSS', function(){
   return gulp.src('src/css/**/*.css')
+    .pipe(sort())
     .pipe(concat('styles.css'))
     //.pipe(minifycss())
     .pipe(gulp.dest('build/app/css'));
