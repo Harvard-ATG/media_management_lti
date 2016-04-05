@@ -1,0 +1,18 @@
+sudo: false # use new travis infrastructure
+language: python
+python:
+  - "2.7"
+env:
+    - DJANGO_SETTINGS_MODULE="media_management_lti.settings.local"
+install:
+    - pip install -r media_management_lti/requirements/local.txt --use-mirrors
+before_script:
+    - psql -c 'DROP DATABASE IF EXISTS media_management_lti;' -U postgres
+    - psql -c "CREATE USER media_management_lti WITH PASSWORD 'media_management_lti';" -U postgres
+    - psql -c 'ALTER USER media_management_lti CREATEDB;' -U postgres
+    - psql -c 'CREATE DATABASE media_management_lti;' -U postgres
+    - psql -c 'GRANT ALL PRIVILEGES ON DATABASE media_management_lti TO media_management_lti;' -U postgres
+    - cp -v media_management_lti/settings/secure.py.example media_management_lti/settings/secure.py
+script:
+    - python manage.py migrate --noinput
+    - python manage.py test media_manager

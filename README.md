@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Harvard-ATG/media_management_lti.svg)](https://travis-ci.org/Harvard-ATG/media_management_lti)
+
 ### Quickstart
 
 ```sh
@@ -11,3 +13,6 @@ $ python manage.py runserver 0.0.0.0:8080
 ```
 
 Note: the port forwarding for vagrant ssh is assuming you have the [API component](https://github.com/Harvard-ATG/media_management_api) running on 8000
+
+Optional step: run `python manage.py collectstatic` before runserver to install all nodejs dependencies and build the JS/CSS.
+
