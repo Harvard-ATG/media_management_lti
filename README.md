@@ -16,3 +16,4 @@ Note: the port forwarding for vagrant ssh is assuming you have the [API componen
 
 Optional step: run `python manage.py collectstatic` before runserver to install all nodejs dependencies and build the JS/CSS.
 
+
