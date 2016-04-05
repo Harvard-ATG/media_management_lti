@@ -87,13 +87,6 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
-    $timeout(function() {
-      var $el = $("#image-collection-panel .panel-body")
-      var el = $el[0];
-      if ($el.css("overflow-x") == "auto") {
-        el.scrollLeft = el.scrollWidth - el.clientWidth;
-      }
-    }, 0, false);
   };
 
   wc.removeFromCollection = function(id){
@@ -133,9 +126,9 @@ angular.module('media_manager')
         "images": "id"
       };
       return image[image_prop_for[image.type]];
-    })
+    });
 
-    // put to update collection
+    // PUT to update collection
     self.isSavingCollection.status = true;
     Collection.update({}, wc.collection, function(data){
       wc.notifications.clear();
@@ -143,11 +136,19 @@ angular.module('media_manager')
       self.isLoadingCollection.status = true;
       collection.$promise.then(function(collection) {
         wc.collection = collection;
+        
+        // update the CourseCache.collections since it is stale
+        var collection_idx = wc.courseCollections.map(function(c) { return c.id; }).indexOf(collection.id);
+        if (collection_idx >= 0) {
+          wc.courseCollections.splice(collection_idx, 1, collection);
+        }
+        $log.debug("insert updated collection into cache at index: ", collection_idx);
       }, function(response) {
         wc.notifications.error("Error loading collection: " + response);
       }).finally(function() {
         self.isLoadingCollection.status = false;
       });
+      
     }, function(errorResponse) {
       $log.debug("Error updating collection:", errorResponse);
       wc.notifications.error("Error updating collection: " + errorResponse);
@@ -174,32 +175,6 @@ angular.module('media_manager')
     });
   };
 
-  // Fix the collection panel at the top of the screen
-  wc.onDocumentScroll = (function() {
-    var fixedPosition = false;
-    var fixedCls = 'image-collection-fixed';
-    var fixedSelector = "#image-collection-panel";
-    var offsetSelector = "#image-collection-panel";
-    var offsetTop = null;
-
-    return function(event) {
-      var windowTop = $(window).scrollTop();
-      if (fixedPosition) {
-        if (windowTop < offsetTop) {
-          $(fixedSelector).removeClass(fixedCls);
-          fixedPosition = false;
-        }
-      } else {
-        if (offsetTop === null) {
-          offsetTop = $(offsetSelector).offset().top;
-        }
-        if (offsetTop < windowTop) {
-          $(fixedSelector).addClass(fixedCls);
-          fixedPosition = true;
-        }
-      }
-    };
-  })();
 
   wc.onClickSortLibrary = function($event, choice) {
     $event.preventDefault();
@@ -266,5 +241,4 @@ angular.module('media_manager')
     Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
   })
 
-  //$(document).scroll(wc.onDocumentScroll);
 }]);

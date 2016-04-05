@@ -25,6 +25,7 @@ angular.module('media_manager')
   this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
   this.isLoadingImages = {"status": false, "msg": "Loading images..."};
   this.isLoading = {"status": false, "msg": "Loading..."};
+  this.loaded = false;
   this.compareImages = null;
   this.sortType = null;
 
@@ -70,12 +71,15 @@ angular.module('media_manager')
     });
   };
   this.load = function() {
-    if (this.images.length == 0) {
+    if (!this.loaded) {
       this.loadImages();
-    }
-    if (this.collections.length == 0) {
       this.loadCollections();
+      this.loaded = true;
     }
+  };
+  this.reload = function() {
+    this.loaded = false;
+    this.load();
   };
   this.getCollectionById = function(id) {
     for (var i = 0; i < this.collections.length; i++) {
