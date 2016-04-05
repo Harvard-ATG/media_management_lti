@@ -1,9 +1,6 @@
-<h4>Edit Collection {{ wc.collection.title }}</h4>
-
 <div data-ng-include data-src="'/static/app/templates/breadcrumbs.html'"></div>
 
 <div ng-if="wc.canEdit" class="container-fluid">
-
 
   <div class="row">
     <div class="notifications" ng-show="wc.notifications.messages.length > 0" ng-repeat="message in wc.notifications.messages track by $index">
@@ -22,23 +19,26 @@
             <span editable-text="wc.collection.title" e-form="collectionTitleForm">{{ wc.collection.title }}</span>
           </h3>
         </div>
-        <div class="panel-body">
-          <div ng-show="wc.isLoadingCollection.status || wc.isSavingCollection.status">
-              <span us-spinner="{top:'50%'}"></span>
-          </div>
-          <button type="button" class="btn btn-primary" ng-click="wc.hideLibrary = !wc.hideLibrary">
-            <span ng-if="wc.hideLibrary">Add Images</span>
-            <span ng-if="!wc.hideLibrary">Close Library</span>
-          </button>
-          <hr>
-          <div ng-show="wc.collection.images.length == 0">Empty collection</div>
-          <ul class="list-inline">
-            <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images track by $index">
-              <droplet-thumb ng-model="collectionImage"></droplet-thumb>
-              <div class="overlay" ng-click="wc.removeFromCollection($index)">-</div>
-            </li>
-          </ul>
-        </div>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <button type="button" class="btn btn-primary" ng-click="wc.hideLibrary = !wc.hideLibrary">
+              <span ng-if="wc.hideLibrary">Add Images</span>
+              <span ng-if="!wc.hideLibrary">Close Library</span>
+            </button>
+          </li>
+          <li class="list-group-item">
+            <div ng-show="wc.isLoadingCollection.status || wc.isSavingCollection.status">
+                <span us-spinner="{top:'50%'}"></span>
+            </div>
+            <div ng-show="wc.collection.images.length == 0">Empty collection</div>
+            <ul class="list-inline">
+              <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images track by $index">
+                <droplet-thumb ng-model="collectionImage"></droplet-thumb>
+                <div class="overlay" ng-click="wc.removeFromCollection($index)">-</div>
+              </li>
+            </ul>
+          </li>
+        </ul>
         <div class="panel-footer">
           <input type="button" class="btn btn-primary" value="Save Collection" ng-click="wc.saveCollection()" ng-disabled="wc.isSavingCollection.status" />
           <input type="button" class="btn btn-default pull-right" style="margin-left: 20px;" value="Cancel" ng-click="wc.cancelCollection()"/>

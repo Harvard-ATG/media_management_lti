@@ -64,12 +64,6 @@ ul.list-inline .as-sortable-placeholder {
   margin-right: 0px;
 }
 
-.row div + div {
-    margin-left: 0px;
-    padding: 0px;
-
-}
-
 .tooltip-inner {
   padding: 3px 8px !important;
 }
