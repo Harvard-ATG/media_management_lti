@@ -37,6 +37,8 @@ angular.module('media_manager')
 
   wc.imagelb = ImageLightBox;
 
+  wc.hideLibrary = true;
+
   var dragEnabled = true;
   wc.dragControlListeners = {
     accept: function(sourceItemHandleScope, destSortableScope){
@@ -239,6 +241,6 @@ angular.module('media_manager')
 
   $scope.$watch('wc.layout', function(newVal, oldVal) {
     Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
-  })
+  });
 
 }]);

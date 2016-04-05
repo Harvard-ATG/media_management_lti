@@ -41,3 +41,29 @@ ul.list-inline .as-sortable-placeholder {
   border-bottom: none;
   color: inherit;
 }
+
+
+/* is this needed for library animations? */
+.row div {
+    -webkit-transition: width 0.4s ease, margin 0.4s ease;
+    -moz-transition: width 0.4s ease, margin 0.4s ease;
+    -o-transition: width 0.4s ease, margin 0.4s ease;
+    transition: width 0.4s ease, margin 0.4s ease;
+}
+
+.col-md-0 {
+    width: 0px;
+    float: left;
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    min-height: 1px;
+}
+
+.row.no-margin {
+  margin-right: 0px;
+}
+
+.tooltip-inner {
+  padding: 3px 8px !important;
+}

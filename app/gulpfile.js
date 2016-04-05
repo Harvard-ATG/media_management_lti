@@ -37,8 +37,7 @@ gulp.task('buildCSS', function(){
 });
 
 gulp.task('buildVendorJS', function(){
-  return gulp.src(['bower_components/jquery/dist/jquery.js',
-                   'bower_components/angular/angular.js',
+  return gulp.src(['bower_components/angular/angular.js',
                     'bower_components/angular-bootstrap/ui-bootstrap.js',
                     'bower_components/angular-fileupload/angular-filereader.js',
                     'bower_components/angular-resource/angular-resource.js',
@@ -49,7 +48,8 @@ gulp.task('buildVendorJS', function(){
                     'bower_components/ng-droplet/dist/ng-droplet.js',
                     'bower_components/spin.js/spin.js',
                     'bower_components/angular-spinner/angular-spinner.js',
-                    'bower_components/ng-sortable/dist/ng-sortable.min.js'
+                    'bower_components/ng-sortable/dist/ng-sortable.min.js',
+                    'bower_components/angular-animate/angular-animate.js'
                     ])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/app/js'));

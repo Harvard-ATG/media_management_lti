@@ -65,7 +65,8 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             'cwd': APP_BASE_DIR, 
             'shell': True,
             'env': {
-                'PATH': os.environ['PATH'] +':{0}'.format(NODE_MODULES_BIN_DIR) # so the shell can find the "bower" command
+                'PATH': os.environ['PATH'] +':{0}'.format(NODE_MODULES_BIN_DIR), # so the shell can find the "bower" command
+                'HOME': APP_BASE_DIR,
             }
         }
         logger.info("popen_args=%s" % popen_args)

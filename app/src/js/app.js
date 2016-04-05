@@ -1,4 +1,4 @@
-angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable'])
+angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable', 'ngAnimate'])
 .run(function(editableOptions){
   editableOptions.theme = 'bs3';
 })
@@ -45,4 +45,15 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
 })
 .run(function($http) {
   $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
-});
+})
+.filter('ellipsit', [function(){
+  return function(input, length){
+    input = input || '';
+    length = parseInt(length) || 20;
+    var out = input.substr(0, length);
+    if(out.length < input.length){
+      out += "...";
+    }
+    return out;
+  };
+}]);
