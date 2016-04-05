@@ -85,10 +85,10 @@ gulp.task('connect', function(){
 });
 
 gulp.task('watch', function(){
-  gulp.watch('src/js/**/*.js', ['buildJS', 's']);
-  gulp.watch('src/css/**/*.css', ['buildCSS', 's']);
-  gulp.watch('src/**/*.html', ['moveHTML', 's']);
-  gulp.watch('bower_components/**/*.js', ['buildVendor', 's']);
+  gulp.watch('src/js/**/*.js', ['buildJS']);
+  gulp.watch('src/css/**/*.css', ['buildCSS']);
+  gulp.watch('src/**/*.html', ['moveHTML']);
+  gulp.watch('bower_components/**/*.js', ['buildVendor']);
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);
