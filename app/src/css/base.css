@@ -60,8 +60,12 @@ ul.list-inline .as-sortable-placeholder {
     min-height: 1px;
 }
 
+.row.no-margin {
+  margin-right: 0px;
+}
+
 .row div + div {
-    margin-left: 0;
+    margin-left: 0px;
     padding: 0px;
 
 }
