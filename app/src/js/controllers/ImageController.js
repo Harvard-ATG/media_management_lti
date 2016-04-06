@@ -99,7 +99,7 @@ angular.module('media_manager')
     ic.editNewMetadata = true;
   };
   ic.hideNewMetadata = function(){
-    ic.editNewMetadata = false;  
+    ic.editNewMetadata = false;
   };
 
   ic.deleteMetadata = function(index, form){
@@ -111,6 +111,9 @@ angular.module('media_manager')
     ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
       if(ic.index == ic.CourseCache.images.length){
         ic.index--;
+      }
+      if(ic.index < 0){
+        ic.index = 0;
       }
       if(ic.CourseCache.images.length == 0){
         $location.path(Breadcrumbs.crumbs[Breadcrumbs.crumbs.length - 1].route);
