@@ -9,6 +9,8 @@ install:
     - cd app
     - npm install
     - bower install
+    - ./node_modules/karma/bin/karma start
+    - cd ..
 #    - /home/vagrant/media_management_lti/app buld build
 before_script:
     - psql -c 'DROP DATABASE IF EXISTS media_management_lti;' -U postgres
