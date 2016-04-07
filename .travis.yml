@@ -6,6 +6,9 @@ env:
     - DJANGO_SETTINGS_MODULE="media_management_lti.settings.local"
 install:
     - pip install -r media_management_lti/requirements/local.txt --use-mirrors
+    - /home/vagrant/media_management_lti/app npm install
+    - /home/vagrant/media_management_lti/app bower install
+#    - /home/vagrant/media_management_lti/app buld build
 before_script:
     - psql -c 'DROP DATABASE IF EXISTS media_management_lti;' -U postgres
     - psql -c "CREATE USER media_management_lti WITH PASSWORD 'media_management_lti';" -U postgres
