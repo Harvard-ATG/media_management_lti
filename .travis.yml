@@ -10,7 +10,6 @@ install:
     - npm install
     - bower install
     - cd ..
-#    - /home/vagrant/media_management_lti/app buld build
 before_script:
     - psql -c 'DROP DATABASE IF EXISTS media_management_lti;' -U postgres
     - psql -c "CREATE USER media_management_lti WITH PASSWORD 'media_management_lti';" -U postgres
