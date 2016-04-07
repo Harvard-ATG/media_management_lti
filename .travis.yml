@@ -9,7 +9,6 @@ install:
     - cd app
     - npm install
     - bower install
-    - ./node_modules/karma/bin/karma start
     - cd ..
 #    - /home/vagrant/media_management_lti/app buld build
 before_script:
@@ -22,3 +21,5 @@ before_script:
 script:
     - python manage.py migrate --noinput
     - python manage.py test media_manager
+    - cd app
+    - ./node_modules/karma/bin/karma start
