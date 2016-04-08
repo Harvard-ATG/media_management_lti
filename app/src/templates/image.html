@@ -27,8 +27,8 @@
       <div class="col-md-12 text-center">
         <h4>{{ ic.CourseCache.current_image.title || "Untitled" }}</h4>
       </div>
-      <div class="modal-body ng-scope">
-        <img style="display: block; margin-left: auto; margin-right: auto; max-height: 400px;" ng-src="{{ ic.CourseCache.current_image.image_url }}"/>
+      <div class="col-md-12 text-center" style="height: 400px;">
+        <img style="display: block;margin: auto; max-width: 100%; max-height: 100%;" ng-src="{{ ic.CourseCache.current_image.image_url }}"/>
       </div>
       <div class="col-md-12 text-center">
         <p>{{ic.CourseCache.current_image.description||'No Description'}}</p>
@@ -82,57 +82,34 @@
       </div>
       <div class="form-group">
         <label for="MetadataDSelect">Image metadata</label>
-        <ul class="list-unstyled">
-          <li ng-repeat="meta in ic.metadata track by $index" ng-init="fname = 'metadataForm' + meta.id" style="margin-top: 1em">
-            <form class="form-inline" editable-form name="fname" ng-submit="" blur="cancel" onaftersave="ic.saveMetadata(meta.label, meta.value, $index)">
-              <div class="form-group">
-                <div class="input-group">
-                  <input type="text" class="form-control" ng-click="fname.$show()" editable-text="meta.label" placeholder="{{ meta.label || 'No Label' }}" />
-                  <span class="input-group-addon">:</span>
-                  <input type="text" class="form-control" ng-click="fname.$show()" editable-text="meta.value" placeholder="{{ meta.value || 'No Value' }}" />
+        <button type="button" class="btn btn-primary" ng-click="ic.metaForm.show()" ng-show="!ic.metaForm.visible">Edit</button>
+        <button type="button" class="btn btn-default" ng-click="ic.metaForm.hide()" ng-show="ic.metaForm.visible">Cancel</button>
+        <form class="form-inline" ng-class="{'has-error': ic.metaForm.hasError, 'has-success': ic.metaForm.hasSuccess}" ng-submit="">
+          <ul class="list-unstyled">
+            <li ng-repeat="row in ic.metaForm.data track by $index" style="margin-top: 1em" ng-style="ic.metaForm.waiting ? {opacity:0.5} : {}">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" ng-readonly="!ic.metaForm.visible" name="label" ng-model="row.label" placeholder="{{ row.label || 'No Label' }}" />
+                    <span class="input-group-addon">:</span>
+                    <input type="text" class="form-control" ng-readonly="!ic.metaForm.visible" name="value" ng-model="row.value" placeholder="{{ row.value || 'No Value' }}" />
+                  </div>
                 </div>
-              </div>
-              <div class="form-group">
-                <button type="button" class="btn btn-primary" ng-click="fname.$show()"ng-show="!fname.$visible">Edit</button>
-                <span ng-show="fname.$visible">
-                  <button type="submit" class="btn btn-primary" ng-disabled="fname.$waiting">
-                    <span class="glyphicon glyphicon-ok"></span>
-                  </button>
-                  <button type="button" class="btn btn-default" ng-disabled="fname.$waiting" ng-click="fname.$cancel()">
-                    <span class="glyphicon glyphicon-remove"></span>
-                  </button>
-                  <button type="button" class="btn btn-danger" ng-disabled="fname.$waiting" ng-click="ic.deleteMetadata($index, fname)">
+                <div class="form-group" ng-show="ic.metaForm.visible">
+                  <button type="button" class="btn btn-danger" ng-click="ic.metaForm.deleteRow($index)">
                     <span class="glyphicon glyphicon-trash"></span>
                   </button>
-                </span>
-              </div>
-            </form>
-          </li>
-          <li ng-hide="ic.editNewMetadata">
-            <div style="margin-top: 1em">
-              <button class="btn btn-primary" ng-click="ic.showNewMetadata()">Add Metadata</button>
-            </div>
-          </li>
-          <li ng-show="ic.editNewMetadata">
-            <form class="form-inline" style="margin-top:1em" ng-submit="ic.saveMetadata()" >
-              <div class="form-group">
-                <div class="input-group">
-                  <input type="text" class="form-control" ng-model="ic.newLabel" focus="ic.editNewMetadata"/>
-                  <span class="input-group-addon">:</span>
-                  <input type="text" class="form-control" ng-model="ic.newValue"/>
                 </div>
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-ok"></span>
-                </button>
-                <button type="button" class="btn btn-default" ng-click="ic.hideNewMetadata()">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-              </div>
-            </form>
-          </li>
-        </ul>
+            </li>
+            <li ng-show="ic.metaForm.visible" style="margin-top: 1em">
+              <button type="submit" class="btn btn-primary" ng-click="ic.metaForm.save()" ng-disabled="ic.metaForm.waiting">Save Metadata</button>
+              <button class="btn btn-default" ng-click="ic.metaForm.addRow()">Add Metadata Field</button>
+            </li>
+            <div class="alert alert-danger" role="alert" ng-if="ic.metaForm.hasError">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Error:</span> {{ic.metaForm.errorMsg}}
+            </div>
+          </ul>
+        </form>
       </div>
     </div>
   </div>
