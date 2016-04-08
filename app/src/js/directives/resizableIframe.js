@@ -9,8 +9,13 @@ angular.module('media_manager')
     };
 
     var resize = function(element) {
-        var height_px = calculateHeight(element) + "px";
-        element.css('height', height_px);
+        var height = calculateHeight(element);
+        if (height < 500) {
+            height = 500;
+        } else if (height > 1000) {
+            height = 1000;
+        }
+        element.css('height', height + "px");
     };
 
     return {
