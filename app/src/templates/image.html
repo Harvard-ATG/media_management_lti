@@ -81,7 +81,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="MetadataDSelect">Search information</label>
+        <label for="MetadataDSelect">Image metadata</label>
         <ul class="list-unstyled">
           <li ng-repeat="meta in ic.metadata track by $index" ng-init="fname = 'metadataForm' + meta.id" style="margin-top: 1em">
             <form class="form-inline" editable-form name="fname" ng-submit="" blur="cancel" onaftersave="ic.saveMetadata(meta.label, meta.value, $index)">
