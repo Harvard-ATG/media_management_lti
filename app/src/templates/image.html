@@ -84,7 +84,7 @@
         <label for="MetadataDSelect">Search information</label>
         <ul class="list-unstyled">
           <li ng-repeat="meta in ic.metadata track by $index" ng-init="fname = 'metadataForm' + meta.id" style="margin-top: 1em">
-            <form class="form-inline" editable-form name="fname" ng-submit="" onaftersave="ic.saveMetadata(meta.label, meta.value, $index)">
+            <form class="form-inline" editable-form name="fname" ng-submit="" blur="cancel" onaftersave="ic.saveMetadata(meta.label, meta.value, $index)">
               <div class="form-group">
                 <div class="input-group">
                   <input type="text" class="form-control" ng-click="fname.$show()" editable-text="meta.label" placeholder="{{ meta.label || 'No Label' }}" />
