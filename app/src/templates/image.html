@@ -83,8 +83,8 @@
       <div class="form-group">
         <label for="MetadataDSelect">Image metadata</label>
         <button type="button" class="btn btn-primary" ng-click="ic.metaForm.show()" ng-show="!ic.metaForm.visible">Edit</button>
-        <button type="button" class="btn btn-default" ng-click="ic.metaForm.hide()" ng-show="ic.metaForm.visible">Cancel</button>
-        <form class="form-inline" ng-class="{'has-error': ic.metaForm.hasError, 'has-success': ic.metaForm.hasSuccess}" ng-submit="">
+        <button type="button" class="btn btn-default" ng-click="ic.metaForm.cancel()" ng-show="ic.metaForm.visible">Cancel</button>
+        <form class="form-inline" ng-class="{'has-error': ic.metaForm.hasError}" ng-submit="">
           <ul class="list-unstyled">
             <li ng-repeat="row in ic.metaForm.data track by $index" style="margin-top: 1em" ng-style="ic.metaForm.waiting ? {opacity:0.5} : {}">
                 <div class="form-group">

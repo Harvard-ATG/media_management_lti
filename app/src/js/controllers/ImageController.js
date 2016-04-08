@@ -88,7 +88,6 @@ angular.module('media_manager')
     visible: false,
     waiting: false,
     hasError: false,
-    hasSuccess: false,
     errorMsg: '',
     show: function() {
       this.visible = true;
@@ -98,18 +97,23 @@ angular.module('media_manager')
       this.visible = false;
       this.resetErrorState();
     },
+    cancel: function() {
+      this.data = ic.getImageMetadata();
+      this.hide();
+    },
     save: function() {
       ic.metaForm.waiting = true;
       ic.image.metadata = this.data;
       Image.update({}, ic.image, function success(data){
-        ic.metaForm.waiting = false;
         ic.metaForm.resetErrorState();
-        ic.metaForm.hasSuccess = true;
+        ic.metaForm.waiting = false;
+        ic.metaForm.hide();
         $log.debug("successfully updated image");
       }, function failure(errorResponse){
         ic.metaForm.resetErrorState();
-        ic.metaForm.hasError = true;
+        ic.metaForm.waiting = false;
         ic.metaForm.errorMsg = errorResponse;
+        ic.metaForm.hasError = true;
         $log.debug("error updating image:", errorResponse);
       });
     },
@@ -121,7 +125,6 @@ angular.module('media_manager')
     },
     resetErrorState: function() {
       this.hasError = false;
-      this.hasSuccess = false;
       this.errorMsg = '';
     }
   };
