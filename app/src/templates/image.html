@@ -64,9 +64,7 @@
             {{ic.CourseCache.current_image.title||'Untitled'}}
           </div>
           <div class="input-group-btn">
-            <span class="input-group-btn">
-              <button class="btn btn-primary" ng-click="titleForm.$show()" ng-hide="titleForm.$visible">Edit</button>
-            </span>
+            <button class="btn btn-primary" ng-click="titleForm.$show()" ng-hide="titleForm.$visible">Edit</button>
           </div>
         </div>
       </div>
@@ -78,50 +76,60 @@
             {{ic.CourseCache.current_image.description||'No Description'}}
           </div>
           <div class="input-group-btn">
-            <span class="input-group-btn">
-              <button class="btn btn-primary" ng-click="descForm.$show()" ng-hide="descForm.$visible">Edit</button>
-            </span>
+            <button class="btn btn-primary" ng-click="descForm.$show()" ng-hide="descForm.$visible">Edit</button>
           </div>
         </div>
       </div>
       <div class="form-group">
         <label for="MetadataDSelect">Search information</label>
         <ul class="list-unstyled">
-          <li ng-repeat="meta in ic.image.metadata track by $index" ng-init="fname = 'metadataForm' + meta.id">
+          <li ng-repeat="meta in ic.metadata track by $index" ng-init="fname = 'metadataForm' + meta.id" style="margin-top: 1em">
             <form class="form-inline" editable-form name="fname" ng-submit="" onaftersave="ic.saveMetadata(meta.label, meta.value, $index)">
               <div class="form-group">
-                <div class="form-control" ng-click="fname.$show()" editable-text="meta.label">{{ meta.label || "No Label" }}</strong>:
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-click="fname.$show()" editable-text="meta.label" placeholder="{{ meta.label || 'No Label' }}" />
+                  <span class="input-group-addon">:</span>
+                  <input type="text" class="form-control" ng-click="fname.$show()" editable-text="meta.value" placeholder="{{ meta.value || 'No Value' }}" />
+                </div>
               </div>
               <div class="form-group">
-                <div class="form-control" ng-click="fname.$show()" editable-text="meta.value">{{ meta.value || "No Value" }}</span>
+                <button type="button" class="btn btn-primary" ng-click="fname.$show()"ng-show="!fname.$visible">Edit</button>
+                <span ng-show="fname.$visible">
+                  <button type="submit" class="btn btn-primary" ng-disabled="fname.$waiting">
+                    <span class="glyphicon glyphicon-ok"></span>
+                  </button>
+                  <button type="button" class="btn btn-default" ng-disabled="fname.$waiting" ng-click="fname.$cancel()">
+                    <span class="glyphicon glyphicon-remove"></span>
+                  </button>
+                  <button type="button" class="btn btn-danger" ng-disabled="fname.$waiting" ng-click="ic.deleteMetadata($index, fname)">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </button>
+                </span>
               </div>
-              <button type="button" class="btn btn-primary" ng-click="fname.$show()"ng-show="!fname.$visible">Edit</button>
-              <span ng-show="fname.$visible">
-                <button type="submit" class="btn btn-primary" ng-disabled="fname.$waiting">
-                  <span class="glyphicon glyphicon-ok"></span>
-                </button>
-                <button type="button" class="btn btn-default" ng-disabled="fname.$waiting" ng-click="fname.$cancel()">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-                <button type="button" class="btn btn-danger" ng-disabled="fname.$waiting" ng-click="ic.deleteMetadata($index, fname)">
-                  <span class="glyphicon glyphicon-trash"></span>
-                </button>
-              </span>
             </form>
           </li>
           <li ng-hide="ic.editNewMetadata">
-            <button class="btn btn-link" ng-click="ic.showNewMetadata()">New Metadata</button>
+            <div style="margin-top: 1em">
+              <button class="btn btn-primary" ng-click="ic.showNewMetadata()">Add Metadata</button>
+            </div>
           </li>
           <li ng-show="ic.editNewMetadata">
-            <form ng-submit="ic.saveMetadata()">
-              <input type="text" ng-model="ic.newLabel" focus="ic.editNewMetadata"/>:
-              <input type="text" ng-model="ic.newValue"/>
-              <button type="submit" class="btn btn-primary">
-                <span class="glyphicon glyphicon-ok"></span>
-              </button>
-              <button type="button" class="btn btn-default" ng-click="ic.hideNewMetadata()">
-                <span class="glyphicon glyphicon-remove"></span>
-              </button>
+            <form class="form-inline" style="margin-top:1em" ng-submit="ic.saveMetadata()" >
+              <div class="form-group">
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="ic.newLabel" focus="ic.editNewMetadata"/>
+                  <span class="input-group-addon">:</span>
+                  <input type="text" class="form-control" ng-model="ic.newValue"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-default" ng-click="ic.hideNewMetadata()">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </div>
             </form>
           </li>
         </ul>

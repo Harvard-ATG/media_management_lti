@@ -7,6 +7,7 @@ angular.module('media_manager')
   ic.imageBehavior = ImageBehavior;
   ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
+  ic.metadata = [];
 
   ic.index = 0;
   CourseCache.images.forEach(function(img, index){
@@ -15,7 +16,7 @@ angular.module('media_manager')
       ic.index = index;
     }
   });
-
+  
   ic.save = function(){
     var image = CourseCache.current_image;
     Image.update({}, image, function success(data){
@@ -92,6 +93,32 @@ angular.module('media_manager')
     ic.saveMetadata('', '', index);
     form.$cancel();
   }
+  
+  ic.defaultMetadataLabels = [
+    'Date',
+    'Type',
+    'Format',
+    'Source',
+    'Repository',
+    'Creator',
+    'Dimensions'
+  ];
+
+  ic.getImageMetadata = function() {
+    var metadata = [];
+    var image_metadata = ic.image.metadata;
+    var default_metadata = ic.defaultMetadataLabels.map(function(label) {
+      return {'label': label, 'value': ''};
+    });
+    
+    if (angular.isArray(image_metadata) && image_metadata.length > 0) {
+      metadata = image_metadata;
+    } else {
+      metadata = default_metadata;
+    }
+
+    return metadata;
+  };
 
   ic.deleteImage = function(){
     ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
@@ -103,4 +130,10 @@ angular.module('media_manager')
       }
     });
   };
+  
+  $scope.$watch(function() {
+    return ic.CourseCache.current_image.id;
+  }, function(newVal, oldVal) {
+    ic.metadata = ic.getImageMetadata();
+  });
 }]);
