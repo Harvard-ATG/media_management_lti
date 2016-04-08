@@ -6,6 +6,10 @@ env:
     - DJANGO_SETTINGS_MODULE="media_management_lti.settings.local"
 install:
     - pip install -r media_management_lti/requirements/local.txt --use-mirrors
+    - cd app
+    - npm install
+    - bower install
+    - cd ..
 before_script:
     - psql -c 'DROP DATABASE IF EXISTS media_management_lti;' -U postgres
     - psql -c "CREATE USER media_management_lti WITH PASSWORD 'media_management_lti';" -U postgres
@@ -16,3 +20,5 @@ before_script:
 script:
     - python manage.py migrate --noinput
     - python manage.py test media_manager
+    - cd app
+    - ./node_modules/karma/bin/karma start

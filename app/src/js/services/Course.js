@@ -41,10 +41,11 @@ angular.module('media_manager')
             break;
         }
     }
+
     if (remove_at_idx >= 0) {
-        this.current_image = this.getPrevImage(image_id);
-        this.images.splice(remove_at_idx, 1);
-        return true;
+      this.images.splice(remove_at_idx, 1);
+      this.current_image = this.getPrevImage(image_id);
+      return true;
     }
     return false;
   };
@@ -111,7 +112,11 @@ angular.module('media_manager')
         }
       }
     }
-    return null;
+    if(this.images.length > 0){
+      return this.images[0];
+    } else {
+      return null;
+    }
   };
   this.updateSort = function(sortType, sortDir) {
     var make_numeric_compare = function(prop, dir) {
