@@ -138,7 +138,7 @@ angular.module('media_manager')
       self.isLoadingCollection.status = true;
       collection.$promise.then(function(collection) {
         wc.collection = collection;
-        
+
         // update the CourseCache.collections since it is stale
         var collection_idx = wc.courseCollections.map(function(c) { return c.id; }).indexOf(collection.id);
         if (collection_idx >= 0) {
@@ -150,7 +150,7 @@ angular.module('media_manager')
       }).finally(function() {
         self.isLoadingCollection.status = false;
       });
-      
+
     }, function(errorResponse) {
       $log.debug("Error updating collection:", errorResponse);
       wc.notifications.error("Error updating collection: " + errorResponse);

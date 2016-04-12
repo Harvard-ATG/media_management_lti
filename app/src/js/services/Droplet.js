@@ -3,16 +3,17 @@ angular.module('media_manager')
   var ds = this;
 
   ds.interface = null;
-  
+
   ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-  
+
   ds.maximumValidFiles = 10;
+  ds.maximumValidSize = 50000; //size is bytes
 
   ds.requestHeaders = {
     'Accept': 'application/json',
     'Authorization': AppConfig.authorization_header
   };
-  
+
   // Returns the image upload URL.
   ds.getUploadUrl = function() {
       var request_url = ":base_url/courses/:course_id/images";
@@ -39,7 +40,7 @@ angular.module('media_manager')
       }
     };
   };
-  
+
   ds.onError = function(callback) {
     return function(event, response) {
       $log.debug("Error: droplet uploaded file: ", response);
@@ -55,24 +56,31 @@ angular.module('media_manager')
       var total_valid = ds.getTotalValid();
       var is_valid_type = (model.type == ds.interface.FILE_TYPES.VALID)
       var is_valid_total = (total_valid <= ds.maximumValidFiles);
+      var total_size = 0;
+      ds.interface.getFiles().forEach(function(item, index, arr){
+        total_size += item.file.size;
+      });
+      var is_valid_total_size = (total_size <= ds.maximumValidSize);
       var msg = "";
-  
-      if (is_valid_type && is_valid_total) {
+
+      if (is_valid_type && is_valid_total_size) {
         success && success(event, model);
       } else {
-        $log.debug("Notification: file added is invalid; NOT uploading with extension: ", model.extension);
         //alert("Error: '" + model.file.name +"' is not valid for upload. Cannot upload file with extension '" + model.extension + "'. File must be one of: " + Droplet.allowedExtensions.join(", "));
         model.deleteFile();
-        if (!is_valid_total) {
-          msg = "Too many images to upload. You can upload " + ds.maximumValidFiles + " at a time.";
+        if(!is_valid_total_size){
+          $log.debug("Notification: total size of files is invalid; NOT uploading when size is greater than: " + ds.maximumValidSize + " bytes.");
+          var size_in_mb = parseInt(ds.maximumValidSize / 1000000);
+          msg = "Total file size too large. Cannot exceed " + size_in_mb + "MB at a time.";
         } else if (!is_valid_type) {
-          msg = "Invalid image: '" + model.file.name +"'. Cannot upload file with extension '" + model.extension + "'. File extension must be one of: " + ds.allowedExtensions.join(", ")
+          $log.debug("Notification: file added is invalid; NOT uploading with extension: ", model.extension);
+            msg = "Invalid image: '" + model.file.name +"'. Cannot upload file with extension '" + model.extension + "'. File extension must be one of: " + ds.allowedExtensions.join(", ")
         }
         error && error(event, model, msg);
       }
     };
   };
-  
+
   ds.onFileDeleted = function(callback) {
     return function(event, model) {
       $log.debug("Notification: droplet file deleted", model);
