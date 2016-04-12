@@ -2,7 +2,6 @@ describe('Droplet Service', function(){
   var droplet;
 
   var interfaceMock = function(){
-    this.somethingelse = "asdf";
     this.files = [];
     this.FILE_TYPES = {
       'VALID': true
