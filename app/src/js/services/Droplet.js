@@ -6,8 +6,7 @@ angular.module('media_manager')
 
   ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
-  ds.maximumValidFiles = 10;
-  ds.maximumValidSize = 50000; //size is bytes
+  ds.maximumValidSize = 50000000; //size is bytes
 
   ds.requestHeaders = {
     'Accept': 'application/json',
