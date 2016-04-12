@@ -53,9 +53,7 @@ angular.module('media_manager')
   ds.onFileAdded = function(success, error) {
     return function(event, model) {
       $log.debug("Notification: droplet file added", model);
-      var total_valid = ds.getTotalValid();
       var is_valid_type = (model.type == ds.interface.FILE_TYPES.VALID)
-      var is_valid_total = (total_valid <= ds.maximumValidFiles);
       var total_size = 0;
       ds.interface.getFiles().forEach(function(item, index, arr){
         total_size += item.file.size;
