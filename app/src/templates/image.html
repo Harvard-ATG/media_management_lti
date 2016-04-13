@@ -1,76 +1,118 @@
 <div data-ng-include data-src="'/static/app/templates/breadcrumbs.html'"></div>
 
-<div class="modal-header">
-    <h3 class="modal-title">
-      <button class="btn btn-sm btn-link" ng-click="titleForm.$show()" ng-hide="titleForm.$visible">
-        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-      </button>
-      <span editable-text="ic.CourseCache.current_image.title" e-form="titleForm" ng-click="titleForm.$show()" onbeforesave="ic.save()">
-        {{ ic.CourseCache.current_image.title || "Untitled" }}
-      </span>
-    </h3>
-    <pp>
-      <button class="btn btn-sm btn-link" ng-click="descForm.$show()" ng-hide="descForm.$visible">
-        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-      </button>
-      <span editable-text="ic.CourseCache.current_image.description" e-form="descForm" ng-click="descForm.$show()" onbeforesave="ic.save()">
-        {{ ic.CourseCache.current_image.description || "No Description" }}
-      </span>
-    </pp>
-    <ul class="list-unstyled">
-      <li ng-repeat="meta in ic.image.metadata track by $index" ng-init="fname = 'metadataForm' + meta.id">
-        <form class="form-inline" editable-form name="fname" ng-submit="" onaftersave="ic.saveMetadata(meta.label, meta.value, $index)">
-          <button type="button" class="btn btn-sm btn-link" ng-click="fname.$show()" ng-show="!fname.$visible">
-            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-          </button>
-          <strong ng-click="fname.$show()" editable-text="meta.label">{{ meta.label || "No Label" }}</strong>:
-          <span ng-click="fname.$show()" editable-text="meta.value">{{ meta.value || "No Value" }}</span>
-          <span ng-show="fname.$visible">
-            <button type="submit" class="btn btn-primary" ng-disabled="fname.$waiting">
-              <span class="glyphicon glyphicon-ok"></span>
-            </button>
-            <button type="button" class="btn btn-default" ng-disabled="fname.$waiting" ng-click="fname.$cancel()">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button>
-            <button type="button" class="btn btn-danger" ng-disabled="fname.$waiting" ng-click="ic.deleteMetadata($index, fname)">
-              <span class="glyphicon glyphicon-trash"></span>
-            </button>
-          </span>
-        </form>
-      </li>
-      <li ng-hide="ic.editNewMetadata">
-        <button class="btn btn-link" ng-click="ic.showNewMetadata()">New Metadata</button>
-      </li>
-      <li ng-show="ic.editNewMetadata">
-        <form ng-submit="ic.saveMetadata()">
-          <input type="text" ng-model="ic.newLabel" focus="ic.editNewMetadata"/>:
-          <input type="text" ng-model="ic.newValue"/>
-          <button type="submit" class="btn btn-primary">
-            <span class="glyphicon glyphicon-ok"></span>
-          </button>
-          <button type="button" class="btn btn-default" ng-click="ic.hideNewMetadata()">
-            <span class="glyphicon glyphicon-remove"></span>
-          </button>
-        </form>
-      </li>
-    </ul>
-    <div>
-      <button class="btn btn-danger pull-right" type="button" ng-click="ic.deleteImage()">Delete</button>
+<div class="row">
+  
+<!-- VIEW IMAGE -->
+<div class="col-md-5">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">View Course Library Image</h3>
     </div>
-</div>
-<div class="modal-body">
-  <div class="text-center">
-    {{ ic.index + 1 }} / {{ ic.CourseCache.images.length }}
+    <div class="panel-body">
+      <nav class="text-center">
+        <ul class="pagination pagination-lg">
+          <li>
+            <a href="#" aria-label="Previous" ng-click="ic.prev($event)">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li><a>{{ ic.index + 1 }} / {{ ic.CourseCache.images.length }}</a></li>
+          <li>
+            <a href="#" aria-label="Next" ng-click="ic.next($event)">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="col-md-12 text-center">
+        <h4>{{ ic.CourseCache.current_image.title || "Untitled" }}</h4>
+      </div>
+      <div class="col-md-12 text-center" style="height: 400px;">
+        <img style="display: block;margin: auto; max-width: 100%; max-height: 100%;" ng-src="{{ ic.CourseCache.current_image.image_url }}"/>
+      </div>
+      <div class="col-md-12 text-center">
+        <p>{{ic.CourseCache.current_image.description||'No Description'}}</p>
+      </div>
+      <div class="col-md-12">
+        <button class="btn btn-primary pull-right" type="button" ng-click="ic.deleteImage()">
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+          Delete this image
+        </button>
+      </div>
+    </div>
   </div>
-  <div class="text-center">
-    <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="ic.prev()">
-      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-    </button>
-    <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="ic.next()">
-      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-    </button>
-  </div>
-  <img style="display: block; margin-left: auto; margin-right: auto; max-height: 400px;" ng-src="{{ ic.CourseCache.current_image.image_url }}"/>
 </div>
-<div class="modal-footer">
+
+<!-- EDIT INFO -->
+<div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Edit information of this image</h3>
+    </div>
+    <div class="panel-body">
+      <p>
+        Edit the name of this image (from the default file name), add or change its description and the search information.
+      </p>
+      <p>
+        This edited information will appear on all instances of this image in each collection.
+      </p>
+      
+      <div class="form-group">
+        <label for="ImageName">Image name</label>
+        <div class="input-group">
+          <div class="form-control" editable-text="ic.CourseCache.current_image.title" e-form="titleForm" onbeforesave="ic.save()" ng-click="titleForm.$show()">
+            {{ic.CourseCache.current_image.title||'Untitled'}}
+          </div>
+          <div class="input-group-btn">
+            <button class="btn btn-primary" ng-click="titleForm.$show()" ng-hide="titleForm.$visible">Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="Description">Image description</label>
+        <div class="input-group">
+          <div class="form-control" style="overflow:hidden"  editable-textarea="ic.CourseCache.current_image.description" e-form="descForm" e-rows="7" e-cols="40" onbeforesave="ic.save()" ng-click="descForm.$show()">
+            {{ic.CourseCache.current_image.description||'No Description'}}
+          </div>
+          <div class="input-group-btn">
+            <button class="btn btn-primary" ng-click="descForm.$show()" ng-hide="descForm.$visible">Edit</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="MetadataDSelect">Image metadata</label>
+        <button type="button" class="btn btn-primary" ng-click="ic.metaForm.show()" ng-show="!ic.metaForm.visible">Edit</button>
+        <button type="button" class="btn btn-default" ng-click="ic.metaForm.cancel()" ng-show="ic.metaForm.visible">Cancel</button>
+        <form class="form-inline" ng-class="{'has-error': ic.metaForm.hasError}" ng-submit="">
+          <ul class="list-unstyled">
+            <li ng-repeat="row in ic.metaForm.data track by $index" style="margin-top: 1em" ng-style="ic.metaForm.waiting ? {opacity:0.5} : {}">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" ng-readonly="!ic.metaForm.visible" name="label" ng-model="row.label" placeholder="{{ row.label || 'No Label' }}" />
+                    <span class="input-group-addon">:</span>
+                    <input type="text" class="form-control" ng-readonly="!ic.metaForm.visible" name="value" ng-model="row.value" placeholder="{{ row.value || 'No Value' }}" />
+                  </div>
+                </div>
+                <div class="form-group" ng-show="ic.metaForm.visible">
+                  <button type="button" class="btn btn-danger" ng-click="ic.metaForm.deleteRow($index)">
+                    <span class="glyphicon glyphicon-trash"></span>
+                  </button>
+                </div>
+            </li>
+            <li ng-show="ic.metaForm.visible" style="margin-top: 1em">
+              <button type="submit" class="btn btn-primary" ng-click="ic.metaForm.save()" ng-disabled="ic.metaForm.waiting">Save Metadata</button>
+              <button class="btn btn-default" ng-click="ic.metaForm.addRow()">Add Metadata Field</button>
+            </li>
+            <div class="alert alert-danger" role="alert" ng-if="ic.metaForm.hasError">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Error:</span> {{ic.metaForm.errorMsg}}
+            </div>
+          </ul>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>

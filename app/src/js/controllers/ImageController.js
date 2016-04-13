@@ -2,110 +2,52 @@ angular.module('media_manager')
 .controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
   var ic = this;
 
+  Breadcrumbs.addCrumb("Edit Image");
+  
   ic.imageBehavior = ImageBehavior;
   ic.CourseCache = CourseCache;
   ic.image = CourseCache.getImageById($routeParams.imageId);
-
-  ic.index = 0;
-  CourseCache.images.forEach(function(img, index){
-    if(img.id == $routeParams.imageId){
-      ic.image = img;
-      ic.index = index;
+  ic.index = 0; // initialize to zero, but should be updated to the corret value
+ 
+  ic.defaultMetadataLabels = [
+    'Date',
+    'Type',
+    'Format',
+    'Source',
+    'Repository',
+    'Creator',
+    'Dimensions'
+  ];
+  
+  ic.updateImageIndex = function() {
+    var images = CourseCache.images;
+    for(var index = 0, img = null, len = images.length; index < len; index++) {
+      img = images[index];
+      if(img.id == $routeParams.imageId){
+        ic.image = img;
+        ic.index = index;
+        break;
+      }
     }
-  });
-
-  var crumbed = false;
-  var resetBreadcrumb = function(){
-    if(crumbed){
-      Breadcrumbs.popCrumb();
-    }
-    Breadcrumbs.addCrumb("Image " + CourseCache.current_image.id, $location.url());
-    crumbed = true;
-  }
-
-  $scope.$watch(function watch(scope){
-    return CourseCache.current_image;
-  }, function handleChange(newval, oldval){
-    if(newval.id != oldval.id){
-      resetBreadcrumb();
-    }
-  });
-  ic.save = function(){
-    var image = CourseCache.current_image;
-    Image.update({}, image, function success(data){
-
-    }, function failure(errorResponse) {
-      $log.debug("error updating image:", errorResponse);
-    });
   };
 
-  ic.next = function(){
+  ic.next = function($event){
+    $event.preventDefault();
     if(ic.index + 1 < CourseCache.images.length){
       ic.index++;
       ic.image = CourseCache.images[ic.index];
       CourseCache.current_image = CourseCache.images[ic.index];
-      resetBreadcrumb();
     }
   };
 
-  ic.prev = function(){
+  ic.prev = function($event){
+    $event.preventDefault();
     if(ic.index > 0){
       ic.index--;
       ic.image = CourseCache.images[ic.index];
       CourseCache.current_image = CourseCache.images[ic.index];
-      resetBreadcrumb();
     }
   };
-
-  ic.newLabel = '';
-  ic.newValue = '';
-  ic.saveMetadata = function(label, value, index){
-    if(index !== undefined){
-
-      if(label === '' && value === ''){
-        ic.image.metadata.splice(index, 1);
-      } else {
-        ic.image.metadata[index].label = label;
-        ic.image.metadata[index].value = value;
-      }
-
-      Image.update({}, ic.image, function success(data){
-
-      }, function failure(errorResponse){
-        $log.debug("error updating image:", errorResponse);
-      });
-
-    } else {
-
-      if(ic.newLabel){
-        if(ic.image.metadata == null) {
-          ic.image.metadata = [];
-        }
-        ic.image.metadata.push({'label': ic.newLabel, 'value': ic.newValue});
-        Image.update({}, ic.image, function success(data){
-          ic.newLabel = '';
-          ic.newValue = '';
-          ic.editNewMetadata = false;
-        }, function failure(errorResponse) {
-          $log.debug("error updating image:", errorResponse);
-          ic.image.metadata.pop();
-        });
-      }
-    }
-  };
-
-  ic.editNewMetadata = false;
-  ic.showNewMetadata = function(){
-    ic.editNewMetadata = true;
-  };
-  ic.hideNewMetadata = function(){
-    ic.editNewMetadata = false;
-  };
-
-  ic.deleteMetadata = function(index, form){
-    ic.saveMetadata('', '', index);
-    form.$cancel();
-  }
 
   ic.deleteImage = function(){
     ic.imageBehavior.deleteImageModal(ic.CourseCache.current_image.id).then(function(){
@@ -120,5 +62,86 @@ angular.module('media_manager')
       }
     });
   };
+
+  ic.getDefaultMetadata = function() {
+      return ic.defaultMetadataLabels.map(function(label) {
+        return {'label': label, 'value': ''};
+      });
+  };
+
+  ic.getImageMetadata = function() {
+    var metadata = [];
+    var image_metadata = ic.image.metadata;
+    var default_metadata = ic.getDefaultMetadata();
+    
+    if (angular.isArray(image_metadata) && image_metadata.length > 0) {
+      metadata = angular.copy(image_metadata);
+    } else {
+      metadata = default_metadata;
+    }
+
+    return metadata;
+  };
+
+  ic.metaForm = {
+    data: [],
+    visible: false,
+    waiting: false,
+    hasError: false,
+    errorMsg: '',
+    show: function() {
+      this.visible = true;
+      this.resetErrorState();
+    },
+    hide: function() {
+      this.visible = false;
+      this.resetErrorState();
+    },
+    cancel: function() {
+      this.data = ic.getImageMetadata();
+      this.hide();
+    },
+    save: function() {
+      ic.metaForm.waiting = true;
+      ic.image.metadata = this.data;
+      Image.update({}, ic.image, function success(data){
+        ic.metaForm.resetErrorState();
+        ic.metaForm.waiting = false;
+        ic.metaForm.hide();
+        $log.debug("successfully updated image");
+      }, function failure(errorResponse){
+        ic.metaForm.resetErrorState();
+        ic.metaForm.waiting = false;
+        ic.metaForm.errorMsg = errorResponse;
+        ic.metaForm.hasError = true;
+        $log.debug("error updating image:", errorResponse);
+      });
+    },
+    addRow: function() {
+      this.data.push({ 'label': '', 'value': '' })
+    },
+    deleteRow: function(index) {
+      this.data.splice(index, 1);
+    },
+    resetErrorState: function() {
+      this.hasError = false;
+      this.errorMsg = '';
+    }
+  };
+  
+  // Update the form metadata when the current image changes
+  $scope.$watch(function() {
+    return ic.CourseCache.current_image.id;
+  }, function(newVal, oldVal) {
+    ic.metaForm.resetErrorState();
+    ic.metaForm.data = ic.getImageMetadata();
+  });
+  
+  // Update the current image index if/when the cache of images changes (i.e. loaded)
+  $scope.$watch(function() {
+    return ic.CourseCache.isLoadingImages.status;
+  }, function(newVal, oldVal) {
+    ic.updateImageIndex();
+  });
 
 }]);

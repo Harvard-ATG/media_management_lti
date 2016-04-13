@@ -21,7 +21,7 @@ angular.module('media_manager')
 .service('CourseCache', ['Course', 'AppConfig', 'Image', function(Course, AppConfig, Image){
   this.images = [];
   this.collections = [];
-  this.current_image = {};
+  this.current_image = null;
   this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
   this.isLoadingImages = {"status": false, "msg": "Loading images..."};
   this.isLoading = {"status": false, "msg": "Loading..."};
@@ -56,7 +56,9 @@ angular.module('media_manager')
     this.images = Course.getImages({id: AppConfig.course_id});
     this.images.$promise.then(function(images) {
       self.sortImages();
-      self.current_image = images[0];
+      if (self.current_image === null) {
+        self.current_image = images[0];
+      }
       self.isLoadingImages.status = false;
       self.isLoading.status = false || self.isLoadingCollections.status;
     });
@@ -94,6 +96,7 @@ angular.module('media_manager')
     var that = this;
     if(that.images.length === 0){
       that.current_image = Image.get({id: id});
+      that.load(); // load the rest of the images if they haven't been already
     }
     this.images.forEach(function(item){
       if(item.id == id){
@@ -173,7 +176,6 @@ angular.module('media_manager')
 
     this.sortType = sortType;
     this.compareImages = lookup_sort[sortType](sortDir == "asc" ? true : false);
-
 
     return this;
   };

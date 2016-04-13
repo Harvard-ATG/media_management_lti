@@ -1,3 +1,13 @@
-.breadcrumb {
-  margin-bottom: 20px;
+.breadcrumbs {
+  margin: 0 0 10px 0;
+  padding: 15px;
+  font-size: 18px;
+  background-color: #fff;
+  font-weight: bold;
+}
+.breadcrumbs > li {
+  display: inline-block;
+}
+.breadcrumbs > li:not(:first-child) {
+  margin-left: 5px;
 }
