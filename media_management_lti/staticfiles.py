@@ -56,6 +56,8 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             shutil.rmtree(BUILD_DST)
         print "Copying tree %s to %s" % (BUILD_SRC, BUILD_DST)
         shutil.copytree(BUILD_SRC, BUILD_DST)
+        print "Cleaning up build source tree %s" % BUILD_SRC
+        shutil.rmtree(os.path.join(BUILD_SRC, 'app'))
 
         return []
 
