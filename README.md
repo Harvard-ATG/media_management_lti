@@ -14,5 +14,5 @@ $ python manage.py runserver 0.0.0.0:8080
 
 Note: the port forwarding for vagrant ssh is assuming you have the [API component](https://github.com/Harvard-ATG/media_management_api) running on 8000
 
-Optional step: run `python manage.py collectstatic` before runserver to build the JS/CSS. You must have [nodejs](https://nodejs.org/en/) and [npm](https://www.npmjs.com/) installed prior to running that command. If you're on an ubuntu machine, you can install these dependencies by running `apt-get install nodejs nodejs-legacy npm build-essentials`
+Optional step: run `python manage.py collectstatic` before *runserver* to build the JS/CSS. You must have [nodejs](https://nodejs.org/en/) and [npm](https://www.npmjs.com/) installed prior to running that command. If you're on an ubuntu machine, you can install these dependencies by running `apt-get install nodejs nodejs-legacy npm build-essentials`
 
