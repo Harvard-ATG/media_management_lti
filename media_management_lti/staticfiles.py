@@ -10,11 +10,14 @@ import hashlib
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+logger.addHandler(ch)
 
 # Setup commands to run
-NPM_INSTALL = 'npm install --production'
-BOWER_INSTALL = 'bower install'
-GULP_BUILD = 'gulp build'
+NPM_INSTALL = ['npm', 'install', '--production']
+BOWER_INSTALL = ['bower', 'install']
+GULP_BUILD = ['gulp', 'build']
 
 # Setup directory paths
 NODE_MODULES_DIR = os.path.join(settings.BASE_DIR, 'app', 'node_modules')
@@ -49,8 +52,12 @@ class StaticFilesStorage(storage.StaticFilesStorage):
 
         # Copy the build file artifacts to the STATIC_ROOT so that django can serve them up
         if os.path.exists(BUILD_DST):
+            print "Deleting tree %s" % BUILD_DST
             shutil.rmtree(BUILD_DST)
+        print "Copying tree %s to %s" % (BUILD_SRC, BUILD_DST)
         shutil.copytree(BUILD_SRC, BUILD_DST)
+        print "Cleaning up build source tree %s" % BUILD_SRC
+        shutil.rmtree(os.path.join(BUILD_SRC, 'app'))
 
         return []
 
@@ -61,23 +68,29 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             2. Build the JS and CSS and copy to their destinations
         """
         # Setup args to pass to the commands
-        popen_args = { 
+        subprocess_args = {
+            'shell': False,
             'cwd': APP_BASE_DIR, 
-            'shell': True,
             'env': {
                 'PATH': os.environ['PATH'] +':{0}'.format(NODE_MODULES_BIN_DIR), # so the shell can find the "bower" command
                 'HOME': APP_BASE_DIR,
             }
         }
-        logger.info("popen_args=%s" % popen_args)
         
         # Run the commands.
         for cmd in (NPM_INSTALL, BOWER_INSTALL, GULP_BUILD):
-            logger.info("Running cmd [%s] with args [%s]" % (cmd, popen_args))
-            child = subprocess.Popen([cmd], **popen_args)
-            child.wait()
-            if child.returncode != 0:
-                raise Exception("Command failed [%s] with return code [%s]" % (cmd, child.returncode))
+            print "\n%s%s%s\n" % ("*" * 25, cmd, "*" * 25)
+            which_cmd = cmd[0]
+            print "Which [%s]?" % which_cmd
+            found_cmd = subprocess.check_output(['/usr/bin/which', which_cmd], **subprocess_args).strip()
+            print "Found [%s] at [%s]" % (which_cmd, found_cmd)
+            cmd[0] = found_cmd
+            print "Running cmd [%s] with args [%s]\n" % (' '.join(cmd), subprocess_args)
+            child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **subprocess_args)
+            (stdoutdata, stderrdata) = child.communicate()
+            while child.returncode is None:
+                continue
+            print "%s\n%s\n" % (stdoutdata, stderrdata)
 
     def hash_build_files(self):
         """
@@ -93,13 +106,13 @@ class StaticFilesStorage(storage.StaticFilesStorage):
                 can_hash_file = (name.endswith('.js') or name.endswith('.css')) and re.match(file_pattern, name) is None
                 if can_hash_file:
                     orig_file_path = os.path.join(target_dir, name)
-                    logger.info("Hashing file: %s" % orig_file_path)
+                    print "Hashing file: %s" % orig_file_path
                     with open(orig_file_path, 'rb') as f:
                         hash_result = self.file_hash(File(f))
                         (file_name, file_extension) = os.path.splitext(name)
                         new_file_path = os.path.join(target_dir, "%s-%s%s" % (file_name, hash_result, file_extension))
                         hashed_files[orig_file_path] = new_file_path
-                        logger.info("Copying file %s to %s" % (orig_file_path, new_file_path))
+                        print "Renaming (copying) file %s to %s" % (orig_file_path, new_file_path)
                         shutil.copyfile(orig_file_path, new_file_path)
 
         return hashed_files
@@ -123,8 +136,8 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         # Write the JSON file with the mappings
         manifest_file = os.path.join(BUILD_SRC, 'build.json')
         manifest_json = json.dumps(build_manifest)
-        logger.info("Build manifest: %s" % manifest_json)
-        logger.info("Writing build manifest: %s" % manifest_file)
+        print "Build manifest: %s" % manifest_json
+        print "Writing build manifest: %s" % manifest_file
         with open(manifest_file, 'w') as f:
             f.write(manifest_json)
 
