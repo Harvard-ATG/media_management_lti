@@ -39,7 +39,7 @@
             </div>
             <div ng-show="wc.collection.images.length == 0">Empty collection</div>
             <ul class="list-inline">
-              <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images track by $index">
+              <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images track by $index" uib-tooltip="{{collectionImage.title}}">
                 <droplet-thumb ng-model="collectionImage"></droplet-thumb>
                 <div class="overlay" ng-click="wc.removeFromCollection(collectionImage.id)">-</div>
               </li>
