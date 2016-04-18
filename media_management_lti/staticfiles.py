@@ -22,7 +22,8 @@ GULP_BUILD = ['gulp', 'build']
 # Setup directory paths
 NODE_MODULES_DIR = os.path.join(settings.BASE_DIR, 'app', 'node_modules')
 NODE_MODULES_BIN_DIR = os.path.join(NODE_MODULES_DIR, '.bin')
-APP_BASE_DIR = os.path.join(settings.BASE_DIR, 'app')
+APP_SRC = os.path.join(settings.BASE_DIR, 'app')
+APP_DST = os.path.join(settings.STATIC_ROOT, 'app')
 BUILD_SRC = os.path.join(settings.BASE_DIR, 'app', 'build')
 BUILD_DST = os.path.join(settings.STATIC_ROOT, 'app', 'build')
 
@@ -51,11 +52,11 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         self.save_build_manifest(hashed_files)
 
         # Copy the build file artifacts to the STATIC_ROOT so that django can serve them up
-        if os.path.exists(BUILD_DST):
-            print "Deleting tree %s" % BUILD_DST
-            shutil.rmtree(BUILD_DST)
-        print "Copying tree %s to %s" % (BUILD_SRC, BUILD_DST)
-        shutil.copytree(BUILD_SRC, BUILD_DST)
+        if os.path.exists(APP_DST):
+            print "Deleting tree %s" % APP_DST
+            shutil.rmtree(APP_DST)
+        print "Copying tree %s to %s" % (APP_SRC, APP_DST)
+        shutil.copytree(APP_SRC, APP_DST)
         print "Cleaning up build source tree %s" % BUILD_SRC
         shutil.rmtree(os.path.join(BUILD_SRC, 'app'))
 
@@ -70,10 +71,10 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         # Setup args to pass to the commands
         subprocess_args = {
             'shell': False,
-            'cwd': APP_BASE_DIR, 
+            'cwd': APP_SRC, 
             'env': {
                 'PATH': os.environ['PATH'] +':{0}'.format(NODE_MODULES_BIN_DIR), # so the shell can find the "bower" command
-                'HOME': APP_BASE_DIR,
+                'HOME': APP_SRC,
             }
         }
         
