@@ -64,7 +64,7 @@
                       <th>Image</th>
                       <th>Title</th>
                       <th>Date Uploaded</th>
-                      <th>Actions</th>
+                      <th style="width:90px">Actions</th>
                   </tr>
               </thead>
               <tbody>
@@ -74,13 +74,13 @@
                       </td>
                       <td><span uib-tooltip="{{courseImage.title}}">{{courseImage.title | ellipsit:"12"}}</span></td>
                       <td><span uib-tooltip='{{courseImage.created | asDate | date:"MM/dd/yy @ h:mma"}}'>{{courseImage.created | asDate | date:"MM/dd/yyyy"}}</td>
-                      <td>
-                          <button class="btn btn-default" ng-click="wc.imageView(courseImage.id)" uib-tooltip="View Image">
-                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                          </button>
-                          <button class="btn btn-primary" ng-click="wc.addToCollection(courseImage)" uib-tooltip="Add to Collection">
-                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                          </button>
+                      <td style="white-space:nowrap;">
+                        <button class="btn btn-default" ng-click="wc.imageView(courseImage.id)" uib-tooltip="View Image">
+                          <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        </button>
+                        <button class="btn btn-primary" ng-click="wc.addToCollection(courseImage)" uib-tooltip="Add to Collection">
+                          <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                        </button>
                       </td>
                   </tr>
               </tbody>
