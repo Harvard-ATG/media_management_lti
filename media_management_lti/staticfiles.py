@@ -22,10 +22,12 @@ GULP_BUILD = ['gulp', 'build']
 # Setup directory paths
 NODE_MODULES_DIR = os.path.join(settings.BASE_DIR, 'app', 'node_modules')
 NODE_MODULES_BIN_DIR = os.path.join(NODE_MODULES_DIR, '.bin')
-APP_BASE_DIR = os.path.join(settings.BASE_DIR, 'app')
-BUILD_SRC = os.path.join(settings.BASE_DIR, 'app', 'build')
+APP_HOME = os.path.join(settings.BASE_DIR, 'app')
+APP_SRC = os.path.join(APP_HOME, 'src')
+APP_DST = os.path.join(settings.STATIC_ROOT, 'app')
+BUILD_SRC = os.path.join(APP_HOME, 'build')
 BUILD_DST = os.path.join(settings.STATIC_ROOT, 'app', 'build')
-
+MANIFEST_FILE = os.path.join(BUILD_SRC, 'build.json')
 
 class StaticFilesStorage(storage.StaticFilesStorage):
     def __init__(self, *args, **kwargs):
@@ -41,6 +43,9 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         if dry_run:
             return []
         
+        # Clean build files from previous runs
+        self.clean_files()
+        
         # Build the source files
         self.build_src_files()
         
@@ -50,14 +55,8 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         # Write the manifest file that maps the original built artifacts to the hashed files
         self.save_build_manifest(hashed_files)
 
-        # Copy the build file artifacts to the STATIC_ROOT so that django can serve them up
-        if os.path.exists(BUILD_DST):
-            print "Deleting tree %s" % BUILD_DST
-            shutil.rmtree(BUILD_DST)
-        print "Copying tree %s to %s" % (BUILD_SRC, BUILD_DST)
-        shutil.copytree(BUILD_SRC, BUILD_DST)
-        print "Cleaning up build source tree %s" % BUILD_SRC
-        shutil.rmtree(os.path.join(BUILD_SRC, 'app'))
+        # Copy the files to the STATIC_ROOT where django can serve them up
+        self.copy_files()
 
         return []
 
@@ -70,10 +69,10 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         # Setup args to pass to the commands
         subprocess_args = {
             'shell': False,
-            'cwd': APP_BASE_DIR, 
+            'cwd': APP_HOME, 
             'env': {
                 'PATH': os.environ['PATH'] +':{0}'.format(NODE_MODULES_BIN_DIR), # so the shell can find the "bower" command
-                'HOME': APP_BASE_DIR,
+                'HOME': APP_HOME,
             }
         }
         
@@ -134,7 +133,7 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             build_manifest[src] = dst
         
         # Write the JSON file with the mappings
-        manifest_file = os.path.join(BUILD_SRC, 'build.json')
+        manifest_file = MANIFEST_FILE
         manifest_json = json.dumps(build_manifest)
         print "Build manifest: %s" % manifest_json
         print "Writing build manifest: %s" % manifest_file
@@ -142,6 +141,30 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             f.write(manifest_json)
 
         return manifest_file
+
+    def copy_files(self):
+        copies = [
+            (APP_SRC, APP_DST),
+            (BUILD_SRC, BUILD_DST),
+        ]
+        for (src, dst) in copies:
+            print "Copying tree %s to %s" % (src, dst)
+            if os.path.exists(dst):
+                print "Deleting tree %s" % dst
+                shutil.rmtree(dst)
+            shutil.copytree(src, dst)
+    
+    def clean_files(self):
+        """
+        Deletes the  build files under the /app/build directory
+        """
+        build_tree = os.path.join(BUILD_SRC, 'app')
+        if os.path.exists(build_tree):
+            print "Deleting build source tree %s" % build_tree
+            shutil.rmtree(build_tree)
+        if os.path.exists(MANIFEST_FILE):
+            print "Deleting build manifest %s" % MANIFEST_FILE
+            os.remove(MANIFEST_FILE)
 
     def file_hash(self, content=None):
         """
