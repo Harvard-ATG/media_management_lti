@@ -109,9 +109,9 @@ angular.module('media_manager')
 
   wc.saveCollection = function(){
     if($routeParams.collectionId){
-      wc.updateCollection();
+      return wc.updateCollection();
     } else {
-      wc.createCollection();
+      return wc.createCollection();
     }
   };
 
@@ -132,7 +132,8 @@ angular.module('media_manager')
 
     // PUT to update collection
     self.isSavingCollection.status = true;
-    Collection.update({}, wc.collection, function(data){
+    
+    return Collection.update({}, wc.collection, function(data){
       wc.notifications.clear();
       var collection = wc.loadActiveCollection();
       self.isLoadingCollection.status = true;
@@ -170,7 +171,7 @@ angular.module('media_manager')
     });
 
     // post to save a new collection
-    Collection.save({}, wc.collection, function(data){
+    return Collection.save({}, wc.collection, function(data){
       wc.collection.id = data.id;
       wc.courseCollections.push(wc.collection);
       $location.path('/collections/');
@@ -187,6 +188,45 @@ angular.module('media_manager')
     CourseCache.updateSort(choice.name, choice.dir).sortImages();
   };
 
+  wc.collectionTitleForm = {
+    cache: null,
+    visible: false,
+    waiting: false,
+    hasError: false,
+    errorMsg: '',
+    show: function() {
+      this.visible = true;
+      this.resetErrorState();
+      this.cache = wc.collection.title;
+    },
+    hide: function() {
+      this.visible = false;
+      this.resetErrorState();
+    },
+    resetErrorState: function() {
+      this.hasError = false;
+      this.errorMsg = '';
+    },
+    save: function() {
+      var that = this;
+      that.waiting = true;
+      var promise = wc.saveCollection();
+      promise.then(function() {
+        that.resetErrorState();
+        that.hide();
+        that.waiting = false;
+      }, function(errorResponse) {
+        that.resetErrorState();
+        that.errorMsg = errorResponse;
+        that.hasError = true;
+        that.waiting = false;
+      });
+    },
+    cancel: function() {
+      this.hide();
+      wc.collection.title = this.cache;
+    }
+  };
 
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
