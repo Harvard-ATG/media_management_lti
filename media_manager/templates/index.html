@@ -1,4 +1,5 @@
 {% load staticbuildfiles %}
+{% load googleanalytics %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +10,7 @@
   <script>
 window.appConfig = {{appConfig|safe}};
   </script>
+  {% include_google_analytics %}
 </head>
 <body ng-app="media_manager">
 
