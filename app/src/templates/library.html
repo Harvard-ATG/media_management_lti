@@ -61,7 +61,6 @@
           <table class="files" ng-if="wc.layout == 'list'">
               <thead>
                   <tr>
-                      <th></th>
                       <th>Image</th>
                       <th>Title</th>
                       <th>Date Uploaded</th>
@@ -70,7 +69,6 @@
               </thead>
               <tbody>
                   <tr ng-repeat="courseImage in wc.courseImages track by $index">
-                      <td>{{$index + 1}}</td>
                       <td>
                           <droplet-thumb ng-model="courseImage"></droplet-thumb>
                       </td>
