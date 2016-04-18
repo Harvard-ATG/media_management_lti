@@ -15,11 +15,17 @@ table.files td > button {
   margin-left: 10px;
 }
 .library-drag-area {
+  position: relative;
+  width: calc(100% - 10px);
+  min-height: 100px;
+}
+.library-drag-area i {
   position: absolute;
   top: 30%;
-  left: 40%;
+  left: 28%;
   z-index: 0;
   font-size: 36px;
+  font-style: normal;
   color: #fff;
   display: inline-block;
 }

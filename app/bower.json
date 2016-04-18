@@ -3,7 +3,8 @@
   "description": "",
   "main": "src/js/app.js",
   "authors": [
-    "JaZahn <jcleveng@fas.harvard.edu>"
+    "JaZahn <jcleveng@fas.harvard.edu>",
+    "Arthur <abarrett@fas.harvard.edu>"
   ],
   "license": "ISC",
   "homepage": "https://github.com/Harvard-ATG/media_management_lti",
@@ -33,6 +34,6 @@
     "angular-mocks": "^1.5.3"
   },
   "resolutions": {
-	"angular": "1.5.3"
+    "angular": "1.5.5"
   }
 }
