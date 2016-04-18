@@ -15,11 +15,15 @@
           <div class="form-inline">
             <div class="form-group">
               <label>Collection</label>
-              <input type="text" class="form-control" placeholder="{{wc.collection.title||'Untitled'}}" ng-model="wc.collection.title" ng-readonly="!wc.collectionTitleForm.visible" ng-click="wc.collectionTitleForm.show()"/>
+              <div class="input-group" style="width: 400px;">
+                <div class="form-control" editable-text="wc.collection.title" e-form="collectionTitleForm" onaftersave="wc.saveCollection()" ng-click="collectionTitleForm.$show()">
+                  {{wc.collection.title||'Untitled'}}
+                </div>
+                <div class="input-group-btn">
+                  <button class="btn btn-primary" ng-click="collectionTitleForm.$show()" ng-hide="collectionTitleForm.$visible">Edit</button>
+                </div>
+              </div>
             </div>
-            <button class="btn btn-default" ng-click="wc.collectionTitleForm.show()" ng-hide="wc.collectionTitleForm.visible">Edit</button>
-            <button class="btn btn-primary" ng-click="wc.collectionTitleForm.save()" ng-show="wc.collectionTitleForm.visible" ng-disabled="wc.collectionTitleForm.waiting">Save</button>
-            <button class="btn btn-default" ng-click="wc.collectionTitleForm.cancel()" ng-show="wc.collectionTitleForm.visible">Cancel</button>
           </div>
         </div>
         <ul class="list-group">

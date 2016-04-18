@@ -188,46 +188,6 @@ angular.module('media_manager')
     CourseCache.updateSort(choice.name, choice.dir).sortImages();
   };
 
-  wc.collectionTitleForm = {
-    cache: null,
-    visible: false,
-    waiting: false,
-    hasError: false,
-    errorMsg: '',
-    show: function() {
-      this.visible = true;
-      this.resetErrorState();
-      this.cache = wc.collection.title;
-    },
-    hide: function() {
-      this.visible = false;
-      this.resetErrorState();
-    },
-    resetErrorState: function() {
-      this.hasError = false;
-      this.errorMsg = '';
-    },
-    save: function() {
-      var that = this;
-      that.waiting = true;
-      var promise = wc.saveCollection();
-      promise.then(function() {
-        that.resetErrorState();
-        that.hide();
-        that.waiting = false;
-      }, function(errorResponse) {
-        that.resetErrorState();
-        that.errorMsg = errorResponse;
-        that.hasError = true;
-        that.waiting = false;
-      });
-    },
-    cancel: function() {
-      this.hide();
-      wc.collection.title = this.cache;
-    }
-  };
-
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
   CourseCache.load();
