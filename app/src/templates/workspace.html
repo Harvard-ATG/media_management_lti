@@ -14,13 +14,24 @@
         <div class="panel-heading">
           <div class="form-inline">
             <div class="form-group">
-              <label>Collection</label>
+              <label for="collectionTitleForm">Collection</label>
               <div class="input-group" style="width: 400px;">
-                <div class="form-control" editable-text="wc.collection.title" e-form="collectionTitleForm" onaftersave="wc.saveCollection()" ng-click="collectionTitleForm.$show()">
+                <div class="form-control" editable-text="wc.collection.title" e-form="collectionTitleForm" e-name="collectionTitleForm" onaftersave="wc.saveCollection()" ng-click="collectionTitleForm.$show()">
                   {{wc.collection.title||'Untitled'}}
                 </div>
                 <div class="input-group-btn">
                   <button class="btn btn-primary" ng-click="collectionTitleForm.$show()" ng-hide="collectionTitleForm.$visible">Edit</button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="collectionDescForm">Description</label>
+              <div class="input-group" style="width: 400px;">
+                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="7" e-cols="40" onaftersave="wc.saveCollection()" ng-click="collectionDescForm.$show()">
+                  {{wc.collection.description||'No Description'}}
+                </div>
+                <div class="input-group-btn">
+                  <button class="btn btn-primary" ng-click="collectionDescForm.$show()" ng-hide="collectionDescForm.$visible">Edit</button>
                 </div>
               </div>
             </div>
