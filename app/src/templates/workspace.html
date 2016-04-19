@@ -29,8 +29,8 @@
           <div class="form-inline" ng-class="{hidden: !collectionDescForm.$visible}">
             <div class="form-group">
               <label for="collectionDescForm">Description</label>
-              <div class="input-group" style="width: 400px;">
-                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="60" onaftersave="wc.saveCollection()" ng-click="collectionDescForm.$show()">
+              <div class="input-group">
+                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="50" onaftersave="wc.saveCollection()" ng-click="collectionDescForm.$show()">
                   {{wc.collection.description||'No Description'}}
                 </div>
                 <div class="input-group-btn">
