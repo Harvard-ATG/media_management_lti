@@ -109,9 +109,9 @@ angular.module('media_manager')
 
   wc.saveCollection = function(){
     if($routeParams.collectionId){
-      wc.updateCollection();
+      return wc.updateCollection();
     } else {
-      wc.createCollection();
+      return wc.createCollection();
     }
   };
 
@@ -132,7 +132,8 @@ angular.module('media_manager')
 
     // PUT to update collection
     self.isSavingCollection.status = true;
-    Collection.update({}, wc.collection, function(data){
+    
+    return Collection.update({}, wc.collection, function(data){
       wc.notifications.clear();
       var collection = wc.loadActiveCollection();
       self.isLoadingCollection.status = true;
@@ -170,7 +171,7 @@ angular.module('media_manager')
     });
 
     // post to save a new collection
-    Collection.save({}, wc.collection, function(data){
+    return Collection.save({}, wc.collection, function(data){
       wc.collection.id = data.id;
       wc.courseCollections.push(wc.collection);
       $location.path('/collections/');
@@ -186,7 +187,6 @@ angular.module('media_manager')
   wc.sortLibrary = function(choice) {
     CourseCache.updateSort(choice.name, choice.dir).sortImages();
   };
-
 
   Breadcrumbs.home().addCrumb("Manage Collection", $location.url());
 
