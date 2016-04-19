@@ -25,3 +25,6 @@
 .collection-edit-button {
   border: none;
 }
+#image-collection-panel .form-inline {
+  margin-top: 5px;
+}
