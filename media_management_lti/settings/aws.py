@@ -16,5 +16,8 @@ EMAIL_PORT = 587  # Use 587 or 2587 to avoid timeouts when sending mail via Amaz
 EMAIL_HOST_USER = SECURE_SETTINGS.get('email_host_user', '')
 EMAIL_HOST_PASSWORD = SECURE_SETTINGS.get('email_host_password', '')
 
+# Google Analytics Settings
+GOOGLE_ANALYTICS_TRACKING_ID = SECURE_SETTINGS['google_analytics_tracking_id']
+
 # Configure logging
 dictConfig(LOGGING)
