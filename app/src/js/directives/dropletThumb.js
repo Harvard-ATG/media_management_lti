@@ -6,7 +6,6 @@ angular.module('media_manager')
     },
     restrict: 'EA',
     replace: true,
-    template: '<img src="{{ image.thumb_url || image.image_url }}" class="droplet-preview" />',
-
+    template: '<img ng-src="{{ image.thumb_url || image.image_url }}" class="droplet-preview" />'
   };
 }]);
