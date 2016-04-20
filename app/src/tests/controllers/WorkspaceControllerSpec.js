@@ -71,7 +71,6 @@ describe("WorkspaceController", function(){
   
   describe("saving collection", function() {
     it("should not redirect back to the index", function() {
-      console.log("save collection test");
       spyOn($location, 'path');
       workspaceController.saveCollection();
       expect($location.path).not.toHaveBeenCalled();
