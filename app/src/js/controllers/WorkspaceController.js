@@ -174,6 +174,7 @@ angular.module('media_manager')
     return Collection.save({}, wc.collection, function(data){
       wc.collection.id = data.id;
       wc.courseCollections.push(wc.collection);
+      $location.path('/collections/');
     });
   };
 
