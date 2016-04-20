@@ -2,6 +2,7 @@ describe("WorkspaceController", function(){
   var workspaceController;
   var $location;
   var $log;
+  var collectionData = {'id':123};
 
   beforeEach(function() {
     module('media_manager'); 
@@ -40,8 +41,7 @@ describe("WorkspaceController", function(){
         var Collection = function() {
         };
         Collection.save = function(params, postData, success, error) {
-          var data = {};
-          success(data);
+          success(collectionData);
           return {};
         };
         return Collection
@@ -73,7 +73,7 @@ describe("WorkspaceController", function(){
     it("should not redirect back to the index", function() {
       spyOn($location, 'path');
       workspaceController.saveCollection();
-      expect($location.path).not.toHaveBeenCalled();
+      expect($location.path).toHaveBeenCalledWith('/workspace/'+collectionData.id);
     });
   });
 
