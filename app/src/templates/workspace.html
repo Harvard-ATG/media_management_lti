@@ -14,13 +14,27 @@
         <div class="panel-heading">
           <div class="form-inline">
             <div class="form-group">
-              <label>Collection</label>
-              <div class="input-group" style="width: 400px;">
-                <div class="form-control" editable-text="wc.collection.title" e-form="collectionTitleForm" onaftersave="wc.saveCollection()" ng-click="collectionTitleForm.$show()">
+              <label for="collectionTitleForm">Collection</label>
+              <div class="input-group">
+                <div class="form-control" style="min-width: 200px" editable-text="wc.collection.title" e-form="collectionTitleForm" e-name="collectionTitleForm" e-maxlength="255" onaftersave="wc.saveCollection()" ng-click="collectionTitleForm.$show()">
                   {{wc.collection.title||'Untitled'}}
                 </div>
                 <div class="input-group-btn">
                   <button class="btn btn-primary" ng-click="collectionTitleForm.$show()" ng-hide="collectionTitleForm.$visible">Edit</button>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-default" ng-click="collectionDescForm.$show()" ng-hide="collectionDescForm.$visible">Edit Description</button>
+          </div>
+          <div class="form-inline" ng-class="{hidden: !collectionDescForm.$visible}">
+            <div class="form-group">
+              <label for="collectionDescForm">Description</label>
+              <div class="input-group">
+                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="50" onaftersave="wc.saveCollection()" ng-click="collectionDescForm.$show()">
+                  {{wc.collection.description||'No Description'}}
+                </div>
+                <div class="input-group-btn">
+                  <button class="btn btn-primary" ng-click="collectionDescForm.$show()" ng-hide="collectionDescForm.$visible">Edit</button>
                 </div>
               </div>
             </div>
