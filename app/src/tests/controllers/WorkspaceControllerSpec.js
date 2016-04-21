@@ -5,7 +5,7 @@ describe("WorkspaceController", function(){
   var collectionData = {'id':123};
 
   beforeEach(function() {
-    module('media_manager'); 
+    module('media_manager');
 
     module(function($provide){
       var deps = ['Course', 'CollectionBehavior', 'ImageLightBox'];
@@ -68,12 +68,27 @@ describe("WorkspaceController", function(){
       expect(workspaceController).not.toBeUndefined();
     });
   });
-  
+
   describe("saving collection", function() {
     it("should not redirect back to the index", function() {
       spyOn($location, 'path');
       workspaceController.saveCollection();
       expect($location.path).toHaveBeenCalledWith('/workspace/'+collectionData.id);
+    });
+  });
+
+  describe("inCollection", function(){
+    it("should tell me if a courseImage is in the collection", function(){
+      var mockCourseImage = { id: 1 };
+      var mockCourseImageNotThere = { id: 123 };
+      var mockCollectionImages = [
+        {id:123, course_image_id:1},
+        {id:234, course_image_id:2},
+        {id:345, course_image_id:3},
+      ];
+      workspaceController.collection.images = mockCollectionImages;
+      expect(workspaceController.inCollection(mockCourseImage)).toBeTruthy();
+      expect(workspaceController.inCollection(mockCourseImageNotThere)).toBeFalsy();
     });
   });
 

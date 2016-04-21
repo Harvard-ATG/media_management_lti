@@ -94,7 +94,6 @@ angular.module('media_manager')
 
   wc.inCollection = function(courseImage){
     in_collection = false;
-    //if(wc.collection)
     if(wc.collection.images != undefined){
       wc.collection.images.some(function(item){
         if(item.course_image_id == courseImage.id){
