@@ -60,10 +60,6 @@
             </ul>
           </li>
         </ul>
-        <div class="panel-footer">
-          <input type="button" class="btn btn-primary" value="Save Collection" ng-click="wc.saveCollection()" ng-disabled="wc.isSavingCollection.status" />
-          <input type="button" class="btn btn-default pull-right" style="margin-left: 20px;" value="Cancel" ng-click="wc.cancelCollection()"/>
-        </div>
       </div>
     </div>
     <div ng-include="'/static/app/templates/library.html'" ng-class="wc.hideLibrary ? 'col-md-0' : 'col-md-6'" ng-hide="wc.hideLibrary"></div>

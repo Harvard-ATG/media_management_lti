@@ -89,16 +89,31 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
+    wc.saveCollection();
+  };
+
+  wc.inCollection = function(courseImage){
+    in_collection = false;
+    if(wc.collection.images != undefined){
+      wc.collection.images.some(function(item){
+        if(item.course_image_id == courseImage.id){
+          in_collection = true;
+          return true;
+        }
+      });
+    }
+    return in_collection;
   };
 
   wc.removeFromCollection = function(id){
     // note this needs to be a forEach/search instead of a splice because
     // ng-sortable won't work with "track by $index" enabled on the ng-repeat
     // https://github.com/a5hik/ng-sortable/issues/221
-    wc.collection.images.forEach(function(item, index, arr){
+    wc.collection.images.some(function(item, index, arr){
       if(item.id == id){
         wc.collection.images.splice(index, 1);
-        return false;
+        wc.saveCollection();
+        return true;
       }
     });
   };
@@ -132,7 +147,7 @@ angular.module('media_manager')
 
     // PUT to update collection
     self.isSavingCollection.status = true;
-    
+
     return Collection.update({}, wc.collection, function(data){
       wc.notifications.clear();
       var collection = wc.loadActiveCollection();
