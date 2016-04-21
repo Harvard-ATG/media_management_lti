@@ -6,7 +6,7 @@
     <div ng-show="wc.isLoading.status" style="position:relative">
       <span us-spinner="{top:0,left:'50%'}"></span>
     </div>
-    <h5>Step 1: Choose image files on your computer to upload to the library.</h5>
+    <h5>Step 1: Choose image files on your computer to upload to the library (limit 200 megabytes).</h5>
     <section class="droplet image-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
       <droplet ng-model="wc.Droplet.interface">
         <droplet-upload-multiple ng-model="wc.Droplet.interface"></droplet-upload-multiple>
