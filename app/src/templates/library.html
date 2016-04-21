@@ -23,7 +23,7 @@
         <hr>
         <h5>Step 2: Upload the above images to this image library.</h5>
         <input type="button" class="btn btn-primary" value="Upload Images" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
-        <label>Number of files to upload:</label> {{wc.filesToUpload}}
+        <label>Number of files to upload:</label> {{wc.filesToUpload}} <i ng-if="wc.fileUploadSize > 0">({{wc.fileUploadSize}} MB)</i>
       </droplet>
     </section>
     <hr>

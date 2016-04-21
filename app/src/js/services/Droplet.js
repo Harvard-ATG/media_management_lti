@@ -1,17 +1,71 @@
 angular.module('media_manager')
 .service('Droplet', ['$timeout', '$log', '$q', 'AppConfig', function($timeout, $log, $q, AppConfig){
   var ds = this;
+  var ONE_MEGABYTE = 1000000; // bytes
 
   ds.interface = null;
-
-  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-
-  ds.maximumValidSize = 50000000; //size is bytes
 
   ds.requestHeaders = {
     'Accept': 'application/json',
     'Authorization': AppConfig.authorization_header
   };
+  
+  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'zip'];
+  
+  ds.limits = {
+    uploadSize:  200 * ONE_MEGABYTE,
+    zipSize:     200 * ONE_MEGABYTE,
+    imageSize:    20 * ONE_MEGABYTE
+  };
+
+  ds.validators = [
+    {
+      "name": "valid_file_type",
+      "fn": function(model, errors) {
+          var msg;
+          var is_valid = (model.type == ds.interface.FILE_TYPES.VALID);
+          if (is_valid) {
+            return true;
+          } else {
+            msg = "Invalid image: '" + model.file.name +"'. Cannot upload file with extension '" + model.extension + "'. File extension must be one of: " + ds.allowedExtensions.join(", ");
+            errors.push(msg);
+            $log.debug("validator:", this.name, "msg:", msg);
+            return false;
+          }
+      }
+    },
+    {
+      "name": "valid_file_size",
+      "fn": function(model, errors) {
+        var msg, max_size;
+        var is_valid = ds.isValidFileSize(model.file);
+        if (is_valid) {
+          return true;
+        } else {
+          max_size = ds.isZipFile(model.file) ? ds.limits.zipSize : ds.limits.imageSize;
+          msg = "File '" + model.file.name + "' (" + model.file.type + ") is too large. Limit " + ds.getSizeInMegabytes(max_size) + "MB.";
+          errors.push(msg);
+          $log.debug("validator:", this.name, "msg:", msg);
+          return false;
+        }
+      }
+    },
+    {
+      "name": "valid_upload_size",
+      "fn": function(model, errors) {
+        var msg;
+        var is_valid = ds.isValidUploadSize();
+        if (is_valid) {
+          return true;
+        } else {
+          msg = "Total upload size is too large. Limit " + ds.getSizeInMegabytes(ds.limits.uploadSize) + "MB per upload.";
+          errors.push(msg);
+          $log.debug("validator:", this.name, "msg:", msg);
+          return false;
+        }
+      }
+    },
+  ];
 
   // Returns the image upload URL.
   ds.getUploadUrl = function() {
@@ -52,28 +106,23 @@ angular.module('media_manager')
   ds.onFileAdded = function(success, error) {
     return function(event, model) {
       $log.debug("Notification: droplet file added", model);
-      var is_valid_type = (model.type == ds.interface.FILE_TYPES.VALID)
-      var total_size = 0;
-      ds.interface.getFiles().forEach(function(item, index, arr){
-        total_size += item.file.size;
-      });
-      var is_valid_total_size = (total_size <= ds.maximumValidSize);
-      var msg = "";
+      var errors = [], valid = true, validator;
 
-      if (is_valid_type && is_valid_total_size) {
-        success && success(event, model);
-      } else {
-        //alert("Error: '" + model.file.name +"' is not valid for upload. Cannot upload file with extension '" + model.extension + "'. File must be one of: " + Droplet.allowedExtensions.join(", "));
-        model.deleteFile();
-        if(!is_valid_total_size){
-          $log.debug("Notification: total size of files is invalid; NOT uploading when size is greater than: " + ds.maximumValidSize + " bytes.");
-          var size_in_mb = parseInt(ds.maximumValidSize / 1000000);
-          msg = "Total file size too large. Cannot exceed " + size_in_mb + "MB at a time.";
-        } else if (!is_valid_type) {
-          $log.debug("Notification: file added is invalid; NOT uploading with extension: ", model.extension);
-            msg = "Invalid image: '" + model.file.name +"'. Cannot upload file with extension '" + model.extension + "'. File extension must be one of: " + ds.allowedExtensions.join(", ")
+      // run validator tests against the model and the droplet queue 
+      for(var i = 0; i < ds.validators.length; i++) {
+        validator = ds.validators[i];
+        valid = validator.fn.call(validator, model, errors);
+        if (!valid) {
+          break;
         }
-        error && error(event, model, msg);
+      }
+      
+      // check the validation result and invoke the appropriate callback
+      if (valid) {
+        success(event, model);
+      } else {
+        model.deleteFile(); // remove the model from the droplet queue because it isn't valid
+        error(event, model, errors.join('\n'));
       }
     };
   };
@@ -88,7 +137,11 @@ angular.module('media_manager')
   };
 
   ds.getTotalValid = function() {
-    return ds.interface ? ds.interface.getFiles(ds.interface.FILE_TYPES.VALID).length : 0;
+    return ds.interface ? ds.getValidFiles().length : 0;
+  };
+  
+  ds.getValidFiles = function() {
+    return ds.interface.getFiles(ds.interface.FILE_TYPES.VALID) || [];
   };
 
   ds.uploadFiles = function() {
@@ -99,4 +152,36 @@ angular.module('media_manager')
       $log.error("Error: droplet interface not available to upload files");
     }
   };
+  
+  ds.getUploadSize = function() {
+    var files = ds.getValidFiles() || [];
+    return files.reduce(function(totalSize, item){
+      return totalSize + item.file.size;
+    }, 0);
+  };
+  
+  ds.getUploadSizeMB = function() {
+    return ds.getSizeInMegabytes(ds.getUploadSize());
+  };
+  
+  ds.isValidUploadSize = function() {
+    return ds.getUploadSize() <= ds.limits.uploadSize;
+  };
+  
+  ds.isValidFileSize = function(file) {
+    var limit = ds.limits.imageSize;
+    if (ds.isZipFile(file)) {
+      limit = ds.limits.zipSize;
+    }
+    return file.size <= limit;
+  };
+  
+  ds.isZipFile = function(file) {
+    return file.type.indexOf("zip") !== -1;
+  };
+  
+  ds.getSizeInMegabytes = function(size) {
+    return (size / ONE_MEGABYTE).toFixed(2);
+  };
+
 }]);
