@@ -10,7 +10,8 @@ module.exports = function(config) {
     plugins: [
       require('./node_modules/karma-jasmine'),
       require('./node_modules/karma-ng-html2js-preprocessor'),
-      require('./node_modules/karma-phantomjs-launcher')
+      require('./node_modules/karma-phantomjs-launcher'),
+      require('./node_modules/karma-spec-reporter')
     ],
 
     // frameworks to use
@@ -48,7 +49,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['spec'],
 
 
     // web server port
