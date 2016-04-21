@@ -256,6 +256,12 @@ div.overlay {
     transform: scale(0.5);
 }
 
+div.overlay-stay {
+  background-color: #337ab7;
+  opacity:.5;
+  transform: none;
+}
+
 div.resize-overlay {
   /*background-color: rgba(0, 0, 0, .25);*/
   width: 30px;
@@ -282,10 +288,18 @@ div.resize-overlay:hover {
     background-color: rgba(0, 0, 0, .45);
 }
 
+div.overlay-stay:hover {
+  background-color: #337ab7;
+}
+
 li:hover div.overlay,
 li:hover div.resize-overlay:hover {
     opacity: 1;
     transform: scale(1);
+}
+
+li:hover div.overlay-stay:hover {
+    transform: none;
 }
 
 li div.add:hover {
