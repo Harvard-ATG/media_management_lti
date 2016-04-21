@@ -53,6 +53,7 @@ angular.module('media_manager')
         wc.collection.images[index].sort_order = newsort;
       });
       dragEnabled = true;
+      wc.saveCollection();
     }
   };
 
