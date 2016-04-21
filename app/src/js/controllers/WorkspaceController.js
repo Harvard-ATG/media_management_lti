@@ -91,6 +91,24 @@ angular.module('media_manager')
     wc.collection.images.push(courseImage);
   };
 
+  wc.inCollection = function(courseImage){
+    in_collection = false;
+    //if(wc.collection)
+    console.log(courseImage.id);
+    if(wc.collection.images != undefined){
+      wc.collection.images.forEach(function(item){
+        console.log(item);
+        console.log(courseImage.id + " == " + item.id);
+        if(item.course_image_id == courseImage.id){
+          in_collection = true;
+          console.log("got it!");
+          return true;
+        }
+      });
+    }
+    return in_collection;
+  };
+
   wc.removeFromCollection = function(id){
     // note this needs to be a forEach/search instead of a splice because
     // ng-sortable won't work with "track by $index" enabled on the ng-repeat
@@ -132,7 +150,7 @@ angular.module('media_manager')
 
     // PUT to update collection
     self.isSavingCollection.status = true;
-    
+
     return Collection.update({}, wc.collection, function(data){
       wc.notifications.clear();
       var collection = wc.loadActiveCollection();
