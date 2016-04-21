@@ -217,6 +217,7 @@ angular.module('media_manager')
   wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
   wc.filesToUpload = 0;
+  wc.fileUploadSize = 0;
   wc.notifications = Notifications;
   wc.sortChoices = [
     {'label': 'Newest to Oldest', 'name': 'created', 'dir': 'desc'},
@@ -235,12 +236,16 @@ angular.module('media_manager')
   }));
   $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
     wc.filesToUpload = Droplet.getTotalValid();
+    wc.fileUploadSize = Droplet.getUploadSizeMB();
+    wc.notifications.clear();
   }, function(event, model, msg) {
     wc.filesToUpload = Droplet.getTotalValid();
-    wc.notifications.notify("warning", msg);
+    wc.fileUploadSize = Droplet.getUploadSizeMB();
+    wc.notifications.clear().notify("warning", msg);
   }));
   $scope.$on('$dropletFileDeleted', Droplet.onFileDeleted(function() {
     wc.filesToUpload = Droplet.getTotalValid();
+    wc.fileUploadSize = Droplet.getUploadSizeMB();
   }));
   $scope.$on('$dropletSuccess', Droplet.onSuccess(function(event, response, files) {
       if (angular.isArray(response)) {
@@ -251,6 +256,7 @@ angular.module('media_manager')
         CourseCache.addImage(response);
       }
       wc.filesToUpload = Droplet.getTotalValid();
+      wc.fileUploadSize = Droplet.getUploadSizeMB();
       wc.notifications.clear().success("Images uploaded successfully");
   }));
 
