@@ -52,7 +52,10 @@
           <ul class="files list-inline" ng-if="wc.layout == 'gallery'">
             <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
               <droplet-thumb ng-model="courseImage"></droplet-thumb>
-              <div class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
+              <div ng-hide="wc.inCollection(courseImage)" class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
+              <div ng-show="wc.inCollection(courseImage)" class="overlay overlay-stay">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+              </div>
               <div class="resize-overlay" ng-click="wc.imageView(courseImage.id)">
                 <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
               </div>
