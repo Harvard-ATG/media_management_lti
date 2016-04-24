@@ -50,7 +50,7 @@
 
       <div style="clear:both; padding: 10px;" ng-show="wc.courseImages.length > 0">
           <ul class="files list-inline" ng-if="wc.layout == 'gallery'">
-            <li ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
+            <li class="droplet-thumb" ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
               <droplet-thumb ng-model="courseImage"></droplet-thumb>
               <div ng-hide="wc.inCollection(courseImage)" class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
               <div ng-show="wc.inCollection(courseImage)" class="overlay overlay-stay">
