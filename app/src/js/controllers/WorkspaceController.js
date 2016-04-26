@@ -38,6 +38,7 @@ angular.module('media_manager')
   wc.imagelb = ImageLightBox;
 
   wc.hideLibrary = true;
+  wc.hideAddImage = true;
 
   var dragEnabled = true;
   wc.dragControlListeners = {
