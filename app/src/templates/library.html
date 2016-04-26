@@ -6,27 +6,33 @@
     <div ng-show="wc.isLoading.status" style="position:relative">
       <span us-spinner="{top:0,left:'50%'}"></span>
     </div>
-    <h5>Step 1: Choose image files on your computer to upload to the library (limit 200 megabytes).</h5>
-    <section class="droplet image-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
-      <droplet ng-model="wc.Droplet.interface">
-        <droplet-upload-multiple ng-model="wc.Droplet.interface"></droplet-upload-multiple>
-        <div class="library-drag-area">
-          <i>Drag & Drop</i>
-          <ul class="files files-queued">
-              <li ng-repeat="model in wc.Droplet.interface.getFiles(wc.Droplet.interface.FILE_TYPES.VALID)" uib-tooltip="{{model.file.name}}">
-                  <droplet-preview ng-model="model" ng-show="model.isImage()"></droplet-preview>
-                  <droplet-preview-zip ng-model="model" ng-if="model.extension == 'zip'"></droplet-preview-zip>
-                  <div class="delete" ng-click="model.deleteFile()">&times;</div>
-              </li>
-          </ul>
-        </div>
-        <hr>
-        <h5>Step 2: Upload the above images to this image library.</h5>
-        <input type="button" class="btn btn-primary" value="Upload Images" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
-        <label>Number of files to upload:</label> {{wc.filesToUpload}} <i ng-if="wc.fileUploadSize > 0">({{wc.fileUploadSize}} MB)</i>
-      </droplet>
-    </section>
-    <hr>
+    <button type="button" class="btn btn-primary" ng-click="wc.hideAddImage = !wc.hideAddImage">
+      <span ng-if="wc.hideAddImage">Add Image to Library</span>
+      <span ng-if="!wc.hideAddImage">Hide Image Uploading</span>
+    </button>
+    <div uib-collapse="wc.hideAddImage">
+      <h5>Step 1: Choose image files on your computer to upload to the library (limit 200 megabytes).</h5>
+      <section class="droplet image-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
+        <droplet ng-model="wc.Droplet.interface">
+          <droplet-upload-multiple ng-model="wc.Droplet.interface"></droplet-upload-multiple>
+          <div class="library-drag-area">
+            <i>Drag & Drop</i>
+            <ul class="files files-queued">
+                <li ng-repeat="model in wc.Droplet.interface.getFiles(wc.Droplet.interface.FILE_TYPES.VALID)" uib-tooltip="{{model.file.name}}">
+                    <droplet-preview ng-model="model" ng-show="model.isImage()"></droplet-preview>
+                    <droplet-preview-zip ng-model="model" ng-if="model.extension == 'zip'"></droplet-preview-zip>
+                    <div class="delete" ng-click="model.deleteFile()">&times;</div>
+                </li>
+            </ul>
+          </div>
+          <hr>
+          <h5>Step 2: Upload the above images to this image library.</h5>
+          <input type="button" class="btn btn-primary" value="Upload Images" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
+          <label>Number of files to upload:</label> {{wc.filesToUpload}} <i ng-if="wc.fileUploadSize > 0">({{wc.fileUploadSize}} MB)</i>
+        </droplet>
+      </section>
+      <hr>
+    </div>
     <h4>Images in this image library</h4>
       <div style="margin-top: 20px">
           <div class="btn-group pull-left" uib-dropdown>
