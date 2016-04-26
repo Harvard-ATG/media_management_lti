@@ -152,7 +152,7 @@ angular.module('media_manager')
   $scope.$watch(function() {
     return ic.CourseCache.current_image ? ic.CourseCache.current_image.id : null;
   }, function(newVal, oldVal) {
-    if (newVal != oldVal && newVal !== null) {
+    if (newVal !== null) {
       ic.metaForm.resetErrorState();
       ic.metaForm.data = ic.getImageMetadata();
     }
