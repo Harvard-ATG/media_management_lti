@@ -1,24 +1,29 @@
-sudo: false # use new travis infrastructure
+sudo: false
 language: python
 python:
-  - "2.7"
+- '2.7'
 env:
-    - DJANGO_SETTINGS_MODULE="media_management_lti.settings.local"
+- DJANGO_SETTINGS_MODULE="media_management_lti.settings.local"
 install:
-    - pip install -r media_management_lti/requirements/local.txt --use-mirrors
-    - cd app
-    - npm install
-    - bower install
-    - cd ..
+- pip install -r media_management_lti/requirements/local.txt --use-mirrors
+- cd app
+- npm install
+- bower install
+- cd ..
 before_script:
-    - psql -c 'DROP DATABASE IF EXISTS media_management_lti;' -U postgres
-    - psql -c "CREATE USER media_management_lti WITH PASSWORD 'media_management_lti';" -U postgres
-    - psql -c 'ALTER USER media_management_lti CREATEDB;' -U postgres
-    - psql -c 'CREATE DATABASE media_management_lti;' -U postgres
-    - psql -c 'GRANT ALL PRIVILEGES ON DATABASE media_management_lti TO media_management_lti;' -U postgres
-    - cp -v media_management_lti/settings/secure.py.example media_management_lti/settings/secure.py
+- psql -c 'DROP DATABASE IF EXISTS media_management_lti;' -U postgres
+- psql -c "CREATE USER media_management_lti WITH PASSWORD 'media_management_lti';"
+  -U postgres
+- psql -c 'ALTER USER media_management_lti CREATEDB;' -U postgres
+- psql -c 'CREATE DATABASE media_management_lti;' -U postgres
+- psql -c 'GRANT ALL PRIVILEGES ON DATABASE media_management_lti TO media_management_lti;'
+  -U postgres
+- cp -v media_management_lti/settings/secure.py.example media_management_lti/settings/secure.py
 script:
-    - python manage.py migrate --noinput
-    - python manage.py test media_manager
-    - cd app
-    - ./node_modules/karma/bin/karma start
+- python manage.py migrate --noinput
+- python manage.py test media_manager
+- cd app
+- "./node_modules/karma/bin/karma start"
+notifications:
+  slack:
+    secure: M+vN6QkWq/zqrNSpXWaQ//xKa4GB2C4JdYjTMnT8LT774RAvfSpXkIJ97KTvAeAE3vLvkpTK2PK+SIN/4eeBuUZrNxKkKgDYI7QeCPlycaaTDUU9AC2a/XGiElpRpfPH6AZNznV3fq5pTQaTfkUTueHxm+o9/PO27ps05kARloahHtfVdAfG+uSTFsV2IcAl91PA9eZviFEloS7UbN9+0fuqVGjAVcrYkwbJJ/U3LcNfuKgq71EUWWLDCAECFezfYI5JpCTKctXTDyrGZsR5PREIZlcgHebh+djV8g8WrhnEOtawnTX38xrg9rJ9muUGAfQPxgUqcIPl2rJF+J6l8XiyGNGhiNMbyLRxGex+ArcTalXbmq2z4zVqcbefjTlC7uXgjFpZT2iLGUVNz8ThO7ua3heqTgdDXyjWvd05dpB2v7wSgxQWHrqmtjAxM9MbuBPqUoTLRTk+x5Vwwp6b4/Hm1+bxoejnCgv/jiNdsiVjs8xH6Noksw1nOU2jfp3KzNIdRskxk3+SaBxjJFfOOauJmOtXfT6n+UOkyE9/RjqTIaMymDdqnyv32Nd6LIxW1Yg4EQE5aQGxR1gieWkeh9t9FwDJxGSxKXm/OGO5jGSh1q8/2dOyTsaFKMdd2agZg2l0itlwKxSRHIC3wL8/DzXf6297TST0coqHQ3UOkLA=
