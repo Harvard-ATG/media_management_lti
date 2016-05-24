@@ -54,7 +54,7 @@ angular.module('media_manager')
         wc.collection.images[index].sort_order = newsort;
       });
       dragEnabled = true;
-      wc.saveCollection();
+      wc.saveCollection("Collection order changed.");
     }
   };
 
@@ -91,7 +91,7 @@ angular.module('media_manager')
 
   wc.addToCollection = function(courseImage){
     wc.collection.images.push(courseImage);
-    wc.saveCollection();
+    wc.saveCollection(courseImage.title + " added to collection.");
   };
 
   wc.inCollection = function(courseImage){
@@ -114,7 +114,7 @@ angular.module('media_manager')
     wc.collection.images.some(function(item, index, arr){
       if(item.id == id){
         wc.collection.images.splice(index, 1);
-        wc.saveCollection();
+        wc.saveCollection(item.title + " removed from collection.");
         return true;
       }
     });
@@ -124,15 +124,15 @@ angular.module('media_manager')
     $location.path('/collections/');
   };
 
-  wc.saveCollection = function(){
+  wc.saveCollection = function(message){
     if($routeParams.collectionId){
-      return wc.updateCollection();
+      return wc.updateCollection(message);
     } else {
       return wc.createCollection();
     }
   };
 
-  wc.updateCollection = function() {
+  wc.updateCollection = function(message) {
     var self = this;
 
     $log.debug("update collection", wc.collection.id);
@@ -174,7 +174,10 @@ angular.module('media_manager')
       wc.notifications.error("Error updating collection: " + errorResponse);
     }).$promise.then(function(data) {
       $log.debug("Collection updated: ", data)
-      wc.notifications.success("Collection saved.");
+      if(!message){
+        message = "Collection saved.";
+      }
+      wc.notifications.success(message);
     }).finally(function() {
       self.isSavingCollection.status = false;
     });

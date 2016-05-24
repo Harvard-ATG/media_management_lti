@@ -16,7 +16,7 @@
             <div class="form-group">
               <label for="collectionTitleForm">Collection</label>
               <div class="input-group">
-                <div class="form-control" style="min-width: 200px" editable-text="wc.collection.title" e-form="collectionTitleForm" e-name="collectionTitleForm" e-maxlength="255" onaftersave="wc.saveCollection()" ng-click="collectionTitleForm.$show()">
+                <div class="form-control" style="min-width: 200px" editable-text="wc.collection.title" e-form="collectionTitleForm" e-name="collectionTitleForm" e-maxlength="255" onaftersave="wc.saveCollection('Collection title saved.')" ng-click="collectionTitleForm.$show()">
                   {{wc.collection.title||'Untitled'}}
                 </div>
                 <div class="input-group-btn">
@@ -30,7 +30,7 @@
             <div class="form-group">
               <label for="collectionDescForm">Description</label>
               <div class="input-group">
-                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="50" onaftersave="wc.saveCollection()" ng-click="collectionDescForm.$show()">
+                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="50" onaftersave="wc.saveCollection('Collection description saved.')" ng-click="collectionDescForm.$show()">
                   {{wc.collection.description||'No Description'}}
                 </div>
                 <div class="input-group-btn">
