@@ -3,6 +3,27 @@ describe("WorkspaceController", function(){
   var $location;
   var $log;
   var collectionData = {'id':123};
+  var $q;
+
+  var setController = function(collectionId){
+    inject(function($controller, $rootScope, _$log_, _$location_, _$q_) {
+      var scope = $rootScope.$new();
+      var routeParams = {"collectionId":collectionId};
+      $q = _$q_;
+      $location = _$location_;
+      $log = _$log_;
+      workspaceController = $controller('WorkspaceController', {
+        '$scope': scope,
+        '$routeParams': routeParams,
+        '$log': $log,
+        '$location': $location
+      });
+      workspaceController.courseCollections = [];
+      workspaceController.collection = {
+        images: []
+      };
+    });
+  };
 
   beforeEach(function() {
     module('media_manager');
@@ -33,6 +54,7 @@ describe("WorkspaceController", function(){
       });
       $provide.service('Notifications', function() {
         this.clear = function() {};
+        this.success = function() {};
       });
       $provide.service('Preferences', function() {
         this.get = function() {};
@@ -44,23 +66,22 @@ describe("WorkspaceController", function(){
           success(collectionData);
           return {};
         };
+        Collection.update = function(params, collection, callback){
+          callback();
+          collection.$promise = $q.defer().promise;
+          return collection;
+        };
+        Collection.get = function(collection){
+          collection.$promise = $q.defer().promise;
+          collection.images = [];
+          return collection;
+        };
         return Collection
       });
+
     });
 
-    inject(function($controller, $rootScope, _$log_, _$location_) {
-      var scope = $rootScope.$new();
-      var routeParams = {collectionId:undefined};
-      $location = _$location_;
-      $log = _$log_;
-      workspaceController = $controller('WorkspaceController', {
-        '$scope': scope,
-        '$routeParams': routeParams,
-        '$log': $log,
-        '$location': $location
-      });
-      workspaceController.courseCollections = [];
-    });
+    setController();
   });
 
   describe("test initialization", function(){
@@ -74,6 +95,14 @@ describe("WorkspaceController", function(){
       spyOn($location, 'path');
       workspaceController.saveCollection();
       expect($location.path).toHaveBeenCalledWith('/workspace/'+collectionData.id);
+    });
+    it("should pass through a message to the notifications", function(done){
+      // sets the controller with a $routeParam for collectionId
+      setController(1);
+
+      spyOn(workspaceController.notifications, 'success');
+      workspaceController.saveCollection("asdf").then(done());
+      expect(workspaceController.notifications.success).toHaveBeenCalledWith("asdf");
     });
   });
 

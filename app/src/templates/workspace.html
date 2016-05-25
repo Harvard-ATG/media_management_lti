@@ -2,8 +2,8 @@
 
 <div ng-if="wc.canEdit" class="container-fluid">
 
-  <div class="row">
-    <div class="notifications" ng-show="wc.notifications.messages.length > 0" ng-repeat="message in wc.notifications.messages track by $index">
+  <div class="row no-margin">
+    <div class="col-md-12 notifications" ng-show="wc.notifications.messages.length > 0" ng-repeat="message in wc.notifications.messages track by $index">
       <div class="alert alert-{{message.type}}" role="alert">{{message.content}}</div>
     </div>
   </div>
@@ -16,7 +16,7 @@
             <div class="form-group">
               <label for="collectionTitleForm">Collection</label>
               <div class="input-group">
-                <div class="form-control" style="min-width: 200px" editable-text="wc.collection.title" e-form="collectionTitleForm" e-name="collectionTitleForm" e-maxlength="255" onaftersave="wc.saveCollection()" ng-click="collectionTitleForm.$show()">
+                <div class="form-control" style="min-width: 200px" editable-text="wc.collection.title" e-form="collectionTitleForm" e-name="collectionTitleForm" e-maxlength="255" onaftersave="wc.saveCollection('Collection title saved.')" ng-click="collectionTitleForm.$show()">
                   {{wc.collection.title||'Untitled'}}
                 </div>
                 <div class="input-group-btn">
@@ -30,7 +30,7 @@
             <div class="form-group">
               <label for="collectionDescForm">Description</label>
               <div class="input-group">
-                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="50" onaftersave="wc.saveCollection()" ng-click="collectionDescForm.$show()">
+                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="50" onaftersave="wc.saveCollection('Collection description saved.')" ng-click="collectionDescForm.$show()">
                   {{wc.collection.description||'No Description'}}
                 </div>
                 <div class="input-group-btn">
@@ -57,6 +57,9 @@
                 <div style="position:relative;" as-sortable-item-handle>
                   <droplet-thumb ng-model="collectionImage"></droplet-thumb>
                   <div class="overlay" ng-click="wc.removeFromCollection(collectionImage.id)">-</div>
+                  <div class="resize-overlay" ng-click="wc.imageView(collectionImage.course_image_id)">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                  </div>
                 </div>
               </li>
             </ul>
