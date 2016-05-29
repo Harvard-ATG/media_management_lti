@@ -11,7 +11,7 @@
       <span ng-if="!wc.hideAddImage">Hide Image Uploading</span>
     </button>
     <div uib-collapse="wc.hideAddImage">
-      <h5>Step 1: Choose image files on your computer to upload to the library (limit 200 megabytes).</h5>
+      <h5>Step 1: Choose image files on your computer to upload to the library (Imported images cannot exceed 200 MB)</h5>
       <section class="droplet image-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
 
         <div class="notifications" ng-if="wc.notifications.messages.length > 0 && wc.notifications.getLocation() == 'upload'" ng-repeat="message in wc.notifications.messages track by $index">
