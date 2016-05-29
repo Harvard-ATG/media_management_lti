@@ -9,9 +9,9 @@ angular.module('media_manager')
     'Accept': 'application/json',
     'Authorization': AppConfig.authorization_header
   };
-  
+
   ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'zip'];
-  
+
   ds.limits = {
     uploadSize:  200 * ONE_MEGABYTE,
     zipSize:     200 * ONE_MEGABYTE,
@@ -58,7 +58,7 @@ angular.module('media_manager')
         if (is_valid) {
           return true;
         } else {
-          msg = "Total upload size is too large. Limit " + ds.getSizeInMegabytes(ds.limits.uploadSize) + "MB per upload.";
+          msg = "Total upload size is too large. Imported images cannot exceed " + ds.getSizeInMegabytes(ds.limits.uploadSize, 0) + "MB per upload.";
           errors.push(msg);
           $log.debug("validator:", this.name, "msg:", msg);
           return false;
@@ -108,7 +108,7 @@ angular.module('media_manager')
       $log.debug("Notification: droplet file added", model);
       var errors = [], valid = true, validator;
 
-      // run validator tests against the model and the droplet queue 
+      // run validator tests against the model and the droplet queue
       for(var i = 0; i < ds.validators.length; i++) {
         validator = ds.validators[i];
         valid = validator.fn.call(validator, model, errors);
@@ -116,7 +116,7 @@ angular.module('media_manager')
           break;
         }
       }
-      
+
       // check the validation result and invoke the appropriate callback
       if (valid) {
         success(event, model);
@@ -139,7 +139,7 @@ angular.module('media_manager')
   ds.getTotalValid = function() {
     return ds.interface ? ds.getValidFiles().length : 0;
   };
-  
+
   ds.getValidFiles = function() {
     return ds.interface.getFiles(ds.interface.FILE_TYPES.VALID) || [];
   };
@@ -152,22 +152,22 @@ angular.module('media_manager')
       $log.error("Error: droplet interface not available to upload files");
     }
   };
-  
+
   ds.getUploadSize = function() {
     var files = ds.getValidFiles() || [];
     return files.reduce(function(totalSize, item){
       return totalSize + item.file.size;
     }, 0);
   };
-  
+
   ds.getUploadSizeMB = function() {
     return ds.getSizeInMegabytes(ds.getUploadSize());
   };
-  
+
   ds.isValidUploadSize = function() {
     return ds.getUploadSize() <= ds.limits.uploadSize;
   };
-  
+
   ds.isValidFileSize = function(file) {
     var limit = ds.limits.imageSize;
     if (ds.isZipFile(file)) {
@@ -175,12 +175,13 @@ angular.module('media_manager')
     }
     return file.size <= limit;
   };
-  
+
   ds.isZipFile = function(file) {
     return file.type.indexOf("zip") !== -1;
   };
-  
-  ds.getSizeInMegabytes = function(size) {
+
+  ds.getSizeInMegabytes = function(size, fixed) {
+    fixed = fixed || 2;
     return (size / ONE_MEGABYTE).toFixed(2);
   };
 
