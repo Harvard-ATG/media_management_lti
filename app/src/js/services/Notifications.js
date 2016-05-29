@@ -7,6 +7,13 @@ angular.module('media_manager').service('Notifications', function() {
           ERROR:"danger"
         },
         messages: [],
+        setLocation: function(loc){
+          this.location = loc
+          return this;
+        },
+        getLocation: function(){
+          return this.location || 'top';
+        },
         notify: function(type, msg) {
           if (this.canReset) {
             this.clear();
@@ -43,6 +50,7 @@ angular.module('media_manager').service('Notifications', function() {
         },
         clear: function() {
           this.messages = [];
+          this.location = 'top';
           return this;
         },
         clearOnNext: function() {
