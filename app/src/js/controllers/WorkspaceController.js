@@ -136,7 +136,7 @@ angular.module('media_manager')
     var self = this;
 
     $log.debug("update collection", wc.collection.id);
-    wc.collection.description = wc.collection.description || "No description";
+    wc.collection.description = wc.collection.description;
     wc.collection.course_image_ids = wc.collection.images.map(function(image) {
       // images could come from the image library, or already be part of the collection
       // and we want to make sure we're returning the image "id" property, not the collectionimage "id"
