@@ -237,7 +237,7 @@ angular.module('media_manager')
 
   $scope.$on('$dropletReady', Droplet.onReady);
   $scope.$on('$dropletError', Droplet.onError(function(event, response) {
-    wc.notifications.clear().error(response);
+    wc.notifications.clear().setLocation('upload').error(response);
   }));
   $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
     wc.filesToUpload = Droplet.getTotalValid();
@@ -246,7 +246,7 @@ angular.module('media_manager')
   }, function(event, model, msg) {
     wc.filesToUpload = Droplet.getTotalValid();
     wc.fileUploadSize = Droplet.getUploadSizeMB();
-    wc.notifications.clear().notify("warning", msg);
+    wc.notifications.clear().setLocation('upload').notify("warning", msg);
   }));
   $scope.$on('$dropletFileDeleted', Droplet.onFileDeleted(function() {
     wc.filesToUpload = Droplet.getTotalValid();
@@ -262,7 +262,7 @@ angular.module('media_manager')
       }
       wc.filesToUpload = Droplet.getTotalValid();
       wc.fileUploadSize = Droplet.getUploadSizeMB();
-      wc.notifications.clear().success("Images uploaded successfully");
+      wc.notifications.clear().setLocation('upload').success("Images uploaded successfully");
   }));
 
   $scope.$watch('wc.layout', function(newVal, oldVal) {
