@@ -24,7 +24,7 @@ gulp.task('buildJS', function(){
   return gulp.src('src/js/**/*.js')
     .pipe(sort())
     .pipe(concat('app.js'))
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest('build/app/js'));
 });
 
@@ -32,7 +32,7 @@ gulp.task('buildCSS', function(){
   return gulp.src('src/css/**/*.css')
     .pipe(sort())
     .pipe(concat('styles.css'))
-    //.pipe(minifycss())
+    .pipe(minifycss())
     .pipe(gulp.dest('build/app/css'));
 });
 
