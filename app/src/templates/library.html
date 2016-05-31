@@ -13,6 +13,11 @@
     <div uib-collapse="wc.hideAddImage">
       <h5>Step 1: Choose image files on your computer to upload to the library (limit 200 megabytes).</h5>
       <section class="droplet image-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
+
+        <div class="notifications" ng-if="wc.notifications.messages.length > 0 && wc.notifications.getLocation() == 'upload'" ng-repeat="message in wc.notifications.messages track by $index">
+          <div class="alert alert-{{message.type}}" role="alert">{{message.content}}</div>
+        </div>
+
         <droplet ng-model="wc.Droplet.interface">
           <droplet-upload-multiple ng-model="wc.Droplet.interface"></droplet-upload-multiple>
           <div class="library-drag-area">
@@ -33,7 +38,9 @@
       </section>
       <hr>
     </div>
-    <h4>Images in this image library</h4>
+    <h4>
+      {{ wc.courseImages.length || 'No' }} available images in this image library
+    </h4>
       <div style="margin-top: 20px">
           <div class="btn-group pull-left" uib-dropdown>
               <button id="sort_images_button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
