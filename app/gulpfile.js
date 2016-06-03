@@ -78,7 +78,7 @@ gulp.task('clean', function() {
   return del(['build/build.json']) // created by "manage.py collectstatic"
 });
 
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'mirador']);
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'initMirador']);
 
 gulp.task('connect', function(){
   connect.server({
