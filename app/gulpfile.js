@@ -4,6 +4,8 @@ var sort = require('gulp-sort');
 var del = require('del');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
+var git = require('gulp-git');
+var exec = require('child_process').exec;
 //var Server = require('karma').Server;
 //var jshint = require('gulp-jshint');
 
@@ -76,7 +78,7 @@ gulp.task('clean', function() {
   return del(['build/build.json']) // created by "manage.py collectstatic"
 });
 
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'mirador']);
 
 gulp.task('connect', function(){
   connect.server({
@@ -85,11 +87,52 @@ gulp.task('connect', function(){
   });
 });
 
+gulp.task('one', function(cb){
+  console.log("starting one...");
+  setTimeout(function(){
+    console.log("finishing one...");
+    cb();
+  }, 2000);
+});
+
+gulp.task('two', ['one'], function(cb){
+  console.log("starting two...");
+  setTimeout(function(){
+    console.log("finishing two...");
+    cb();
+  }, 2000);
+});
+
+gulp.task('test', ['one', 'two']);
+
+var miradorDir = 'src/vendor/mirador';
+gulp.task('cloneMirador', function(cb){
+  git.clone('https://github.com/IIIF/Mirador', {args: miradorDir}, function(err) {
+    cb();
+  });
+});
+var buildMirador = function(cb){
+  exec('npm install', {cwd: miradorDir}, function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    exec('grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+      cb();
+    });
+  });
+};
+// this one has the clone as a dependency
+gulp.task('initMirador', ['cloneMirador'], buildMirador);
+// this one is for the watch
+gulp.task('buildMirador', buildMirador);
+
 gulp.task('watch', function(){
   gulp.watch('src/js/**/*.js', ['buildJS']);
   gulp.watch('src/css/**/*.css', ['buildCSS']);
   gulp.watch('src/**/*.html', ['moveHTML']);
   gulp.watch('bower_components/**/*.js', ['buildVendor']);
+  gulp.watch('src/vendor/**/*', ['buildMirador']);
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);
