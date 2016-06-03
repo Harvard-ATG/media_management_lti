@@ -80,7 +80,7 @@ gulp.task('clean', function() {
 });
 
 //gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'initMirador']);
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'initMirador']);
 
 gulp.task('connect', function(){
   connect.server({
