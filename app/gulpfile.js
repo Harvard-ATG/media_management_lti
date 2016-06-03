@@ -6,6 +6,7 @@ var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
 var git = require('gulp-git');
 var exec = require('child_process').exec;
+var fs = require('fs');
 //var Server = require('karma').Server;
 //var jshint = require('gulp-jshint');
 
@@ -78,7 +79,8 @@ gulp.task('clean', function() {
   return del(['build/build.json']) // created by "manage.py collectstatic"
 });
 
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'initMirador']);
+//gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'initMirador']);
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 
 gulp.task('connect', function(){
   connect.server({
@@ -87,31 +89,24 @@ gulp.task('connect', function(){
   });
 });
 
-gulp.task('one', function(cb){
-  console.log("starting one...");
-  setTimeout(function(){
-    console.log("finishing one...");
-    cb();
-  }, 2000);
-});
-
-gulp.task('two', ['one'], function(cb){
-  console.log("starting two...");
-  setTimeout(function(){
-    console.log("finishing two...");
-    cb();
-  }, 2000);
-});
-
-gulp.task('test', ['one', 'two']);
-
 var miradorDir = 'src/vendor/mirador';
 gulp.task('cloneMirador', function(cb){
-  git.clone('https://github.com/IIIF/Mirador', {args: miradorDir}, function(err) {
+
+  if(!fs.existsSync(miradorDir)){
+    git.clone('https://github.com/IIIF/Mirador', {args: miradorDir}, function(err) {
+      if(err){
+        throw err;
+      }
+      cb();
+    });
+  } else {
     cb();
-  });
+  }
 });
+
 var buildMirador = function(cb){
+  console.log("Building Mirador");
+
   exec('npm install', {cwd: miradorDir}, function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
@@ -132,7 +127,6 @@ gulp.task('watch', function(){
   gulp.watch('src/css/**/*.css', ['buildCSS']);
   gulp.watch('src/**/*.html', ['moveHTML']);
   gulp.watch('bower_components/**/*.js', ['buildVendor']);
-  gulp.watch('src/vendor/**/*', ['buildMirador']);
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);
