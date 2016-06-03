@@ -24,7 +24,7 @@ gulp.task('buildJS', function(){
   return gulp.src('src/js/**/*.js')
     .pipe(sort())
     .pipe(concat('app.js'))
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(gulp.dest('build/app/js'));
 });
 
