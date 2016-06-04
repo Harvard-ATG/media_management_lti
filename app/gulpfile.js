@@ -17,7 +17,7 @@ gulp.task('moveHTML', function(){
     .pipe(gulp.dest('build/app'));
 });
 
-gulp.task('moveVendorSrc', function(){
+gulp.task('moveVendorSrc', ['initMirador'], function(){
   return gulp.src('src/vendor/**/*')
     .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
@@ -97,7 +97,7 @@ gulp.task('cloneMirador', function(cb){
       if(err){
         throw err;
       }
-      cb();
+      cb(err);
     });
   } else {
     cb();
@@ -110,10 +110,13 @@ var buildMirador = function(cb){
   exec('npm install', {cwd: miradorDir}, function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
+    if(err){
+      cb(err);
+    }
     exec('grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
       console.log(stdout);
       console.log(stderr);
-      cb();
+      cb(err);
     });
   });
 };
