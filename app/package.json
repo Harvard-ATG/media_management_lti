@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/js/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "cd src && mkdir vendor && cd vendor && git clone https://github.com/IIIF/Mirador && cd mirador && npm install && grunt"
   },
   "author": "",
   "license": "ISC",
@@ -26,8 +27,7 @@
     "karma-ng-html2js-preprocessor": "^0.2.1",
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-spec-reporter": "0.0.26",
-    "phantomjs": "^2.1.7",
-    "phantomjs-prebuilt": "^2.1.7"
+    "phantomjs": "^2.1.7"
   },
   "dependencies": {
     "gulp": "^3.9.0",
