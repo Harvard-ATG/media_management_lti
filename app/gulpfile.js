@@ -17,8 +17,8 @@ gulp.task('moveHTML', function(){
     .pipe(gulp.dest('build/app'));
 });
 
-gulp.task('moveVendorSrc', ['initMirador'], function(){
-  return gulp.src('src/vendor/**/*')
+gulp.task('moveVendorSrc', function(){
+  return gulp.src(['src/vendor/mirador/build/**/*'])
     .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
 });
@@ -79,8 +79,7 @@ gulp.task('clean', function() {
   return del(['build/build.json']) // created by "manage.py collectstatic"
 });
 
-//gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'initMirador']);
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'initMirador']);
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 
 gulp.task('connect', function(){
   connect.server({
@@ -88,42 +87,6 @@ gulp.task('connect', function(){
     livereload: true
   });
 });
-
-var miradorDir = 'src/vendor/mirador';
-gulp.task('cloneMirador', function(cb){
-
-  if(!fs.existsSync(miradorDir)){
-    git.clone('https://github.com/IIIF/Mirador', {args: miradorDir}, function(err) {
-      if(err){
-        throw err;
-      }
-      cb(err);
-    });
-  } else {
-    cb();
-  }
-});
-
-var buildMirador = function(cb){
-  console.log("Building Mirador");
-
-  exec('npm install', {cwd: miradorDir}, function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    if(err){
-      cb(err);
-    }
-    exec('grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
-      console.log(stdout);
-      console.log(stderr);
-      cb(err);
-    });
-  });
-};
-// this one has the clone as a dependency
-gulp.task('initMirador', ['cloneMirador'], buildMirador);
-// this one is for the watch
-gulp.task('buildMirador', buildMirador);
 
 gulp.task('watch', function(){
   gulp.watch('src/js/**/*.js', ['buildJS']);
