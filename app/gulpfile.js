@@ -15,7 +15,7 @@ gulp.task('moveHTML', function(){
 });
 
 gulp.task('moveVendorSrc', function(){
-  return gulp.src(['src/vendor/mirador/build/**/*'])
+  return gulp.src(['src/vendor/Mirador/build/**/*'])
     .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
 });
