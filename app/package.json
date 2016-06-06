@@ -5,7 +5,7 @@
   "main": "src/js/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && npm install && grunt"
+    "install": "cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && npm install --ignore-scripts && grunt"
   },
   "author": "",
   "license": "ISC",
