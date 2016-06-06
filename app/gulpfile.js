@@ -8,10 +8,8 @@ var minifycss = require('gulp-minify-css');
 //var jshint = require('gulp-jshint');
 
 gulp.task('moveHTML', function(){
-  gulp.src('src/index.html')
-    .pipe(gulp.dest('.'));
-  return gulp.src(['src/**/*.html'])
-    .pipe(gulp.dest('build/app'));
+  return gulp.src(['src/templates/**/*.html'])
+    .pipe(gulp.dest('build/app/templates'));
 });
 
 gulp.task('moveVendorSrc', function(){
@@ -72,9 +70,12 @@ gulp.task('moveVendorFonts', function(){
 
 gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
 
-gulp.task('clean', function() {
-  return del(['build/build.json']) // created by "manage.py collectstatic"
+gulp.task('clean', function(done) {
+  del(['build/build.json']).then(function(){
+    done();
+  }); // created by "manage.py collectstatic"
 });
+
 
 gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 
@@ -88,7 +89,7 @@ gulp.task('connect', function(){
 gulp.task('watch', function(){
   gulp.watch('src/js/**/*.js', ['buildJS']);
   gulp.watch('src/css/**/*.css', ['buildCSS']);
-  gulp.watch('src/**/*.html', ['moveHTML']);
+  gulp.watch('src/templates/**/*.html', ['moveHTML']);
   gulp.watch('bower_components/**/*.js', ['buildVendor']);
 });
 
