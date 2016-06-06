@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/js/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "rm -rf src/vendor && cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && pwd && npm install --ignore-scripts && grunt"
+    "test": "karma start",
+    "install": "cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && pwd && npm install && ./node_modules/grunt-cli/bin/grunt"
   },
   "author": "",
   "license": "ISC",
