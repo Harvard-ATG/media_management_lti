@@ -101,7 +101,7 @@ gulp.task('buildMirador', ['cloneMirador'], function(done){
     if(err){
       done(err);
     }
-    exec('grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
+    exec('./node_modules/grunt-cli/bin/grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
       console.log(stdout);
       console.log(stderr);
       done(err);
