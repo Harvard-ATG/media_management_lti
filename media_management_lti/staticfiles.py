@@ -101,16 +101,16 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         file_pattern = r'^.+(?:-[a-zA-Z0-9]{12})\.(?:js|css)$'
 
         hashed_files = {}
-        for target_dir in (js_dir, css_dir, vendor_dir):
-            for name in os.listdir(target_dir):
+        for root, dirs, files in os.walk(os.path.join(BUILD_SRC, 'app')):
+            for name in files:
                 can_hash_file = (name.endswith('.js') or name.endswith('.css')) and re.match(file_pattern, name) is None
                 if can_hash_file:
-                    orig_file_path = os.path.join(target_dir, name)
+                    orig_file_path = os.path.join(root, name)
                     print "Hashing file: %s" % orig_file_path
                     with open(orig_file_path, 'rb') as f:
                         hash_result = self.file_hash(File(f))
                         (file_name, file_extension) = os.path.splitext(name)
-                        new_file_path = os.path.join(target_dir, "%s-%s%s" % (file_name, hash_result, file_extension))
+                        new_file_path = os.path.join(root, "%s-%s%s" % (file_name, hash_result, file_extension))
                         hashed_files[orig_file_path] = new_file_path
                         print "Renaming (copying) file %s to %s" % (orig_file_path, new_file_path)
                         shutil.copyfile(orig_file_path, new_file_path)
