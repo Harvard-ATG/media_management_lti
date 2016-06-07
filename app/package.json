@@ -5,7 +5,7 @@
   "main": "src/js/app.js",
   "scripts": {
     "test": "karma start",
-    "install": "cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && pwd && npm install && ./node_modules/grunt-cli/bin/grunt"
+    "_comment": "cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && pwd && npm install && ./node_modules/grunt-cli/bin/grunt"
   },
   "author": "",
   "license": "ISC",

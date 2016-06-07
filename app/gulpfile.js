@@ -4,6 +4,9 @@ var sort = require('gulp-sort');
 var del = require('del');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
+var git = require('gulp-git');
+var exec = require('child_process').exec;
+var fs = require('fs');
 //var Server = require('karma').Server;
 //var jshint = require('gulp-jshint');
 
@@ -12,8 +15,8 @@ gulp.task('moveHTML', function(){
     .pipe(gulp.dest('build/app/templates'));
 });
 
-gulp.task('moveVendorSrc', function(){
-  return gulp.src(['src/vendor/Mirador/build/**/*'])
+gulp.task('moveVendorSrc', ['moveMirador'], function(){
+  return gulp.src(['src/vendor/**/*'])
     .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
 });
@@ -70,6 +73,56 @@ gulp.task('moveVendorFonts', function(){
 
 gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
 
+
+
+
+var tmpDir = 'tmp';
+var miradorDir = tmpDir + '/mirador';
+var miradorBuildDir = miradorDir + '/build/mirador';
+gulp.task('cloneMirador', function(done){
+  if(!fs.existsSync(tmpDir)){
+    fs.mkdirSync(tmpDir);
+  }
+  if(!fs.existsSync(miradorDir)){
+    git.clone('https://github.com/IIIF/Mirador', {args: miradorDir}, function(err) {
+      if(err){
+        throw err;
+      }
+      done(err);
+    });
+  } else {
+    done();
+  }
+});
+gulp.task('buildMirador', ['cloneMirador'], function(done){
+  exec('npm install', {cwd: miradorDir}, function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    if(err){
+      done(err);
+    }
+    exec('grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+      done(err);
+    });
+  });
+});
+gulp.task('moveMirador', ['buildMirador'], function(){
+  gulp.src([miradorBuildDir + '/**/*'])
+  .pipe(gulp.dest('src/vendor/mirador'));
+});
+
+gulp.task('cleanMirador', function(){
+  del([miradorDir, 'build/app/vendor/mirador', 'src/vendor/mirador']);
+});
+
+gulp.task('mirador', ['cloneMirador', 'buildMirador', 'moveMirador']);
+
+
+
+
+
 gulp.task('clean', function(done) {
   del(['build/build.json']).then(function(){
     done();
@@ -77,13 +130,14 @@ gulp.task('clean', function(done) {
 });
 
 
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'mirador']);
 
 gulp.task('connect', function(){
   connect.server({
     root: 'build',
     livereload: true
   });
+
 });
 
 gulp.task('watch', function(){
@@ -91,6 +145,7 @@ gulp.task('watch', function(){
   gulp.watch('src/css/**/*.css', ['buildCSS']);
   gulp.watch('src/templates/**/*.html', ['moveHTML']);
   gulp.watch('bower_components/**/*.js', ['buildVendor']);
+  //gulp.watch('src/vendor/**/*', ['moveVendorSrc']);
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);
