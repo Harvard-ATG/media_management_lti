@@ -42,16 +42,16 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         """
         if dry_run:
             return []
-        
+
         # Clean build files from previous runs
         self.clean_files()
-        
+
         # Build the source files
         self.build_src_files()
-        
+
         # Hash the built artifacts (cache-busting tactic)
         hashed_files = self.hash_build_files()
-        
+
         # Write the manifest file that maps the original built artifacts to the hashed files
         self.save_build_manifest(hashed_files)
 
@@ -69,13 +69,13 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         # Setup args to pass to the commands
         subprocess_args = {
             'shell': False,
-            'cwd': APP_HOME, 
+            'cwd': APP_HOME,
             'env': {
                 'PATH': os.environ['PATH'] +':{0}'.format(NODE_MODULES_BIN_DIR), # so the shell can find the "bower" command
                 'HOME': APP_HOME,
             }
         }
-        
+
         # Run the commands.
         for cmd in (NPM_INSTALL, BOWER_INSTALL, GULP_BUILD):
             print "\n%s%s%s\n" % ("*" * 25, cmd, "*" * 25)
@@ -97,19 +97,20 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         """
         js_dir = os.path.join(BUILD_SRC, 'app', 'js')
         css_dir = os.path.join(BUILD_SRC, 'app', 'css')
+        vendor_dir = os.path.join(BUILD_SRC, 'app', 'vendor')
         file_pattern = r'^.+(?:-[a-zA-Z0-9]{12})\.(?:js|css)$'
-        
+
         hashed_files = {}
-        for target_dir in (js_dir, css_dir):
-            for name in os.listdir(target_dir):
+        for root, dirs, files in os.walk(os.path.join(BUILD_SRC, 'app')):
+            for name in files:
                 can_hash_file = (name.endswith('.js') or name.endswith('.css')) and re.match(file_pattern, name) is None
                 if can_hash_file:
-                    orig_file_path = os.path.join(target_dir, name)
+                    orig_file_path = os.path.join(root, name)
                     print "Hashing file: %s" % orig_file_path
                     with open(orig_file_path, 'rb') as f:
                         hash_result = self.file_hash(File(f))
                         (file_name, file_extension) = os.path.splitext(name)
-                        new_file_path = os.path.join(target_dir, "%s-%s%s" % (file_name, hash_result, file_extension))
+                        new_file_path = os.path.join(root, "%s-%s%s" % (file_name, hash_result, file_extension))
                         hashed_files[orig_file_path] = new_file_path
                         print "Renaming (copying) file %s to %s" % (orig_file_path, new_file_path)
                         shutil.copyfile(orig_file_path, new_file_path)
@@ -121,7 +122,7 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         Writes the build manfiest which contains a JSON object mapping the
         original file names to the hashed file names.
         """
-        
+
         # Make the paths relative instead of absolute in the same way that they
         # are in the application (i.e. "app/js/vendor.js").
         build_manifest = {}
@@ -131,7 +132,7 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             src = original_path.replace(strip_src_path, '')
             dst = hashed_path.replace(strip_dst_path, '')
             build_manifest[src] = dst
-        
+
         # Write the JSON file with the mappings
         manifest_file = MANIFEST_FILE
         manifest_json = json.dumps(build_manifest)
@@ -153,7 +154,7 @@ class StaticFilesStorage(storage.StaticFilesStorage):
                 print "Deleting tree %s" % dst
                 shutil.rmtree(dst)
             shutil.copytree(src, dst)
-    
+
     def clean_files(self):
         """
         Deletes the  build files under the /app/build directory

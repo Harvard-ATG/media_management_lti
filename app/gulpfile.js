@@ -4,18 +4,19 @@ var sort = require('gulp-sort');
 var del = require('del');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
+var git = require('gulp-git');
+var exec = require('child_process').exec;
+var fs = require('fs');
 //var Server = require('karma').Server;
 //var jshint = require('gulp-jshint');
 
 gulp.task('moveHTML', function(){
-  gulp.src('src/index.html')
-    .pipe(gulp.dest('.'));
-  return gulp.src(['src/**/*.html'])
-    .pipe(gulp.dest('build/app'));
+  return gulp.src(['src/templates/**/*.html'])
+    .pipe(gulp.dest('build/app/templates'));
 });
 
-gulp.task('moveVendorSrc', function(){
-  return gulp.src('src/vendor/**/*')
+gulp.task('moveVendorSrc', ['moveMirador'], function(){
+  return gulp.src(['src/vendor/**/*'])
     .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
 });
@@ -72,24 +73,79 @@ gulp.task('moveVendorFonts', function(){
 
 gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
 
-gulp.task('clean', function() {
-  return del(['build/build.json']) // created by "manage.py collectstatic"
+
+
+
+var tmpDir = 'tmp';
+var miradorDir = tmpDir + '/mirador';
+var miradorBuildDir = miradorDir + '/build/mirador';
+gulp.task('cloneMirador', function(done){
+  if(!fs.existsSync(tmpDir)){
+    fs.mkdirSync(tmpDir);
+  }
+  if(!fs.existsSync(miradorDir)){
+    git.clone('https://github.com/IIIF/Mirador', {args: miradorDir}, function(err) {
+      if(err){
+        throw err;
+      }
+      done(err);
+    });
+  } else {
+    done();
+  }
+});
+gulp.task('buildMirador', ['cloneMirador'], function(done){
+  exec('npm install', {cwd: miradorDir}, function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    if(err){
+      done(err);
+    }
+    exec('./node_modules/grunt-cli/bin/grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+      done(err);
+    });
+  });
+});
+gulp.task('moveMirador', ['buildMirador'], function(){
+  gulp.src([miradorBuildDir + '/**/*'])
+  .pipe(gulp.dest('src/vendor/mirador'));
 });
 
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
+gulp.task('cleanMirador', function(){
+  del([miradorDir, 'build/app/vendor/mirador', 'src/vendor/mirador']);
+});
+
+gulp.task('mirador', ['cloneMirador', 'buildMirador', 'moveMirador']);
+
+
+
+
+
+gulp.task('clean', function(done) {
+  del(['build/build.json']).then(function(){
+    done();
+  }); // created by "manage.py collectstatic"
+});
+
+
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'mirador']);
 
 gulp.task('connect', function(){
   connect.server({
     root: 'build',
     livereload: true
   });
+
 });
 
 gulp.task('watch', function(){
   gulp.watch('src/js/**/*.js', ['buildJS']);
   gulp.watch('src/css/**/*.css', ['buildCSS']);
-  gulp.watch('src/**/*.html', ['moveHTML']);
+  gulp.watch('src/templates/**/*.html', ['moveHTML']);
   gulp.watch('bower_components/**/*.js', ['buildVendor']);
+  //gulp.watch('src/vendor/**/*', ['moveVendorSrc']);
 });
 
 gulp.task('default', ['build', 'watch', 'connect']);

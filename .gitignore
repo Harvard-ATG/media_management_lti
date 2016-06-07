@@ -24,3 +24,6 @@ app/.config
 app/.npm
 app/tmp
 app/.*.json
+
+# Mirador
+/app/src/vendor

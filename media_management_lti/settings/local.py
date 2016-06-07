@@ -24,3 +24,5 @@ LOGGING['handlers']['default'] = {
 }
 
 dictConfig(LOGGING)
+
+APP_BUILD_JSON = None
