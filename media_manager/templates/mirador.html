@@ -3,6 +3,7 @@
 <head>
   <link rel="stylesheet" href="{% static_build "app/vendor/mirador/css/mirador-combined.css" %}" />
   <script src="{% static_build "app/vendor/mirador/mirador.js" %}"></script>
+  <script src="{% static_build "app/vendor/Mirador-meta/metadataPanel.js" %}"></script>
   <style type="text/css">
 #viewer {  width: 100%; height: 100%; }
   </style>
@@ -38,7 +39,8 @@ window.appConfig = {{appConfig|safe}};
 
     console.log("Loading mirador with settings: ", miradorSettings);
 
-    Mirador(miradorSettings);
+    window.mirador = Mirador(miradorSettings);
+    window.mirador.metadataPlugin();
 })();
   </script>
 </body>
