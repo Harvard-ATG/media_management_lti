@@ -11,9 +11,10 @@
       var metadatas = [];
       $.getJSON(manifestUri, function(data) {
         metadatas = data.sequences[0].canvases.reduce(function(dict, canvas){
-          dict[canvas['@id']] = {};
-          dict[canvas['@id']].datas = canvas.metadata || [];
-          dict[canvas['@id']].label = canvas.label;
+          dict[canvas['@id']] = {
+            "datas": canvas.metadata || [],
+            "label": canvas.label
+          };
           return dict;
         }, {});
       });
