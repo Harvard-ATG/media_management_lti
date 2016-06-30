@@ -10,28 +10,28 @@
       var manifestUri = mirador.viewer.data[0].manifestUri;
       var metadatas = [];
       $.getJSON(manifestUri, function(data) {
-        metadatas = data.sequences[0].canvases;
+        metadatas = data.sequences[0].canvases.reduce(function(dict, canvas){
+          dict[canvas['@id']] = {};
+          dict[canvas['@id']].datas = canvas.metadata || [];
+          dict[canvas['@id']].label = canvas.label;
+          return dict;
+        }, {});
       });
 
       mirador.eventEmitter.subscribe('currentCanvasIDUpdated.' + windowId, function(event, data){
         var imageId = data;
 
         var $sidePanel = $('.sidePanel .tabContentArea');
-        metadatas.forEach(function(item){
-          if(item['@id'] == imageId){
-            //item.label
-            var html = '<b>' + item.label + '</b><br/>';
-            if(item.metadata){
-              item.metadata.forEach(function(md){
-                //md.label
-                //md.value
-                md.value = md.value || "No value";
-                html += md.label + ': ' + md.value + '<br/>';
-              });
-            }
-            $sidePanel.html(html);
-          }
-        });
+        var html = '';
+        if(metadatas[imageId]){
+          html = '<b>' + metadatas[imageId].label + '</b><br/>';
+          html += metadatas[imageId].datas.map(function(md){
+            var value = md.value || "No Value";
+            var label = md.label || "";
+            return label + ': ' + value;
+          }).join('<br/>');
+          $sidePanel.html(html);
+        }
 
       });
     });
