@@ -26,4 +26,4 @@ app/tmp
 app/.*.json
 
 # Mirador
-/app/src/vendor
+/app/src/vendor/mirador
