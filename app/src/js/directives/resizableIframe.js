@@ -3,8 +3,8 @@ angular.module('media_manager')
 
     var calculateHeight = function(element) {
         var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-        var offsetTop = element[0].offsetTop || 0;
-        var height = windowHeight - offsetTop;
+        var height = windowHeight - 150; 
+        console.log("calculateheight >>", element, windowHeight, "returning", height);
         return height;
     };
 
