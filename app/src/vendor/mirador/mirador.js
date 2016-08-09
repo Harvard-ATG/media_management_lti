@@ -18,6 +18,1003 @@ this.element.addClass("ui-selectable"),this.dragged=!1,this.refresh=function(){t
 return this._isOpen?(this._moveToTop()&&this._focusTabbable(),void 0):(this._isOpen=!0,this.opener=e(this.document[0].activeElement),this._size(),this._position(),this._createOverlay(),this._moveToTop(null,!0),this.overlay&&this.overlay.css("z-index",this.uiDialog.css("z-index")-1),this._show(this.uiDialog,this.options.show,function(){t._focusTabbable(),t._trigger("focus")}),this._makeFocusTarget(),this._trigger("open"),void 0)},_focusTabbable:function(){var e=this._focusedElement;e||(e=this.element.find("[autofocus]")),e.length||(e=this.element.find(":tabbable")),e.length||(e=this.uiDialogButtonPane.find(":tabbable")),e.length||(e=this.uiDialogTitlebarClose.filter(":tabbable")),e.length||(e=this.uiDialog),e.eq(0).focus()},_keepFocus:function(t){function i(){var t=this.document[0].activeElement,i=this.uiDialog[0]===t||e.contains(this.uiDialog[0],t);i||this._focusTabbable()}t.preventDefault(),i.call(this),this._delay(i)},_createWrapper:function(){this.uiDialog=e("<div>").addClass("ui-dialog ui-widget ui-widget-content ui-corner-all ui-front "+this.options.dialogClass).hide().attr({tabIndex:-1,role:"dialog"}).appendTo(this._appendTo()),this._on(this.uiDialog,{keydown:function(t){if(this.options.closeOnEscape&&!t.isDefaultPrevented()&&t.keyCode&&t.keyCode===e.ui.keyCode.ESCAPE)return t.preventDefault(),this.close(t),void 0;if(t.keyCode===e.ui.keyCode.TAB&&!t.isDefaultPrevented()){var i=this.uiDialog.find(":tabbable"),s=i.filter(":first"),n=i.filter(":last");t.target!==n[0]&&t.target!==this.uiDialog[0]||t.shiftKey?t.target!==s[0]&&t.target!==this.uiDialog[0]||!t.shiftKey||(this._delay(function(){n.focus()}),t.preventDefault()):(this._delay(function(){s.focus()}),t.preventDefault())}},mousedown:function(e){this._moveToTop(e)&&this._focusTabbable()}}),this.element.find("[aria-describedby]").length||this.uiDialog.attr({"aria-describedby":this.element.uniqueId().attr("id")})},_createTitlebar:function(){var t;this.uiDialogTitlebar=e("<div>").addClass("ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix").prependTo(this.uiDialog),this._on(this.uiDialogTitlebar,{mousedown:function(t){e(t.target).closest(".ui-dialog-titlebar-close")||this.uiDialog.focus()}}),this.uiDialogTitlebarClose=e("<button type='button'></button>").button({label:this.options.closeText,icons:{primary:"ui-icon-closethick"},text:!1}).addClass("ui-dialog-titlebar-close").appendTo(this.uiDialogTitlebar),this._on(this.uiDialogTitlebarClose,{click:function(e){e.preventDefault(),this.close(e)}}),t=e("<span>").uniqueId().addClass("ui-dialog-title").prependTo(this.uiDialogTitlebar),this._title(t),this.uiDialog.attr({"aria-labelledby":t.attr("id")})},_title:function(e){this.options.title||e.html("&#160;"),e.text(this.options.title)},_createButtonPane:function(){this.uiDialogButtonPane=e("<div>").addClass("ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"),this.uiButtonSet=e("<div>").addClass("ui-dialog-buttonset").appendTo(this.uiDialogButtonPane),this._createButtons()},_createButtons:function(){var t=this,i=this.options.buttons;return this.uiDialogButtonPane.remove(),this.uiButtonSet.empty(),e.isEmptyObject(i)||e.isArray(i)&&!i.length?(this.uiDialog.removeClass("ui-dialog-buttons"),void 0):(e.each(i,function(i,s){var n,a;s=e.isFunction(s)?{click:s,text:i}:s,s=e.extend({type:"button"},s),n=s.click,s.click=function(){n.apply(t.element[0],arguments)},a={icons:s.icons,text:s.showText},delete s.icons,delete s.showText,e("<button></button>",s).button(a).appendTo(t.uiButtonSet)}),this.uiDialog.addClass("ui-dialog-buttons"),this.uiDialogButtonPane.appendTo(this.uiDialog),void 0)},_makeDraggable:function(){function t(e){return{position:e.position,offset:e.offset}}var i=this,s=this.options;this.uiDialog.draggable({cancel:".ui-dialog-content, .ui-dialog-titlebar-close",handle:".ui-dialog-titlebar",containment:"document",start:function(s,n){e(this).addClass("ui-dialog-dragging"),i._blockFrames(),i._trigger("dragStart",s,t(n))},drag:function(e,s){i._trigger("drag",e,t(s))},stop:function(n,a){var o=a.offset.left-i.document.scrollLeft(),r=a.offset.top-i.document.scrollTop();s.position={my:"left top",at:"left"+(o>=0?"+":"")+o+" "+"top"+(r>=0?"+":"")+r,of:i.window},e(this).removeClass("ui-dialog-dragging"),i._unblockFrames(),i._trigger("dragStop",n,t(a))}})},_makeResizable:function(){function t(e){return{originalPosition:e.originalPosition,originalSize:e.originalSize,position:e.position,size:e.size}}var i=this,s=this.options,n=s.resizable,a=this.uiDialog.css("position"),o="string"==typeof n?n:"n,e,s,w,se,sw,ne,nw";this.uiDialog.resizable({cancel:".ui-dialog-content",containment:"document",alsoResize:this.element,maxWidth:s.maxWidth,maxHeight:s.maxHeight,minWidth:s.minWidth,minHeight:this._minHeight(),handles:o,start:function(s,n){e(this).addClass("ui-dialog-resizing"),i._blockFrames(),i._trigger("resizeStart",s,t(n))},resize:function(e,s){i._trigger("resize",e,t(s))},stop:function(n,a){var o=i.uiDialog.offset(),r=o.left-i.document.scrollLeft(),h=o.top-i.document.scrollTop();s.height=i.uiDialog.height(),s.width=i.uiDialog.width(),s.position={my:"left top",at:"left"+(r>=0?"+":"")+r+" "+"top"+(h>=0?"+":"")+h,of:i.window},e(this).removeClass("ui-dialog-resizing"),i._unblockFrames(),i._trigger("resizeStop",n,t(a))}}).css("position",a)},_trackFocus:function(){this._on(this.widget(),{focusin:function(t){this._makeFocusTarget(),this._focusedElement=e(t.target)}})},_makeFocusTarget:function(){this._untrackInstance(),this._trackingInstances().unshift(this)},_untrackInstance:function(){var t=this._trackingInstances(),i=e.inArray(this,t);-1!==i&&t.splice(i,1)},_trackingInstances:function(){var e=this.document.data("ui-dialog-instances");return e||(e=[],this.document.data("ui-dialog-instances",e)),e},_minHeight:function(){var e=this.options;return"auto"===e.height?e.minHeight:Math.min(e.minHeight,e.height)},_position:function(){var e=this.uiDialog.is(":visible");e||this.uiDialog.show(),this.uiDialog.position(this.options.position),e||this.uiDialog.hide()},_setOptions:function(t){var i=this,s=!1,n={};e.each(t,function(e,t){i._setOption(e,t),e in i.sizeRelatedOptions&&(s=!0),e in i.resizableRelatedOptions&&(n[e]=t)}),s&&(this._size(),this._position()),this.uiDialog.is(":data(ui-resizable)")&&this.uiDialog.resizable("option",n)},_setOption:function(e,t){var i,s,n=this.uiDialog;"dialogClass"===e&&n.removeClass(this.options.dialogClass).addClass(t),"disabled"!==e&&(this._super(e,t),"appendTo"===e&&this.uiDialog.appendTo(this._appendTo()),"buttons"===e&&this._createButtons(),"closeText"===e&&this.uiDialogTitlebarClose.button({label:""+t}),"draggable"===e&&(i=n.is(":data(ui-draggable)"),i&&!t&&n.draggable("destroy"),!i&&t&&this._makeDraggable()),"position"===e&&this._position(),"resizable"===e&&(s=n.is(":data(ui-resizable)"),s&&!t&&n.resizable("destroy"),s&&"string"==typeof t&&n.resizable("option","handles",t),s||t===!1||this._makeResizable()),"title"===e&&this._title(this.uiDialogTitlebar.find(".ui-dialog-title")))},_size:function(){var e,t,i,s=this.options;this.element.show().css({width:"auto",minHeight:0,maxHeight:"none",height:0}),s.minWidth>s.width&&(s.width=s.minWidth),e=this.uiDialog.css({height:"auto",width:s.width}).outerHeight(),t=Math.max(0,s.minHeight-e),i="number"==typeof s.maxHeight?Math.max(0,s.maxHeight-e):"none","auto"===s.height?this.element.css({minHeight:t,maxHeight:i,height:"auto"}):this.element.height(Math.max(0,s.height-e)),this.uiDialog.is(":data(ui-resizable)")&&this.uiDialog.resizable("option","minHeight",this._minHeight())},_blockFrames:function(){this.iframeBlocks=this.document.find("iframe").map(function(){var t=e(this);return e("<div>").css({position:"absolute",width:t.outerWidth(),height:t.outerHeight()}).appendTo(t.parent()).offset(t.offset())[0]})},_unblockFrames:function(){this.iframeBlocks&&(this.iframeBlocks.remove(),delete this.iframeBlocks)},_allowInteraction:function(t){return e(t.target).closest(".ui-dialog").length?!0:!!e(t.target).closest(".ui-datepicker").length},_createOverlay:function(){if(this.options.modal){var t=!0;this._delay(function(){t=!1}),this.document.data("ui-dialog-overlays")||this._on(this.document,{focusin:function(e){t||this._allowInteraction(e)||(e.preventDefault(),this._trackingInstances()[0]._focusTabbable())}}),this.overlay=e("<div>").addClass("ui-widget-overlay ui-front").appendTo(this._appendTo()),this._on(this.overlay,{mousedown:"_keepFocus"}),this.document.data("ui-dialog-overlays",(this.document.data("ui-dialog-overlays")||0)+1)}},_destroyOverlay:function(){if(this.options.modal&&this.overlay){var e=this.document.data("ui-dialog-overlays")-1;e?this.document.data("ui-dialog-overlays",e):this.document.unbind("focusin").removeData("ui-dialog-overlays"),this.overlay.remove(),this.overlay=null}}}),e.widget("ui.progressbar",{version:"1.11.4",options:{max:100,value:0,change:null,complete:null},min:0,_create:function(){this.oldValue=this.options.value=this._constrainedValue(),this.element.addClass("ui-progressbar ui-widget ui-widget-content ui-corner-all").attr({role:"progressbar","aria-valuemin":this.min}),this.valueDiv=e("<div class='ui-progressbar-value ui-widget-header ui-corner-left'></div>").appendTo(this.element),this._refreshValue()},_destroy:function(){this.element.removeClass("ui-progressbar ui-widget ui-widget-content ui-corner-all").removeAttr("role").removeAttr("aria-valuemin").removeAttr("aria-valuemax").removeAttr("aria-valuenow"),this.valueDiv.remove()},value:function(e){return void 0===e?this.options.value:(this.options.value=this._constrainedValue(e),this._refreshValue(),void 0)},_constrainedValue:function(e){return void 0===e&&(e=this.options.value),this.indeterminate=e===!1,"number"!=typeof e&&(e=0),this.indeterminate?!1:Math.min(this.options.max,Math.max(this.min,e))},_setOptions:function(e){var t=e.value;delete e.value,this._super(e),this.options.value=this._constrainedValue(t),this._refreshValue()},_setOption:function(e,t){"max"===e&&(t=Math.max(this.min,t)),"disabled"===e&&this.element.toggleClass("ui-state-disabled",!!t).attr("aria-disabled",t),this._super(e,t)},_percentage:function(){return this.indeterminate?100:100*(this.options.value-this.min)/(this.options.max-this.min)},_refreshValue:function(){var t=this.options.value,i=this._percentage();this.valueDiv.toggle(this.indeterminate||t>this.min).toggleClass("ui-corner-right",t===this.options.max).width(i.toFixed(0)+"%"),this.element.toggleClass("ui-progressbar-indeterminate",this.indeterminate),this.indeterminate?(this.element.removeAttr("aria-valuenow"),this.overlayDiv||(this.overlayDiv=e("<div class='ui-progressbar-overlay'></div>").appendTo(this.valueDiv))):(this.element.attr({"aria-valuemax":this.options.max,"aria-valuenow":t}),this.overlayDiv&&(this.overlayDiv.remove(),this.overlayDiv=null)),this.oldValue!==t&&(this.oldValue=t,this._trigger("change")),t===this.options.max&&this._trigger("complete")}}),e.widget("ui.selectmenu",{version:"1.11.4",defaultElement:"<select>",options:{appendTo:null,disabled:null,icons:{button:"ui-icon-triangle-1-s"},position:{my:"left top",at:"left bottom",collision:"none"},width:null,change:null,close:null,focus:null,open:null,select:null},_create:function(){var e=this.element.uniqueId().attr("id");this.ids={element:e,button:e+"-button",menu:e+"-menu"},this._drawButton(),this._drawMenu(),this.options.disabled&&this.disable()},_drawButton:function(){var t=this;this.label=e("label[for='"+this.ids.element+"']").attr("for",this.ids.button),this._on(this.label,{click:function(e){this.button.focus(),e.preventDefault()}}),this.element.hide(),this.button=e("<span>",{"class":"ui-selectmenu-button ui-widget ui-state-default ui-corner-all",tabindex:this.options.disabled?-1:0,id:this.ids.button,role:"combobox","aria-expanded":"false","aria-autocomplete":"list","aria-owns":this.ids.menu,"aria-haspopup":"true"}).insertAfter(this.element),e("<span>",{"class":"ui-icon "+this.options.icons.button}).prependTo(this.button),this.buttonText=e("<span>",{"class":"ui-selectmenu-text"}).appendTo(this.button),this._setText(this.buttonText,this.element.find("option:selected").text()),this._resizeButton(),this._on(this.button,this._buttonEvents),this.button.one("focusin",function(){t.menuItems||t._refreshMenu()}),this._hoverable(this.button),this._focusable(this.button)},_drawMenu:function(){var t=this;this.menu=e("<ul>",{"aria-hidden":"true","aria-labelledby":this.ids.button,id:this.ids.menu}),this.menuWrap=e("<div>",{"class":"ui-selectmenu-menu ui-front"}).append(this.menu).appendTo(this._appendTo()),this.menuInstance=this.menu.menu({role:"listbox",select:function(e,i){e.preventDefault(),t._setSelection(),t._select(i.item.data("ui-selectmenu-item"),e)},focus:function(e,i){var s=i.item.data("ui-selectmenu-item");null!=t.focusIndex&&s.index!==t.focusIndex&&(t._trigger("focus",e,{item:s}),t.isOpen||t._select(s,e)),t.focusIndex=s.index,t.button.attr("aria-activedescendant",t.menuItems.eq(s.index).attr("id"))}}).menu("instance"),this.menu.addClass("ui-corner-bottom").removeClass("ui-corner-all"),this.menuInstance._off(this.menu,"mouseleave"),this.menuInstance._closeOnDocumentClick=function(){return!1},this.menuInstance._isDivider=function(){return!1}},refresh:function(){this._refreshMenu(),this._setText(this.buttonText,this._getSelectedItem().text()),this.options.width||this._resizeButton()},_refreshMenu:function(){this.menu.empty();var e,t=this.element.find("option");t.length&&(this._parseOptions(t),this._renderMenu(this.menu,this.items),this.menuInstance.refresh(),this.menuItems=this.menu.find("li").not(".ui-selectmenu-optgroup"),e=this._getSelectedItem(),this.menuInstance.focus(null,e),this._setAria(e.data("ui-selectmenu-item")),this._setOption("disabled",this.element.prop("disabled")))},open:function(e){this.options.disabled||(this.menuItems?(this.menu.find(".ui-state-focus").removeClass("ui-state-focus"),this.menuInstance.focus(null,this._getSelectedItem())):this._refreshMenu(),this.isOpen=!0,this._toggleAttr(),this._resizeMenu(),this._position(),this._on(this.document,this._documentClick),this._trigger("open",e))},_position:function(){this.menuWrap.position(e.extend({of:this.button},this.options.position))},close:function(e){this.isOpen&&(this.isOpen=!1,this._toggleAttr(),this.range=null,this._off(this.document),this._trigger("close",e))},widget:function(){return this.button},menuWidget:function(){return this.menu},_renderMenu:function(t,i){var s=this,n="";e.each(i,function(i,a){a.optgroup!==n&&(e("<li>",{"class":"ui-selectmenu-optgroup ui-menu-divider"+(a.element.parent("optgroup").prop("disabled")?" ui-state-disabled":""),text:a.optgroup}).appendTo(t),n=a.optgroup),s._renderItemData(t,a)})},_renderItemData:function(e,t){return this._renderItem(e,t).data("ui-selectmenu-item",t)},_renderItem:function(t,i){var s=e("<li>");return i.disabled&&s.addClass("ui-state-disabled"),this._setText(s,i.label),s.appendTo(t)},_setText:function(e,t){t?e.text(t):e.html("&#160;")},_move:function(e,t){var i,s,n=".ui-menu-item";this.isOpen?i=this.menuItems.eq(this.focusIndex):(i=this.menuItems.eq(this.element[0].selectedIndex),n+=":not(.ui-state-disabled)"),s="first"===e||"last"===e?i["first"===e?"prevAll":"nextAll"](n).eq(-1):i[e+"All"](n).eq(0),s.length&&this.menuInstance.focus(t,s)},_getSelectedItem:function(){return this.menuItems.eq(this.element[0].selectedIndex)},_toggle:function(e){this[this.isOpen?"close":"open"](e)},_setSelection:function(){var e;this.range&&(window.getSelection?(e=window.getSelection(),e.removeAllRanges(),e.addRange(this.range)):this.range.select(),this.button.focus())},_documentClick:{mousedown:function(t){this.isOpen&&(e(t.target).closest(".ui-selectmenu-menu, #"+this.ids.button).length||this.close(t))}},_buttonEvents:{mousedown:function(){var e;window.getSelection?(e=window.getSelection(),e.rangeCount&&(this.range=e.getRangeAt(0))):this.range=document.selection.createRange()},click:function(e){this._setSelection(),this._toggle(e)},keydown:function(t){var i=!0;switch(t.keyCode){case e.ui.keyCode.TAB:case e.ui.keyCode.ESCAPE:this.close(t),i=!1;break;case e.ui.keyCode.ENTER:this.isOpen&&this._selectFocusedItem(t);break;case e.ui.keyCode.UP:t.altKey?this._toggle(t):this._move("prev",t);break;case e.ui.keyCode.DOWN:t.altKey?this._toggle(t):this._move("next",t);break;case e.ui.keyCode.SPACE:this.isOpen?this._selectFocusedItem(t):this._toggle(t);break;case e.ui.keyCode.LEFT:this._move("prev",t);break;case e.ui.keyCode.RIGHT:this._move("next",t);break;case e.ui.keyCode.HOME:case e.ui.keyCode.PAGE_UP:this._move("first",t);break;case e.ui.keyCode.END:case e.ui.keyCode.PAGE_DOWN:this._move("last",t);break;default:this.menu.trigger(t),i=!1}i&&t.preventDefault()}},_selectFocusedItem:function(e){var t=this.menuItems.eq(this.focusIndex);t.hasClass("ui-state-disabled")||this._select(t.data("ui-selectmenu-item"),e)},_select:function(e,t){var i=this.element[0].selectedIndex;this.element[0].selectedIndex=e.index,this._setText(this.buttonText,e.label),this._setAria(e),this._trigger("select",t,{item:e}),e.index!==i&&this._trigger("change",t,{item:e}),this.close(t)},_setAria:function(e){var t=this.menuItems.eq(e.index).attr("id");this.button.attr({"aria-labelledby":t,"aria-activedescendant":t}),this.menu.attr("aria-activedescendant",t)},_setOption:function(e,t){"icons"===e&&this.button.find("span.ui-icon").removeClass(this.options.icons.button).addClass(t.button),this._super(e,t),"appendTo"===e&&this.menuWrap.appendTo(this._appendTo()),"disabled"===e&&(this.menuInstance.option("disabled",t),this.button.toggleClass("ui-state-disabled",t).attr("aria-disabled",t),this.element.prop("disabled",t),t?(this.button.attr("tabindex",-1),this.close()):this.button.attr("tabindex",0)),"width"===e&&this._resizeButton()},_appendTo:function(){var t=this.options.appendTo;return t&&(t=t.jquery||t.nodeType?e(t):this.document.find(t).eq(0)),t&&t[0]||(t=this.element.closest(".ui-front")),t.length||(t=this.document[0].body),t},_toggleAttr:function(){this.button.toggleClass("ui-corner-top",this.isOpen).toggleClass("ui-corner-all",!this.isOpen).attr("aria-expanded",this.isOpen),this.menuWrap.toggleClass("ui-selectmenu-open",this.isOpen),this.menu.attr("aria-hidden",!this.isOpen)},_resizeButton:function(){var e=this.options.width;e||(e=this.element.show().outerWidth(),this.element.hide()),this.button.outerWidth(e)},_resizeMenu:function(){this.menu.outerWidth(Math.max(this.button.outerWidth(),this.menu.width("").outerWidth()+1))},_getCreateOptions:function(){return{disabled:this.element.prop("disabled")}},_parseOptions:function(t){var i=[];t.each(function(t,s){var n=e(s),a=n.parent("optgroup");i.push({element:n,index:t,value:n.val(),label:n.text(),optgroup:a.attr("label")||"",disabled:a.prop("disabled")||n.prop("disabled")})}),this.items=i},_destroy:function(){this.menuWrap.remove(),this.button.remove(),this.element.show(),this.element.removeUniqueId(),this.label.attr("for",this.ids.element)}}),e.widget("ui.slider",e.ui.mouse,{version:"1.11.4",widgetEventPrefix:"slide",options:{animate:!1,distance:0,max:100,min:0,orientation:"horizontal",range:!1,step:1,value:0,values:null,change:null,slide:null,start:null,stop:null},numPages:5,_create:function(){this._keySliding=!1,this._mouseSliding=!1,this._animateOff=!0,this._handleIndex=null,this._detectOrientation(),this._mouseInit(),this._calculateNewMax(),this.element.addClass("ui-slider ui-slider-"+this.orientation+" ui-widget"+" ui-widget-content"+" ui-corner-all"),this._refresh(),this._setOption("disabled",this.options.disabled),this._animateOff=!1},_refresh:function(){this._createRange(),this._createHandles(),this._setupEvents(),this._refreshValue()},_createHandles:function(){var t,i,s=this.options,n=this.element.find(".ui-slider-handle").addClass("ui-state-default ui-corner-all"),a="<span class='ui-slider-handle ui-state-default ui-corner-all' tabindex='0'></span>",o=[];for(i=s.values&&s.values.length||1,n.length>i&&(n.slice(i).remove(),n=n.slice(0,i)),t=n.length;i>t;t++)o.push(a);this.handles=n.add(e(o.join("")).appendTo(this.element)),this.handle=this.handles.eq(0),this.handles.each(function(t){e(this).data("ui-slider-handle-index",t)})},_createRange:function(){var t=this.options,i="";t.range?(t.range===!0&&(t.values?t.values.length&&2!==t.values.length?t.values=[t.values[0],t.values[0]]:e.isArray(t.values)&&(t.values=t.values.slice(0)):t.values=[this._valueMin(),this._valueMin()]),this.range&&this.range.length?this.range.removeClass("ui-slider-range-min ui-slider-range-max").css({left:"",bottom:""}):(this.range=e("<div></div>").appendTo(this.element),i="ui-slider-range ui-widget-header ui-corner-all"),this.range.addClass(i+("min"===t.range||"max"===t.range?" ui-slider-range-"+t.range:""))):(this.range&&this.range.remove(),this.range=null)},_setupEvents:function(){this._off(this.handles),this._on(this.handles,this._handleEvents),this._hoverable(this.handles),this._focusable(this.handles)},_destroy:function(){this.handles.remove(),this.range&&this.range.remove(),this.element.removeClass("ui-slider ui-slider-horizontal ui-slider-vertical ui-widget ui-widget-content ui-corner-all"),this._mouseDestroy()},_mouseCapture:function(t){var i,s,n,a,o,r,h,l,u=this,d=this.options;return d.disabled?!1:(this.elementSize={width:this.element.outerWidth(),height:this.element.outerHeight()},this.elementOffset=this.element.offset(),i={x:t.pageX,y:t.pageY},s=this._normValueFromMouse(i),n=this._valueMax()-this._valueMin()+1,this.handles.each(function(t){var i=Math.abs(s-u.values(t));(n>i||n===i&&(t===u._lastChangedValue||u.values(t)===d.min))&&(n=i,a=e(this),o=t)}),r=this._start(t,o),r===!1?!1:(this._mouseSliding=!0,this._handleIndex=o,a.addClass("ui-state-active").focus(),h=a.offset(),l=!e(t.target).parents().addBack().is(".ui-slider-handle"),this._clickOffset=l?{left:0,top:0}:{left:t.pageX-h.left-a.width()/2,top:t.pageY-h.top-a.height()/2-(parseInt(a.css("borderTopWidth"),10)||0)-(parseInt(a.css("borderBottomWidth"),10)||0)+(parseInt(a.css("marginTop"),10)||0)},this.handles.hasClass("ui-state-hover")||this._slide(t,o,s),this._animateOff=!0,!0))},_mouseStart:function(){return!0},_mouseDrag:function(e){var t={x:e.pageX,y:e.pageY},i=this._normValueFromMouse(t);return this._slide(e,this._handleIndex,i),!1},_mouseStop:function(e){return this.handles.removeClass("ui-state-active"),this._mouseSliding=!1,this._stop(e,this._handleIndex),this._change(e,this._handleIndex),this._handleIndex=null,this._clickOffset=null,this._animateOff=!1,!1},_detectOrientation:function(){this.orientation="vertical"===this.options.orientation?"vertical":"horizontal"},_normValueFromMouse:function(e){var t,i,s,n,a;return"horizontal"===this.orientation?(t=this.elementSize.width,i=e.x-this.elementOffset.left-(this._clickOffset?this._clickOffset.left:0)):(t=this.elementSize.height,i=e.y-this.elementOffset.top-(this._clickOffset?this._clickOffset.top:0)),s=i/t,s>1&&(s=1),0>s&&(s=0),"vertical"===this.orientation&&(s=1-s),n=this._valueMax()-this._valueMin(),a=this._valueMin()+s*n,this._trimAlignValue(a)},_start:function(e,t){var i={handle:this.handles[t],value:this.value()};return this.options.values&&this.options.values.length&&(i.value=this.values(t),i.values=this.values()),this._trigger("start",e,i)},_slide:function(e,t,i){var s,n,a;this.options.values&&this.options.values.length?(s=this.values(t?0:1),2===this.options.values.length&&this.options.range===!0&&(0===t&&i>s||1===t&&s>i)&&(i=s),i!==this.values(t)&&(n=this.values(),n[t]=i,a=this._trigger("slide",e,{handle:this.handles[t],value:i,values:n}),s=this.values(t?0:1),a!==!1&&this.values(t,i))):i!==this.value()&&(a=this._trigger("slide",e,{handle:this.handles[t],value:i}),a!==!1&&this.value(i))},_stop:function(e,t){var i={handle:this.handles[t],value:this.value()};this.options.values&&this.options.values.length&&(i.value=this.values(t),i.values=this.values()),this._trigger("stop",e,i)},_change:function(e,t){if(!this._keySliding&&!this._mouseSliding){var i={handle:this.handles[t],value:this.value()};this.options.values&&this.options.values.length&&(i.value=this.values(t),i.values=this.values()),this._lastChangedValue=t,this._trigger("change",e,i)}},value:function(e){return arguments.length?(this.options.value=this._trimAlignValue(e),this._refreshValue(),this._change(null,0),void 0):this._value()},values:function(t,i){var s,n,a;if(arguments.length>1)return this.options.values[t]=this._trimAlignValue(i),this._refreshValue(),this._change(null,t),void 0;if(!arguments.length)return this._values();if(!e.isArray(arguments[0]))return this.options.values&&this.options.values.length?this._values(t):this.value();for(s=this.options.values,n=arguments[0],a=0;s.length>a;a+=1)s[a]=this._trimAlignValue(n[a]),this._change(null,a);this._refreshValue()},_setOption:function(t,i){var s,n=0;switch("range"===t&&this.options.range===!0&&("min"===i?(this.options.value=this._values(0),this.options.values=null):"max"===i&&(this.options.value=this._values(this.options.values.length-1),this.options.values=null)),e.isArray(this.options.values)&&(n=this.options.values.length),"disabled"===t&&this.element.toggleClass("ui-state-disabled",!!i),this._super(t,i),t){case"orientation":this._detectOrientation(),this.element.removeClass("ui-slider-horizontal ui-slider-vertical").addClass("ui-slider-"+this.orientation),this._refreshValue(),this.handles.css("horizontal"===i?"bottom":"left","");break;case"value":this._animateOff=!0,this._refreshValue(),this._change(null,0),this._animateOff=!1;break;case"values":for(this._animateOff=!0,this._refreshValue(),s=0;n>s;s+=1)this._change(null,s);this._animateOff=!1;break;case"step":case"min":case"max":this._animateOff=!0,this._calculateNewMax(),this._refreshValue(),this._animateOff=!1;break;case"range":this._animateOff=!0,this._refresh(),this._animateOff=!1}},_value:function(){var e=this.options.value;return e=this._trimAlignValue(e)},_values:function(e){var t,i,s;if(arguments.length)return t=this.options.values[e],t=this._trimAlignValue(t);if(this.options.values&&this.options.values.length){for(i=this.options.values.slice(),s=0;i.length>s;s+=1)i[s]=this._trimAlignValue(i[s]);return i}return[]},_trimAlignValue:function(e){if(this._valueMin()>=e)return this._valueMin();if(e>=this._valueMax())return this._valueMax();var t=this.options.step>0?this.options.step:1,i=(e-this._valueMin())%t,s=e-i;return 2*Math.abs(i)>=t&&(s+=i>0?t:-t),parseFloat(s.toFixed(5))},_calculateNewMax:function(){var e=this.options.max,t=this._valueMin(),i=this.options.step,s=Math.floor(+(e-t).toFixed(this._precision())/i)*i;e=s+t,this.max=parseFloat(e.toFixed(this._precision()))},_precision:function(){var e=this._precisionOf(this.options.step);return null!==this.options.min&&(e=Math.max(e,this._precisionOf(this.options.min))),e},_precisionOf:function(e){var t=""+e,i=t.indexOf(".");return-1===i?0:t.length-i-1},_valueMin:function(){return this.options.min},_valueMax:function(){return this.max},_refreshValue:function(){var t,i,s,n,a,o=this.options.range,r=this.options,h=this,l=this._animateOff?!1:r.animate,u={};this.options.values&&this.options.values.length?this.handles.each(function(s){i=100*((h.values(s)-h._valueMin())/(h._valueMax()-h._valueMin())),u["horizontal"===h.orientation?"left":"bottom"]=i+"%",e(this).stop(1,1)[l?"animate":"css"](u,r.animate),h.options.range===!0&&("horizontal"===h.orientation?(0===s&&h.range.stop(1,1)[l?"animate":"css"]({left:i+"%"},r.animate),1===s&&h.range[l?"animate":"css"]({width:i-t+"%"},{queue:!1,duration:r.animate})):(0===s&&h.range.stop(1,1)[l?"animate":"css"]({bottom:i+"%"},r.animate),1===s&&h.range[l?"animate":"css"]({height:i-t+"%"},{queue:!1,duration:r.animate}))),t=i}):(s=this.value(),n=this._valueMin(),a=this._valueMax(),i=a!==n?100*((s-n)/(a-n)):0,u["horizontal"===this.orientation?"left":"bottom"]=i+"%",this.handle.stop(1,1)[l?"animate":"css"](u,r.animate),"min"===o&&"horizontal"===this.orientation&&this.range.stop(1,1)[l?"animate":"css"]({width:i+"%"},r.animate),"max"===o&&"horizontal"===this.orientation&&this.range[l?"animate":"css"]({width:100-i+"%"},{queue:!1,duration:r.animate}),"min"===o&&"vertical"===this.orientation&&this.range.stop(1,1)[l?"animate":"css"]({height:i+"%"},r.animate),"max"===o&&"vertical"===this.orientation&&this.range[l?"animate":"css"]({height:100-i+"%"},{queue:!1,duration:r.animate}))},_handleEvents:{keydown:function(t){var i,s,n,a,o=e(t.target).data("ui-slider-handle-index");switch(t.keyCode){case e.ui.keyCode.HOME:case e.ui.keyCode.END:case e.ui.keyCode.PAGE_UP:case e.ui.keyCode.PAGE_DOWN:case e.ui.keyCode.UP:case e.ui.keyCode.RIGHT:case e.ui.keyCode.DOWN:case e.ui.keyCode.LEFT:if(t.preventDefault(),!this._keySliding&&(this._keySliding=!0,e(t.target).addClass("ui-state-active"),i=this._start(t,o),i===!1))return}switch(a=this.options.step,s=n=this.options.values&&this.options.values.length?this.values(o):this.value(),t.keyCode){case e.ui.keyCode.HOME:n=this._valueMin();break;case e.ui.keyCode.END:n=this._valueMax();break;case e.ui.keyCode.PAGE_UP:n=this._trimAlignValue(s+(this._valueMax()-this._valueMin())/this.numPages);break;case e.ui.keyCode.PAGE_DOWN:n=this._trimAlignValue(s-(this._valueMax()-this._valueMin())/this.numPages);break;case e.ui.keyCode.UP:case e.ui.keyCode.RIGHT:if(s===this._valueMax())return;n=this._trimAlignValue(s+a);break;case e.ui.keyCode.DOWN:case e.ui.keyCode.LEFT:if(s===this._valueMin())return;n=this._trimAlignValue(s-a)}this._slide(t,o,n)},keyup:function(t){var i=e(t.target).data("ui-slider-handle-index");this._keySliding&&(this._keySliding=!1,this._stop(t,i),this._change(t,i),e(t.target).removeClass("ui-state-active"))}}}),e.widget("ui.spinner",{version:"1.11.4",defaultElement:"<input>",widgetEventPrefix:"spin",options:{culture:null,icons:{down:"ui-icon-triangle-1-s",up:"ui-icon-triangle-1-n"},incremental:!0,max:null,min:null,numberFormat:null,page:10,step:1,change:null,spin:null,start:null,stop:null},_create:function(){this._setOption("max",this.options.max),this._setOption("min",this.options.min),this._setOption("step",this.options.step),""!==this.value()&&this._value(this.element.val(),!0),this._draw(),this._on(this._events),this._refresh(),this._on(this.window,{beforeunload:function(){this.element.removeAttr("autocomplete")}})},_getCreateOptions:function(){var t={},i=this.element;return e.each(["min","max","step"],function(e,s){var n=i.attr(s);void 0!==n&&n.length&&(t[s]=n)}),t},_events:{keydown:function(e){this._start(e)&&this._keydown(e)&&e.preventDefault()},keyup:"_stop",focus:function(){this.previous=this.element.val()},blur:function(e){return this.cancelBlur?(delete this.cancelBlur,void 0):(this._stop(),this._refresh(),this.previous!==this.element.val()&&this._trigger("change",e),void 0)},mousewheel:function(e,t){if(t){if(!this.spinning&&!this._start(e))return!1;this._spin((t>0?1:-1)*this.options.step,e),clearTimeout(this.mousewheelTimer),this.mousewheelTimer=this._delay(function(){this.spinning&&this._stop(e)},100),e.preventDefault()}},"mousedown .ui-spinner-button":function(t){function i(){var e=this.element[0]===this.document[0].activeElement;e||(this.element.focus(),this.previous=s,this._delay(function(){this.previous=s}))}var s;s=this.element[0]===this.document[0].activeElement?this.previous:this.element.val(),t.preventDefault(),i.call(this),this.cancelBlur=!0,this._delay(function(){delete this.cancelBlur,i.call(this)}),this._start(t)!==!1&&this._repeat(null,e(t.currentTarget).hasClass("ui-spinner-up")?1:-1,t)},"mouseup .ui-spinner-button":"_stop","mouseenter .ui-spinner-button":function(t){return e(t.currentTarget).hasClass("ui-state-active")?this._start(t)===!1?!1:(this._repeat(null,e(t.currentTarget).hasClass("ui-spinner-up")?1:-1,t),void 0):void 0},"mouseleave .ui-spinner-button":"_stop"},_draw:function(){var e=this.uiSpinner=this.element.addClass("ui-spinner-input").attr("autocomplete","off").wrap(this._uiSpinnerHtml()).parent().append(this._buttonHtml());this.element.attr("role","spinbutton"),this.buttons=e.find(".ui-spinner-button").attr("tabIndex",-1).button().removeClass("ui-corner-all"),this.buttons.height()>Math.ceil(.5*e.height())&&e.height()>0&&e.height(e.height()),this.options.disabled&&this.disable()
 },_keydown:function(t){var i=this.options,s=e.ui.keyCode;switch(t.keyCode){case s.UP:return this._repeat(null,1,t),!0;case s.DOWN:return this._repeat(null,-1,t),!0;case s.PAGE_UP:return this._repeat(null,i.page,t),!0;case s.PAGE_DOWN:return this._repeat(null,-i.page,t),!0}return!1},_uiSpinnerHtml:function(){return"<span class='ui-spinner ui-widget ui-widget-content ui-corner-all'></span>"},_buttonHtml:function(){return"<a class='ui-spinner-button ui-spinner-up ui-corner-tr'><span class='ui-icon "+this.options.icons.up+"'>&#9650;</span>"+"</a>"+"<a class='ui-spinner-button ui-spinner-down ui-corner-br'>"+"<span class='ui-icon "+this.options.icons.down+"'>&#9660;</span>"+"</a>"},_start:function(e){return this.spinning||this._trigger("start",e)!==!1?(this.counter||(this.counter=1),this.spinning=!0,!0):!1},_repeat:function(e,t,i){e=e||500,clearTimeout(this.timer),this.timer=this._delay(function(){this._repeat(40,t,i)},e),this._spin(t*this.options.step,i)},_spin:function(e,t){var i=this.value()||0;this.counter||(this.counter=1),i=this._adjustValue(i+e*this._increment(this.counter)),this.spinning&&this._trigger("spin",t,{value:i})===!1||(this._value(i),this.counter++)},_increment:function(t){var i=this.options.incremental;return i?e.isFunction(i)?i(t):Math.floor(t*t*t/5e4-t*t/500+17*t/200+1):1},_precision:function(){var e=this._precisionOf(this.options.step);return null!==this.options.min&&(e=Math.max(e,this._precisionOf(this.options.min))),e},_precisionOf:function(e){var t=""+e,i=t.indexOf(".");return-1===i?0:t.length-i-1},_adjustValue:function(e){var t,i,s=this.options;return t=null!==s.min?s.min:0,i=e-t,i=Math.round(i/s.step)*s.step,e=t+i,e=parseFloat(e.toFixed(this._precision())),null!==s.max&&e>s.max?s.max:null!==s.min&&s.min>e?s.min:e},_stop:function(e){this.spinning&&(clearTimeout(this.timer),clearTimeout(this.mousewheelTimer),this.counter=0,this.spinning=!1,this._trigger("stop",e))},_setOption:function(e,t){if("culture"===e||"numberFormat"===e){var i=this._parse(this.element.val());return this.options[e]=t,this.element.val(this._format(i)),void 0}("max"===e||"min"===e||"step"===e)&&"string"==typeof t&&(t=this._parse(t)),"icons"===e&&(this.buttons.first().find(".ui-icon").removeClass(this.options.icons.up).addClass(t.up),this.buttons.last().find(".ui-icon").removeClass(this.options.icons.down).addClass(t.down)),this._super(e,t),"disabled"===e&&(this.widget().toggleClass("ui-state-disabled",!!t),this.element.prop("disabled",!!t),this.buttons.button(t?"disable":"enable"))},_setOptions:h(function(e){this._super(e)}),_parse:function(e){return"string"==typeof e&&""!==e&&(e=window.Globalize&&this.options.numberFormat?Globalize.parseFloat(e,10,this.options.culture):+e),""===e||isNaN(e)?null:e},_format:function(e){return""===e?"":window.Globalize&&this.options.numberFormat?Globalize.format(e,this.options.numberFormat,this.options.culture):e},_refresh:function(){this.element.attr({"aria-valuemin":this.options.min,"aria-valuemax":this.options.max,"aria-valuenow":this._parse(this.element.val())})},isValid:function(){var e=this.value();return null===e?!1:e===this._adjustValue(e)},_value:function(e,t){var i;""!==e&&(i=this._parse(e),null!==i&&(t||(i=this._adjustValue(i)),e=this._format(i))),this.element.val(e),this._refresh()},_destroy:function(){this.element.removeClass("ui-spinner-input").prop("disabled",!1).removeAttr("autocomplete").removeAttr("role").removeAttr("aria-valuemin").removeAttr("aria-valuemax").removeAttr("aria-valuenow"),this.uiSpinner.replaceWith(this.element)},stepUp:h(function(e){this._stepUp(e)}),_stepUp:function(e){this._start()&&(this._spin((e||1)*this.options.step),this._stop())},stepDown:h(function(e){this._stepDown(e)}),_stepDown:function(e){this._start()&&(this._spin((e||1)*-this.options.step),this._stop())},pageUp:h(function(e){this._stepUp((e||1)*this.options.page)}),pageDown:h(function(e){this._stepDown((e||1)*this.options.page)}),value:function(e){return arguments.length?(h(this._value).call(this,e),void 0):this._parse(this.element.val())},widget:function(){return this.uiSpinner}}),e.widget("ui.tabs",{version:"1.11.4",delay:300,options:{active:null,collapsible:!1,event:"click",heightStyle:"content",hide:null,show:null,activate:null,beforeActivate:null,beforeLoad:null,load:null},_isLocal:function(){var e=/#.*$/;return function(t){var i,s;t=t.cloneNode(!1),i=t.href.replace(e,""),s=location.href.replace(e,"");try{i=decodeURIComponent(i)}catch(n){}try{s=decodeURIComponent(s)}catch(n){}return t.hash.length>1&&i===s}}(),_create:function(){var t=this,i=this.options;this.running=!1,this.element.addClass("ui-tabs ui-widget ui-widget-content ui-corner-all").toggleClass("ui-tabs-collapsible",i.collapsible),this._processTabs(),i.active=this._initialActive(),e.isArray(i.disabled)&&(i.disabled=e.unique(i.disabled.concat(e.map(this.tabs.filter(".ui-state-disabled"),function(e){return t.tabs.index(e)}))).sort()),this.active=this.options.active!==!1&&this.anchors.length?this._findActive(i.active):e(),this._refresh(),this.active.length&&this.load(i.active)},_initialActive:function(){var t=this.options.active,i=this.options.collapsible,s=location.hash.substring(1);return null===t&&(s&&this.tabs.each(function(i,n){return e(n).attr("aria-controls")===s?(t=i,!1):void 0}),null===t&&(t=this.tabs.index(this.tabs.filter(".ui-tabs-active"))),(null===t||-1===t)&&(t=this.tabs.length?0:!1)),t!==!1&&(t=this.tabs.index(this.tabs.eq(t)),-1===t&&(t=i?!1:0)),!i&&t===!1&&this.anchors.length&&(t=0),t},_getCreateEventData:function(){return{tab:this.active,panel:this.active.length?this._getPanelForTab(this.active):e()}},_tabKeydown:function(t){var i=e(this.document[0].activeElement).closest("li"),s=this.tabs.index(i),n=!0;if(!this._handlePageNav(t)){switch(t.keyCode){case e.ui.keyCode.RIGHT:case e.ui.keyCode.DOWN:s++;break;case e.ui.keyCode.UP:case e.ui.keyCode.LEFT:n=!1,s--;break;case e.ui.keyCode.END:s=this.anchors.length-1;break;case e.ui.keyCode.HOME:s=0;break;case e.ui.keyCode.SPACE:return t.preventDefault(),clearTimeout(this.activating),this._activate(s),void 0;case e.ui.keyCode.ENTER:return t.preventDefault(),clearTimeout(this.activating),this._activate(s===this.options.active?!1:s),void 0;default:return}t.preventDefault(),clearTimeout(this.activating),s=this._focusNextTab(s,n),t.ctrlKey||t.metaKey||(i.attr("aria-selected","false"),this.tabs.eq(s).attr("aria-selected","true"),this.activating=this._delay(function(){this.option("active",s)},this.delay))}},_panelKeydown:function(t){this._handlePageNav(t)||t.ctrlKey&&t.keyCode===e.ui.keyCode.UP&&(t.preventDefault(),this.active.focus())},_handlePageNav:function(t){return t.altKey&&t.keyCode===e.ui.keyCode.PAGE_UP?(this._activate(this._focusNextTab(this.options.active-1,!1)),!0):t.altKey&&t.keyCode===e.ui.keyCode.PAGE_DOWN?(this._activate(this._focusNextTab(this.options.active+1,!0)),!0):void 0},_findNextTab:function(t,i){function s(){return t>n&&(t=0),0>t&&(t=n),t}for(var n=this.tabs.length-1;-1!==e.inArray(s(),this.options.disabled);)t=i?t+1:t-1;return t},_focusNextTab:function(e,t){return e=this._findNextTab(e,t),this.tabs.eq(e).focus(),e},_setOption:function(e,t){return"active"===e?(this._activate(t),void 0):"disabled"===e?(this._setupDisabled(t),void 0):(this._super(e,t),"collapsible"===e&&(this.element.toggleClass("ui-tabs-collapsible",t),t||this.options.active!==!1||this._activate(0)),"event"===e&&this._setupEvents(t),"heightStyle"===e&&this._setupHeightStyle(t),void 0)},_sanitizeSelector:function(e){return e?e.replace(/[!"$%&'()*+,.\/:;<=>?@\[\]\^`{|}~]/g,"\\$&"):""},refresh:function(){var t=this.options,i=this.tablist.children(":has(a[href])");t.disabled=e.map(i.filter(".ui-state-disabled"),function(e){return i.index(e)}),this._processTabs(),t.active!==!1&&this.anchors.length?this.active.length&&!e.contains(this.tablist[0],this.active[0])?this.tabs.length===t.disabled.length?(t.active=!1,this.active=e()):this._activate(this._findNextTab(Math.max(0,t.active-1),!1)):t.active=this.tabs.index(this.active):(t.active=!1,this.active=e()),this._refresh()},_refresh:function(){this._setupDisabled(this.options.disabled),this._setupEvents(this.options.event),this._setupHeightStyle(this.options.heightStyle),this.tabs.not(this.active).attr({"aria-selected":"false","aria-expanded":"false",tabIndex:-1}),this.panels.not(this._getPanelForTab(this.active)).hide().attr({"aria-hidden":"true"}),this.active.length?(this.active.addClass("ui-tabs-active ui-state-active").attr({"aria-selected":"true","aria-expanded":"true",tabIndex:0}),this._getPanelForTab(this.active).show().attr({"aria-hidden":"false"})):this.tabs.eq(0).attr("tabIndex",0)},_processTabs:function(){var t=this,i=this.tabs,s=this.anchors,n=this.panels;this.tablist=this._getList().addClass("ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all").attr("role","tablist").delegate("> li","mousedown"+this.eventNamespace,function(t){e(this).is(".ui-state-disabled")&&t.preventDefault()}).delegate(".ui-tabs-anchor","focus"+this.eventNamespace,function(){e(this).closest("li").is(".ui-state-disabled")&&this.blur()}),this.tabs=this.tablist.find("> li:has(a[href])").addClass("ui-state-default ui-corner-top").attr({role:"tab",tabIndex:-1}),this.anchors=this.tabs.map(function(){return e("a",this)[0]}).addClass("ui-tabs-anchor").attr({role:"presentation",tabIndex:-1}),this.panels=e(),this.anchors.each(function(i,s){var n,a,o,r=e(s).uniqueId().attr("id"),h=e(s).closest("li"),l=h.attr("aria-controls");t._isLocal(s)?(n=s.hash,o=n.substring(1),a=t.element.find(t._sanitizeSelector(n))):(o=h.attr("aria-controls")||e({}).uniqueId()[0].id,n="#"+o,a=t.element.find(n),a.length||(a=t._createPanel(o),a.insertAfter(t.panels[i-1]||t.tablist)),a.attr("aria-live","polite")),a.length&&(t.panels=t.panels.add(a)),l&&h.data("ui-tabs-aria-controls",l),h.attr({"aria-controls":o,"aria-labelledby":r}),a.attr("aria-labelledby",r)}),this.panels.addClass("ui-tabs-panel ui-widget-content ui-corner-bottom").attr("role","tabpanel"),i&&(this._off(i.not(this.tabs)),this._off(s.not(this.anchors)),this._off(n.not(this.panels)))},_getList:function(){return this.tablist||this.element.find("ol,ul").eq(0)},_createPanel:function(t){return e("<div>").attr("id",t).addClass("ui-tabs-panel ui-widget-content ui-corner-bottom").data("ui-tabs-destroy",!0)},_setupDisabled:function(t){e.isArray(t)&&(t.length?t.length===this.anchors.length&&(t=!0):t=!1);for(var i,s=0;i=this.tabs[s];s++)t===!0||-1!==e.inArray(s,t)?e(i).addClass("ui-state-disabled").attr("aria-disabled","true"):e(i).removeClass("ui-state-disabled").removeAttr("aria-disabled");this.options.disabled=t},_setupEvents:function(t){var i={};t&&e.each(t.split(" "),function(e,t){i[t]="_eventHandler"}),this._off(this.anchors.add(this.tabs).add(this.panels)),this._on(!0,this.anchors,{click:function(e){e.preventDefault()}}),this._on(this.anchors,i),this._on(this.tabs,{keydown:"_tabKeydown"}),this._on(this.panels,{keydown:"_panelKeydown"}),this._focusable(this.tabs),this._hoverable(this.tabs)},_setupHeightStyle:function(t){var i,s=this.element.parent();"fill"===t?(i=s.height(),i-=this.element.outerHeight()-this.element.height(),this.element.siblings(":visible").each(function(){var t=e(this),s=t.css("position");"absolute"!==s&&"fixed"!==s&&(i-=t.outerHeight(!0))}),this.element.children().not(this.panels).each(function(){i-=e(this).outerHeight(!0)}),this.panels.each(function(){e(this).height(Math.max(0,i-e(this).innerHeight()+e(this).height()))}).css("overflow","auto")):"auto"===t&&(i=0,this.panels.each(function(){i=Math.max(i,e(this).height("").height())}).height(i))},_eventHandler:function(t){var i=this.options,s=this.active,n=e(t.currentTarget),a=n.closest("li"),o=a[0]===s[0],r=o&&i.collapsible,h=r?e():this._getPanelForTab(a),l=s.length?this._getPanelForTab(s):e(),u={oldTab:s,oldPanel:l,newTab:r?e():a,newPanel:h};t.preventDefault(),a.hasClass("ui-state-disabled")||a.hasClass("ui-tabs-loading")||this.running||o&&!i.collapsible||this._trigger("beforeActivate",t,u)===!1||(i.active=r?!1:this.tabs.index(a),this.active=o?e():a,this.xhr&&this.xhr.abort(),l.length||h.length||e.error("jQuery UI Tabs: Mismatching fragment identifier."),h.length&&this.load(this.tabs.index(a),t),this._toggle(t,u))},_toggle:function(t,i){function s(){a.running=!1,a._trigger("activate",t,i)}function n(){i.newTab.closest("li").addClass("ui-tabs-active ui-state-active"),o.length&&a.options.show?a._show(o,a.options.show,s):(o.show(),s())}var a=this,o=i.newPanel,r=i.oldPanel;this.running=!0,r.length&&this.options.hide?this._hide(r,this.options.hide,function(){i.oldTab.closest("li").removeClass("ui-tabs-active ui-state-active"),n()}):(i.oldTab.closest("li").removeClass("ui-tabs-active ui-state-active"),r.hide(),n()),r.attr("aria-hidden","true"),i.oldTab.attr({"aria-selected":"false","aria-expanded":"false"}),o.length&&r.length?i.oldTab.attr("tabIndex",-1):o.length&&this.tabs.filter(function(){return 0===e(this).attr("tabIndex")}).attr("tabIndex",-1),o.attr("aria-hidden","false"),i.newTab.attr({"aria-selected":"true","aria-expanded":"true",tabIndex:0})},_activate:function(t){var i,s=this._findActive(t);s[0]!==this.active[0]&&(s.length||(s=this.active),i=s.find(".ui-tabs-anchor")[0],this._eventHandler({target:i,currentTarget:i,preventDefault:e.noop}))},_findActive:function(t){return t===!1?e():this.tabs.eq(t)},_getIndex:function(e){return"string"==typeof e&&(e=this.anchors.index(this.anchors.filter("[href$='"+e+"']"))),e},_destroy:function(){this.xhr&&this.xhr.abort(),this.element.removeClass("ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-collapsible"),this.tablist.removeClass("ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all").removeAttr("role"),this.anchors.removeClass("ui-tabs-anchor").removeAttr("role").removeAttr("tabIndex").removeUniqueId(),this.tablist.unbind(this.eventNamespace),this.tabs.add(this.panels).each(function(){e.data(this,"ui-tabs-destroy")?e(this).remove():e(this).removeClass("ui-state-default ui-state-active ui-state-disabled ui-corner-top ui-corner-bottom ui-widget-content ui-tabs-active ui-tabs-panel").removeAttr("tabIndex").removeAttr("aria-live").removeAttr("aria-busy").removeAttr("aria-selected").removeAttr("aria-labelledby").removeAttr("aria-hidden").removeAttr("aria-expanded").removeAttr("role")}),this.tabs.each(function(){var t=e(this),i=t.data("ui-tabs-aria-controls");i?t.attr("aria-controls",i).removeData("ui-tabs-aria-controls"):t.removeAttr("aria-controls")}),this.panels.show(),"content"!==this.options.heightStyle&&this.panels.css("height","")},enable:function(t){var i=this.options.disabled;i!==!1&&(void 0===t?i=!1:(t=this._getIndex(t),i=e.isArray(i)?e.map(i,function(e){return e!==t?e:null}):e.map(this.tabs,function(e,i){return i!==t?i:null})),this._setupDisabled(i))},disable:function(t){var i=this.options.disabled;if(i!==!0){if(void 0===t)i=!0;else{if(t=this._getIndex(t),-1!==e.inArray(t,i))return;i=e.isArray(i)?e.merge([t],i).sort():[t]}this._setupDisabled(i)}},load:function(t,i){t=this._getIndex(t);var s=this,n=this.tabs.eq(t),a=n.find(".ui-tabs-anchor"),o=this._getPanelForTab(n),r={tab:n,panel:o},h=function(e,t){"abort"===t&&s.panels.stop(!1,!0),n.removeClass("ui-tabs-loading"),o.removeAttr("aria-busy"),e===s.xhr&&delete s.xhr};this._isLocal(a[0])||(this.xhr=e.ajax(this._ajaxSettings(a,i,r)),this.xhr&&"canceled"!==this.xhr.statusText&&(n.addClass("ui-tabs-loading"),o.attr("aria-busy","true"),this.xhr.done(function(e,t,n){setTimeout(function(){o.html(e),s._trigger("load",i,r),h(n,t)},1)}).fail(function(e,t){setTimeout(function(){h(e,t)},1)})))},_ajaxSettings:function(t,i,s){var n=this;return{url:t.attr("href"),beforeSend:function(t,a){return n._trigger("beforeLoad",i,e.extend({jqXHR:t,ajaxSettings:a},s))}}},_getPanelForTab:function(t){var i=e(t).attr("aria-controls");return this.element.find(this._sanitizeSelector("#"+i))}}),e.widget("ui.tooltip",{version:"1.11.4",options:{content:function(){var t=e(this).attr("title")||"";return e("<a>").text(t).html()},hide:!0,items:"[title]:not([disabled])",position:{my:"left top+15",at:"left bottom",collision:"flipfit flip"},show:!0,tooltipClass:null,track:!1,close:null,open:null},_addDescribedBy:function(t,i){var s=(t.attr("aria-describedby")||"").split(/\s+/);s.push(i),t.data("ui-tooltip-id",i).attr("aria-describedby",e.trim(s.join(" ")))},_removeDescribedBy:function(t){var i=t.data("ui-tooltip-id"),s=(t.attr("aria-describedby")||"").split(/\s+/),n=e.inArray(i,s);-1!==n&&s.splice(n,1),t.removeData("ui-tooltip-id"),s=e.trim(s.join(" ")),s?t.attr("aria-describedby",s):t.removeAttr("aria-describedby")},_create:function(){this._on({mouseover:"open",focusin:"open"}),this.tooltips={},this.parents={},this.options.disabled&&this._disable(),this.liveRegion=e("<div>").attr({role:"log","aria-live":"assertive","aria-relevant":"additions"}).addClass("ui-helper-hidden-accessible").appendTo(this.document[0].body)},_setOption:function(t,i){var s=this;return"disabled"===t?(this[i?"_disable":"_enable"](),this.options[t]=i,void 0):(this._super(t,i),"content"===t&&e.each(this.tooltips,function(e,t){s._updateContent(t.element)}),void 0)},_disable:function(){var t=this;e.each(this.tooltips,function(i,s){var n=e.Event("blur");n.target=n.currentTarget=s.element[0],t.close(n,!0)}),this.element.find(this.options.items).addBack().each(function(){var t=e(this);t.is("[title]")&&t.data("ui-tooltip-title",t.attr("title")).removeAttr("title")})},_enable:function(){this.element.find(this.options.items).addBack().each(function(){var t=e(this);t.data("ui-tooltip-title")&&t.attr("title",t.data("ui-tooltip-title"))})},open:function(t){var i=this,s=e(t?t.target:this.element).closest(this.options.items);s.length&&!s.data("ui-tooltip-id")&&(s.attr("title")&&s.data("ui-tooltip-title",s.attr("title")),s.data("ui-tooltip-open",!0),t&&"mouseover"===t.type&&s.parents().each(function(){var t,s=e(this);s.data("ui-tooltip-open")&&(t=e.Event("blur"),t.target=t.currentTarget=this,i.close(t,!0)),s.attr("title")&&(s.uniqueId(),i.parents[this.id]={element:this,title:s.attr("title")},s.attr("title",""))}),this._registerCloseHandlers(t,s),this._updateContent(s,t))},_updateContent:function(e,t){var i,s=this.options.content,n=this,a=t?t.type:null;return"string"==typeof s?this._open(t,e,s):(i=s.call(e[0],function(i){n._delay(function(){e.data("ui-tooltip-open")&&(t&&(t.type=a),this._open(t,e,i))})}),i&&this._open(t,e,i),void 0)},_open:function(t,i,s){function n(e){l.of=e,o.is(":hidden")||o.position(l)}var a,o,r,h,l=e.extend({},this.options.position);if(s){if(a=this._find(i))return a.tooltip.find(".ui-tooltip-content").html(s),void 0;i.is("[title]")&&(t&&"mouseover"===t.type?i.attr("title",""):i.removeAttr("title")),a=this._tooltip(i),o=a.tooltip,this._addDescribedBy(i,o.attr("id")),o.find(".ui-tooltip-content").html(s),this.liveRegion.children().hide(),s.clone?(h=s.clone(),h.removeAttr("id").find("[id]").removeAttr("id")):h=s,e("<div>").html(h).appendTo(this.liveRegion),this.options.track&&t&&/^mouse/.test(t.type)?(this._on(this.document,{mousemove:n}),n(t)):o.position(e.extend({of:i},this.options.position)),o.hide(),this._show(o,this.options.show),this.options.show&&this.options.show.delay&&(r=this.delayedShow=setInterval(function(){o.is(":visible")&&(n(l.of),clearInterval(r))},e.fx.interval)),this._trigger("open",t,{tooltip:o})}},_registerCloseHandlers:function(t,i){var s={keyup:function(t){if(t.keyCode===e.ui.keyCode.ESCAPE){var s=e.Event(t);s.currentTarget=i[0],this.close(s,!0)}}};i[0]!==this.element[0]&&(s.remove=function(){this._removeTooltip(this._find(i).tooltip)}),t&&"mouseover"!==t.type||(s.mouseleave="close"),t&&"focusin"!==t.type||(s.focusout="close"),this._on(!0,i,s)},close:function(t){var i,s=this,n=e(t?t.currentTarget:this.element),a=this._find(n);return a?(i=a.tooltip,a.closing||(clearInterval(this.delayedShow),n.data("ui-tooltip-title")&&!n.attr("title")&&n.attr("title",n.data("ui-tooltip-title")),this._removeDescribedBy(n),a.hiding=!0,i.stop(!0),this._hide(i,this.options.hide,function(){s._removeTooltip(e(this))}),n.removeData("ui-tooltip-open"),this._off(n,"mouseleave focusout keyup"),n[0]!==this.element[0]&&this._off(n,"remove"),this._off(this.document,"mousemove"),t&&"mouseleave"===t.type&&e.each(this.parents,function(t,i){e(i.element).attr("title",i.title),delete s.parents[t]}),a.closing=!0,this._trigger("close",t,{tooltip:i}),a.hiding||(a.closing=!1)),void 0):(n.removeData("ui-tooltip-open"),void 0)},_tooltip:function(t){var i=e("<div>").attr("role","tooltip").addClass("ui-tooltip ui-widget ui-corner-all ui-widget-content "+(this.options.tooltipClass||"")),s=i.uniqueId().attr("id");return e("<div>").addClass("ui-tooltip-content").appendTo(i),i.appendTo(this.document[0].body),this.tooltips[s]={element:t,tooltip:i}},_find:function(e){var t=e.data("ui-tooltip-id");return t?this.tooltips[t]:null},_removeTooltip:function(e){e.remove(),delete this.tooltips[e.attr("id")]},_destroy:function(){var t=this;e.each(this.tooltips,function(i,s){var n=e.Event("blur"),a=s.element;n.target=n.currentTarget=a[0],t.close(n,!0),e("#"+i).remove(),a.data("ui-tooltip-title")&&(a.attr("title")||a.attr("title",a.data("ui-tooltip-title")),a.removeData("ui-tooltip-title"))}),this.liveRegion.remove()}});var y="ui-effects-",b=e;e.effects={effect:{}},function(e,t){function i(e,t,i){var s=d[t.type]||{};return null==e?i||!t.def?null:t.def:(e=s.floor?~~e:parseFloat(e),isNaN(e)?t.def:s.mod?(e+s.mod)%s.mod:0>e?0:e>s.max?s.max:e)}function s(i){var s=l(),n=s._rgba=[];return i=i.toLowerCase(),f(h,function(e,a){var o,r=a.re.exec(i),h=r&&a.parse(r),l=a.space||"rgba";return h?(o=s[l](h),s[u[l].cache]=o[u[l].cache],n=s._rgba=o._rgba,!1):t}),n.length?("0,0,0,0"===n.join()&&e.extend(n,a.transparent),s):a[i]}function n(e,t,i){return i=(i+1)%1,1>6*i?e+6*(t-e)*i:1>2*i?t:2>3*i?e+6*(t-e)*(2/3-i):e}var a,o="backgroundColor borderBottomColor borderLeftColor borderRightColor borderTopColor color columnRuleColor outlineColor textDecorationColor textEmphasisColor",r=/^([\-+])=\s*(\d+\.?\d*)/,h=[{re:/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,parse:function(e){return[e[1],e[2],e[3],e[4]]}},{re:/rgba?\(\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,parse:function(e){return[2.55*e[1],2.55*e[2],2.55*e[3],e[4]]}},{re:/#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})/,parse:function(e){return[parseInt(e[1],16),parseInt(e[2],16),parseInt(e[3],16)]}},{re:/#([a-f0-9])([a-f0-9])([a-f0-9])/,parse:function(e){return[parseInt(e[1]+e[1],16),parseInt(e[2]+e[2],16),parseInt(e[3]+e[3],16)]}},{re:/hsla?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)\%\s*,\s*(\d+(?:\.\d+)?)\%\s*(?:,\s*(\d?(?:\.\d+)?)\s*)?\)/,space:"hsla",parse:function(e){return[e[1],e[2]/100,e[3]/100,e[4]]}}],l=e.Color=function(t,i,s,n){return new e.Color.fn.parse(t,i,s,n)},u={rgba:{props:{red:{idx:0,type:"byte"},green:{idx:1,type:"byte"},blue:{idx:2,type:"byte"}}},hsla:{props:{hue:{idx:0,type:"degrees"},saturation:{idx:1,type:"percent"},lightness:{idx:2,type:"percent"}}}},d={"byte":{floor:!0,max:255},percent:{max:1},degrees:{mod:360,floor:!0}},c=l.support={},p=e("<p>")[0],f=e.each;p.style.cssText="background-color:rgba(1,1,1,.5)",c.rgba=p.style.backgroundColor.indexOf("rgba")>-1,f(u,function(e,t){t.cache="_"+e,t.props.alpha={idx:3,type:"percent",def:1}}),l.fn=e.extend(l.prototype,{parse:function(n,o,r,h){if(n===t)return this._rgba=[null,null,null,null],this;(n.jquery||n.nodeType)&&(n=e(n).css(o),o=t);var d=this,c=e.type(n),p=this._rgba=[];return o!==t&&(n=[n,o,r,h],c="array"),"string"===c?this.parse(s(n)||a._default):"array"===c?(f(u.rgba.props,function(e,t){p[t.idx]=i(n[t.idx],t)}),this):"object"===c?(n instanceof l?f(u,function(e,t){n[t.cache]&&(d[t.cache]=n[t.cache].slice())}):f(u,function(t,s){var a=s.cache;f(s.props,function(e,t){if(!d[a]&&s.to){if("alpha"===e||null==n[e])return;d[a]=s.to(d._rgba)}d[a][t.idx]=i(n[e],t,!0)}),d[a]&&0>e.inArray(null,d[a].slice(0,3))&&(d[a][3]=1,s.from&&(d._rgba=s.from(d[a])))}),this):t},is:function(e){var i=l(e),s=!0,n=this;return f(u,function(e,a){var o,r=i[a.cache];return r&&(o=n[a.cache]||a.to&&a.to(n._rgba)||[],f(a.props,function(e,i){return null!=r[i.idx]?s=r[i.idx]===o[i.idx]:t})),s}),s},_space:function(){var e=[],t=this;return f(u,function(i,s){t[s.cache]&&e.push(i)}),e.pop()},transition:function(e,t){var s=l(e),n=s._space(),a=u[n],o=0===this.alpha()?l("transparent"):this,r=o[a.cache]||a.to(o._rgba),h=r.slice();return s=s[a.cache],f(a.props,function(e,n){var a=n.idx,o=r[a],l=s[a],u=d[n.type]||{};null!==l&&(null===o?h[a]=l:(u.mod&&(l-o>u.mod/2?o+=u.mod:o-l>u.mod/2&&(o-=u.mod)),h[a]=i((l-o)*t+o,n)))}),this[n](h)},blend:function(t){if(1===this._rgba[3])return this;var i=this._rgba.slice(),s=i.pop(),n=l(t)._rgba;return l(e.map(i,function(e,t){return(1-s)*n[t]+s*e}))},toRgbaString:function(){var t="rgba(",i=e.map(this._rgba,function(e,t){return null==e?t>2?1:0:e});return 1===i[3]&&(i.pop(),t="rgb("),t+i.join()+")"},toHslaString:function(){var t="hsla(",i=e.map(this.hsla(),function(e,t){return null==e&&(e=t>2?1:0),t&&3>t&&(e=Math.round(100*e)+"%"),e});return 1===i[3]&&(i.pop(),t="hsl("),t+i.join()+")"},toHexString:function(t){var i=this._rgba.slice(),s=i.pop();return t&&i.push(~~(255*s)),"#"+e.map(i,function(e){return e=(e||0).toString(16),1===e.length?"0"+e:e}).join("")},toString:function(){return 0===this._rgba[3]?"transparent":this.toRgbaString()}}),l.fn.parse.prototype=l.fn,u.hsla.to=function(e){if(null==e[0]||null==e[1]||null==e[2])return[null,null,null,e[3]];var t,i,s=e[0]/255,n=e[1]/255,a=e[2]/255,o=e[3],r=Math.max(s,n,a),h=Math.min(s,n,a),l=r-h,u=r+h,d=.5*u;return t=h===r?0:s===r?60*(n-a)/l+360:n===r?60*(a-s)/l+120:60*(s-n)/l+240,i=0===l?0:.5>=d?l/u:l/(2-u),[Math.round(t)%360,i,d,null==o?1:o]},u.hsla.from=function(e){if(null==e[0]||null==e[1]||null==e[2])return[null,null,null,e[3]];var t=e[0]/360,i=e[1],s=e[2],a=e[3],o=.5>=s?s*(1+i):s+i-s*i,r=2*s-o;return[Math.round(255*n(r,o,t+1/3)),Math.round(255*n(r,o,t)),Math.round(255*n(r,o,t-1/3)),a]},f(u,function(s,n){var a=n.props,o=n.cache,h=n.to,u=n.from;l.fn[s]=function(s){if(h&&!this[o]&&(this[o]=h(this._rgba)),s===t)return this[o].slice();var n,r=e.type(s),d="array"===r||"object"===r?s:arguments,c=this[o].slice();return f(a,function(e,t){var s=d["object"===r?e:t.idx];null==s&&(s=c[t.idx]),c[t.idx]=i(s,t)}),u?(n=l(u(c)),n[o]=c,n):l(c)},f(a,function(t,i){l.fn[t]||(l.fn[t]=function(n){var a,o=e.type(n),h="alpha"===t?this._hsla?"hsla":"rgba":s,l=this[h](),u=l[i.idx];return"undefined"===o?u:("function"===o&&(n=n.call(this,u),o=e.type(n)),null==n&&i.empty?this:("string"===o&&(a=r.exec(n),a&&(n=u+parseFloat(a[2])*("+"===a[1]?1:-1))),l[i.idx]=n,this[h](l)))})})}),l.hook=function(t){var i=t.split(" ");f(i,function(t,i){e.cssHooks[i]={set:function(t,n){var a,o,r="";if("transparent"!==n&&("string"!==e.type(n)||(a=s(n)))){if(n=l(a||n),!c.rgba&&1!==n._rgba[3]){for(o="backgroundColor"===i?t.parentNode:t;(""===r||"transparent"===r)&&o&&o.style;)try{r=e.css(o,"backgroundColor"),o=o.parentNode}catch(h){}n=n.blend(r&&"transparent"!==r?r:"_default")}n=n.toRgbaString()}try{t.style[i]=n}catch(h){}}},e.fx.step[i]=function(t){t.colorInit||(t.start=l(t.elem,i),t.end=l(t.end),t.colorInit=!0),e.cssHooks[i].set(t.elem,t.start.transition(t.end,t.pos))}})},l.hook(o),e.cssHooks.borderColor={expand:function(e){var t={};return f(["Top","Right","Bottom","Left"],function(i,s){t["border"+s+"Color"]=e}),t}},a=e.Color.names={aqua:"#00ffff",black:"#000000",blue:"#0000ff",fuchsia:"#ff00ff",gray:"#808080",green:"#008000",lime:"#00ff00",maroon:"#800000",navy:"#000080",olive:"#808000",purple:"#800080",red:"#ff0000",silver:"#c0c0c0",teal:"#008080",white:"#ffffff",yellow:"#ffff00",transparent:[null,null,null,0],_default:"#ffffff"}}(b),function(){function t(t){var i,s,n=t.ownerDocument.defaultView?t.ownerDocument.defaultView.getComputedStyle(t,null):t.currentStyle,a={};if(n&&n.length&&n[0]&&n[n[0]])for(s=n.length;s--;)i=n[s],"string"==typeof n[i]&&(a[e.camelCase(i)]=n[i]);else for(i in n)"string"==typeof n[i]&&(a[i]=n[i]);return a}function i(t,i){var s,a,o={};for(s in i)a=i[s],t[s]!==a&&(n[s]||(e.fx.step[s]||!isNaN(parseFloat(a)))&&(o[s]=a));return o}var s=["add","remove","toggle"],n={border:1,borderBottom:1,borderColor:1,borderLeft:1,borderRight:1,borderTop:1,borderWidth:1,margin:1,padding:1};e.each(["borderLeftStyle","borderRightStyle","borderBottomStyle","borderTopStyle"],function(t,i){e.fx.step[i]=function(e){("none"!==e.end&&!e.setAttr||1===e.pos&&!e.setAttr)&&(b.style(e.elem,i,e.end),e.setAttr=!0)}}),e.fn.addBack||(e.fn.addBack=function(e){return this.add(null==e?this.prevObject:this.prevObject.filter(e))}),e.effects.animateClass=function(n,a,o,r){var h=e.speed(a,o,r);return this.queue(function(){var a,o=e(this),r=o.attr("class")||"",l=h.children?o.find("*").addBack():o;l=l.map(function(){var i=e(this);return{el:i,start:t(this)}}),a=function(){e.each(s,function(e,t){n[t]&&o[t+"Class"](n[t])})},a(),l=l.map(function(){return this.end=t(this.el[0]),this.diff=i(this.start,this.end),this}),o.attr("class",r),l=l.map(function(){var t=this,i=e.Deferred(),s=e.extend({},h,{queue:!1,complete:function(){i.resolve(t)}});return this.el.animate(this.diff,s),i.promise()}),e.when.apply(e,l.get()).done(function(){a(),e.each(arguments,function(){var t=this.el;e.each(this.diff,function(e){t.css(e,"")})}),h.complete.call(o[0])})})},e.fn.extend({addClass:function(t){return function(i,s,n,a){return s?e.effects.animateClass.call(this,{add:i},s,n,a):t.apply(this,arguments)}}(e.fn.addClass),removeClass:function(t){return function(i,s,n,a){return arguments.length>1?e.effects.animateClass.call(this,{remove:i},s,n,a):t.apply(this,arguments)}}(e.fn.removeClass),toggleClass:function(t){return function(i,s,n,a,o){return"boolean"==typeof s||void 0===s?n?e.effects.animateClass.call(this,s?{add:i}:{remove:i},n,a,o):t.apply(this,arguments):e.effects.animateClass.call(this,{toggle:i},s,n,a)}}(e.fn.toggleClass),switchClass:function(t,i,s,n,a){return e.effects.animateClass.call(this,{add:i,remove:t},s,n,a)}})}(),function(){function t(t,i,s,n){return e.isPlainObject(t)&&(i=t,t=t.effect),t={effect:t},null==i&&(i={}),e.isFunction(i)&&(n=i,s=null,i={}),("number"==typeof i||e.fx.speeds[i])&&(n=s,s=i,i={}),e.isFunction(s)&&(n=s,s=null),i&&e.extend(t,i),s=s||i.duration,t.duration=e.fx.off?0:"number"==typeof s?s:s in e.fx.speeds?e.fx.speeds[s]:e.fx.speeds._default,t.complete=n||i.complete,t}function i(t){return!t||"number"==typeof t||e.fx.speeds[t]?!0:"string"!=typeof t||e.effects.effect[t]?e.isFunction(t)?!0:"object"!=typeof t||t.effect?!1:!0:!0}e.extend(e.effects,{version:"1.11.4",save:function(e,t){for(var i=0;t.length>i;i++)null!==t[i]&&e.data(y+t[i],e[0].style[t[i]])},restore:function(e,t){var i,s;for(s=0;t.length>s;s++)null!==t[s]&&(i=e.data(y+t[s]),void 0===i&&(i=""),e.css(t[s],i))},setMode:function(e,t){return"toggle"===t&&(t=e.is(":hidden")?"show":"hide"),t},getBaseline:function(e,t){var i,s;switch(e[0]){case"top":i=0;break;case"middle":i=.5;break;case"bottom":i=1;break;default:i=e[0]/t.height}switch(e[1]){case"left":s=0;break;case"center":s=.5;break;case"right":s=1;break;default:s=e[1]/t.width}return{x:s,y:i}},createWrapper:function(t){if(t.parent().is(".ui-effects-wrapper"))return t.parent();var i={width:t.outerWidth(!0),height:t.outerHeight(!0),"float":t.css("float")},s=e("<div></div>").addClass("ui-effects-wrapper").css({fontSize:"100%",background:"transparent",border:"none",margin:0,padding:0}),n={width:t.width(),height:t.height()},a=document.activeElement;try{a.id}catch(o){a=document.body}return t.wrap(s),(t[0]===a||e.contains(t[0],a))&&e(a).focus(),s=t.parent(),"static"===t.css("position")?(s.css({position:"relative"}),t.css({position:"relative"})):(e.extend(i,{position:t.css("position"),zIndex:t.css("z-index")}),e.each(["top","left","bottom","right"],function(e,s){i[s]=t.css(s),isNaN(parseInt(i[s],10))&&(i[s]="auto")}),t.css({position:"relative",top:0,left:0,right:"auto",bottom:"auto"})),t.css(n),s.css(i).show()},removeWrapper:function(t){var i=document.activeElement;
 return t.parent().is(".ui-effects-wrapper")&&(t.parent().replaceWith(t),(t[0]===i||e.contains(t[0],i))&&e(i).focus()),t},setTransition:function(t,i,s,n){return n=n||{},e.each(i,function(e,i){var a=t.cssUnit(i);a[0]>0&&(n[i]=a[0]*s+a[1])}),n}}),e.fn.extend({effect:function(){function i(t){function i(){e.isFunction(a)&&a.call(n[0]),e.isFunction(t)&&t()}var n=e(this),a=s.complete,r=s.mode;(n.is(":hidden")?"hide"===r:"show"===r)?(n[r](),i()):o.call(n[0],s,i)}var s=t.apply(this,arguments),n=s.mode,a=s.queue,o=e.effects.effect[s.effect];return e.fx.off||!o?n?this[n](s.duration,s.complete):this.each(function(){s.complete&&s.complete.call(this)}):a===!1?this.each(i):this.queue(a||"fx",i)},show:function(e){return function(s){if(i(s))return e.apply(this,arguments);var n=t.apply(this,arguments);return n.mode="show",this.effect.call(this,n)}}(e.fn.show),hide:function(e){return function(s){if(i(s))return e.apply(this,arguments);var n=t.apply(this,arguments);return n.mode="hide",this.effect.call(this,n)}}(e.fn.hide),toggle:function(e){return function(s){if(i(s)||"boolean"==typeof s)return e.apply(this,arguments);var n=t.apply(this,arguments);return n.mode="toggle",this.effect.call(this,n)}}(e.fn.toggle),cssUnit:function(t){var i=this.css(t),s=[];return e.each(["em","px","%","pt"],function(e,t){i.indexOf(t)>0&&(s=[parseFloat(i),t])}),s}})}(),function(){var t={};e.each(["Quad","Cubic","Quart","Quint","Expo"],function(e,i){t[i]=function(t){return Math.pow(t,e+2)}}),e.extend(t,{Sine:function(e){return 1-Math.cos(e*Math.PI/2)},Circ:function(e){return 1-Math.sqrt(1-e*e)},Elastic:function(e){return 0===e||1===e?e:-Math.pow(2,8*(e-1))*Math.sin((80*(e-1)-7.5)*Math.PI/15)},Back:function(e){return e*e*(3*e-2)},Bounce:function(e){for(var t,i=4;((t=Math.pow(2,--i))-1)/11>e;);return 1/Math.pow(4,3-i)-7.5625*Math.pow((3*t-2)/22-e,2)}}),e.each(t,function(t,i){e.easing["easeIn"+t]=i,e.easing["easeOut"+t]=function(e){return 1-i(1-e)},e.easing["easeInOut"+t]=function(e){return.5>e?i(2*e)/2:1-i(-2*e+2)/2}})}(),e.effects,e.effects.effect.blind=function(t,i){var s,n,a,o=e(this),r=/up|down|vertical/,h=/up|left|vertical|horizontal/,l=["position","top","bottom","left","right","height","width"],u=e.effects.setMode(o,t.mode||"hide"),d=t.direction||"up",c=r.test(d),p=c?"height":"width",f=c?"top":"left",m=h.test(d),g={},v="show"===u;o.parent().is(".ui-effects-wrapper")?e.effects.save(o.parent(),l):e.effects.save(o,l),o.show(),s=e.effects.createWrapper(o).css({overflow:"hidden"}),n=s[p](),a=parseFloat(s.css(f))||0,g[p]=v?n:0,m||(o.css(c?"bottom":"right",0).css(c?"top":"left","auto").css({position:"absolute"}),g[f]=v?a:n+a),v&&(s.css(p,0),m||s.css(f,a+n)),s.animate(g,{duration:t.duration,easing:t.easing,queue:!1,complete:function(){"hide"===u&&o.hide(),e.effects.restore(o,l),e.effects.removeWrapper(o),i()}})},e.effects.effect.bounce=function(t,i){var s,n,a,o=e(this),r=["position","top","bottom","left","right","height","width"],h=e.effects.setMode(o,t.mode||"effect"),l="hide"===h,u="show"===h,d=t.direction||"up",c=t.distance,p=t.times||5,f=2*p+(u||l?1:0),m=t.duration/f,g=t.easing,v="up"===d||"down"===d?"top":"left",y="up"===d||"left"===d,b=o.queue(),_=b.length;for((u||l)&&r.push("opacity"),e.effects.save(o,r),o.show(),e.effects.createWrapper(o),c||(c=o["top"===v?"outerHeight":"outerWidth"]()/3),u&&(a={opacity:1},a[v]=0,o.css("opacity",0).css(v,y?2*-c:2*c).animate(a,m,g)),l&&(c/=Math.pow(2,p-1)),a={},a[v]=0,s=0;p>s;s++)n={},n[v]=(y?"-=":"+=")+c,o.animate(n,m,g).animate(a,m,g),c=l?2*c:c/2;l&&(n={opacity:0},n[v]=(y?"-=":"+=")+c,o.animate(n,m,g)),o.queue(function(){l&&o.hide(),e.effects.restore(o,r),e.effects.removeWrapper(o),i()}),_>1&&b.splice.apply(b,[1,0].concat(b.splice(_,f+1))),o.dequeue()},e.effects.effect.clip=function(t,i){var s,n,a,o=e(this),r=["position","top","bottom","left","right","height","width"],h=e.effects.setMode(o,t.mode||"hide"),l="show"===h,u=t.direction||"vertical",d="vertical"===u,c=d?"height":"width",p=d?"top":"left",f={};e.effects.save(o,r),o.show(),s=e.effects.createWrapper(o).css({overflow:"hidden"}),n="IMG"===o[0].tagName?s:o,a=n[c](),l&&(n.css(c,0),n.css(p,a/2)),f[c]=l?a:0,f[p]=l?0:a/2,n.animate(f,{queue:!1,duration:t.duration,easing:t.easing,complete:function(){l||o.hide(),e.effects.restore(o,r),e.effects.removeWrapper(o),i()}})},e.effects.effect.drop=function(t,i){var s,n=e(this),a=["position","top","bottom","left","right","opacity","height","width"],o=e.effects.setMode(n,t.mode||"hide"),r="show"===o,h=t.direction||"left",l="up"===h||"down"===h?"top":"left",u="up"===h||"left"===h?"pos":"neg",d={opacity:r?1:0};e.effects.save(n,a),n.show(),e.effects.createWrapper(n),s=t.distance||n["top"===l?"outerHeight":"outerWidth"](!0)/2,r&&n.css("opacity",0).css(l,"pos"===u?-s:s),d[l]=(r?"pos"===u?"+=":"-=":"pos"===u?"-=":"+=")+s,n.animate(d,{queue:!1,duration:t.duration,easing:t.easing,complete:function(){"hide"===o&&n.hide(),e.effects.restore(n,a),e.effects.removeWrapper(n),i()}})},e.effects.effect.explode=function(t,i){function s(){b.push(this),b.length===d*c&&n()}function n(){p.css({visibility:"visible"}),e(b).remove(),m||p.hide(),i()}var a,o,r,h,l,u,d=t.pieces?Math.round(Math.sqrt(t.pieces)):3,c=d,p=e(this),f=e.effects.setMode(p,t.mode||"hide"),m="show"===f,g=p.show().css("visibility","hidden").offset(),v=Math.ceil(p.outerWidth()/c),y=Math.ceil(p.outerHeight()/d),b=[];for(a=0;d>a;a++)for(h=g.top+a*y,u=a-(d-1)/2,o=0;c>o;o++)r=g.left+o*v,l=o-(c-1)/2,p.clone().appendTo("body").wrap("<div></div>").css({position:"absolute",visibility:"visible",left:-o*v,top:-a*y}).parent().addClass("ui-effects-explode").css({position:"absolute",overflow:"hidden",width:v,height:y,left:r+(m?l*v:0),top:h+(m?u*y:0),opacity:m?0:1}).animate({left:r+(m?0:l*v),top:h+(m?0:u*y),opacity:m?1:0},t.duration||500,t.easing,s)},e.effects.effect.fade=function(t,i){var s=e(this),n=e.effects.setMode(s,t.mode||"toggle");s.animate({opacity:n},{queue:!1,duration:t.duration,easing:t.easing,complete:i})},e.effects.effect.fold=function(t,i){var s,n,a=e(this),o=["position","top","bottom","left","right","height","width"],r=e.effects.setMode(a,t.mode||"hide"),h="show"===r,l="hide"===r,u=t.size||15,d=/([0-9]+)%/.exec(u),c=!!t.horizFirst,p=h!==c,f=p?["width","height"]:["height","width"],m=t.duration/2,g={},v={};e.effects.save(a,o),a.show(),s=e.effects.createWrapper(a).css({overflow:"hidden"}),n=p?[s.width(),s.height()]:[s.height(),s.width()],d&&(u=parseInt(d[1],10)/100*n[l?0:1]),h&&s.css(c?{height:0,width:u}:{height:u,width:0}),g[f[0]]=h?n[0]:u,v[f[1]]=h?n[1]:0,s.animate(g,m,t.easing).animate(v,m,t.easing,function(){l&&a.hide(),e.effects.restore(a,o),e.effects.removeWrapper(a),i()})},e.effects.effect.highlight=function(t,i){var s=e(this),n=["backgroundImage","backgroundColor","opacity"],a=e.effects.setMode(s,t.mode||"show"),o={backgroundColor:s.css("backgroundColor")};"hide"===a&&(o.opacity=0),e.effects.save(s,n),s.show().css({backgroundImage:"none",backgroundColor:t.color||"#ffff99"}).animate(o,{queue:!1,duration:t.duration,easing:t.easing,complete:function(){"hide"===a&&s.hide(),e.effects.restore(s,n),i()}})},e.effects.effect.size=function(t,i){var s,n,a,o=e(this),r=["position","top","bottom","left","right","width","height","overflow","opacity"],h=["position","top","bottom","left","right","overflow","opacity"],l=["width","height","overflow"],u=["fontSize"],d=["borderTopWidth","borderBottomWidth","paddingTop","paddingBottom"],c=["borderLeftWidth","borderRightWidth","paddingLeft","paddingRight"],p=e.effects.setMode(o,t.mode||"effect"),f=t.restore||"effect"!==p,m=t.scale||"both",g=t.origin||["middle","center"],v=o.css("position"),y=f?r:h,b={height:0,width:0,outerHeight:0,outerWidth:0};"show"===p&&o.show(),s={height:o.height(),width:o.width(),outerHeight:o.outerHeight(),outerWidth:o.outerWidth()},"toggle"===t.mode&&"show"===p?(o.from=t.to||b,o.to=t.from||s):(o.from=t.from||("show"===p?b:s),o.to=t.to||("hide"===p?b:s)),a={from:{y:o.from.height/s.height,x:o.from.width/s.width},to:{y:o.to.height/s.height,x:o.to.width/s.width}},("box"===m||"both"===m)&&(a.from.y!==a.to.y&&(y=y.concat(d),o.from=e.effects.setTransition(o,d,a.from.y,o.from),o.to=e.effects.setTransition(o,d,a.to.y,o.to)),a.from.x!==a.to.x&&(y=y.concat(c),o.from=e.effects.setTransition(o,c,a.from.x,o.from),o.to=e.effects.setTransition(o,c,a.to.x,o.to))),("content"===m||"both"===m)&&a.from.y!==a.to.y&&(y=y.concat(u).concat(l),o.from=e.effects.setTransition(o,u,a.from.y,o.from),o.to=e.effects.setTransition(o,u,a.to.y,o.to)),e.effects.save(o,y),o.show(),e.effects.createWrapper(o),o.css("overflow","hidden").css(o.from),g&&(n=e.effects.getBaseline(g,s),o.from.top=(s.outerHeight-o.outerHeight())*n.y,o.from.left=(s.outerWidth-o.outerWidth())*n.x,o.to.top=(s.outerHeight-o.to.outerHeight)*n.y,o.to.left=(s.outerWidth-o.to.outerWidth)*n.x),o.css(o.from),("content"===m||"both"===m)&&(d=d.concat(["marginTop","marginBottom"]).concat(u),c=c.concat(["marginLeft","marginRight"]),l=r.concat(d).concat(c),o.find("*[width]").each(function(){var i=e(this),s={height:i.height(),width:i.width(),outerHeight:i.outerHeight(),outerWidth:i.outerWidth()};f&&e.effects.save(i,l),i.from={height:s.height*a.from.y,width:s.width*a.from.x,outerHeight:s.outerHeight*a.from.y,outerWidth:s.outerWidth*a.from.x},i.to={height:s.height*a.to.y,width:s.width*a.to.x,outerHeight:s.height*a.to.y,outerWidth:s.width*a.to.x},a.from.y!==a.to.y&&(i.from=e.effects.setTransition(i,d,a.from.y,i.from),i.to=e.effects.setTransition(i,d,a.to.y,i.to)),a.from.x!==a.to.x&&(i.from=e.effects.setTransition(i,c,a.from.x,i.from),i.to=e.effects.setTransition(i,c,a.to.x,i.to)),i.css(i.from),i.animate(i.to,t.duration,t.easing,function(){f&&e.effects.restore(i,l)})})),o.animate(o.to,{queue:!1,duration:t.duration,easing:t.easing,complete:function(){0===o.to.opacity&&o.css("opacity",o.from.opacity),"hide"===p&&o.hide(),e.effects.restore(o,y),f||("static"===v?o.css({position:"relative",top:o.to.top,left:o.to.left}):e.each(["top","left"],function(e,t){o.css(t,function(t,i){var s=parseInt(i,10),n=e?o.to.left:o.to.top;return"auto"===i?n+"px":s+n+"px"})})),e.effects.removeWrapper(o),i()}})},e.effects.effect.scale=function(t,i){var s=e(this),n=e.extend(!0,{},t),a=e.effects.setMode(s,t.mode||"effect"),o=parseInt(t.percent,10)||(0===parseInt(t.percent,10)?0:"hide"===a?0:100),r=t.direction||"both",h=t.origin,l={height:s.height(),width:s.width(),outerHeight:s.outerHeight(),outerWidth:s.outerWidth()},u={y:"horizontal"!==r?o/100:1,x:"vertical"!==r?o/100:1};n.effect="size",n.queue=!1,n.complete=i,"effect"!==a&&(n.origin=h||["middle","center"],n.restore=!0),n.from=t.from||("show"===a?{height:0,width:0,outerHeight:0,outerWidth:0}:l),n.to={height:l.height*u.y,width:l.width*u.x,outerHeight:l.outerHeight*u.y,outerWidth:l.outerWidth*u.x},n.fade&&("show"===a&&(n.from.opacity=0,n.to.opacity=1),"hide"===a&&(n.from.opacity=1,n.to.opacity=0)),s.effect(n)},e.effects.effect.puff=function(t,i){var s=e(this),n=e.effects.setMode(s,t.mode||"hide"),a="hide"===n,o=parseInt(t.percent,10)||150,r=o/100,h={height:s.height(),width:s.width(),outerHeight:s.outerHeight(),outerWidth:s.outerWidth()};e.extend(t,{effect:"scale",queue:!1,fade:!0,mode:n,complete:i,percent:a?o:100,from:a?h:{height:h.height*r,width:h.width*r,outerHeight:h.outerHeight*r,outerWidth:h.outerWidth*r}}),s.effect(t)},e.effects.effect.pulsate=function(t,i){var s,n=e(this),a=e.effects.setMode(n,t.mode||"show"),o="show"===a,r="hide"===a,h=o||"hide"===a,l=2*(t.times||5)+(h?1:0),u=t.duration/l,d=0,c=n.queue(),p=c.length;for((o||!n.is(":visible"))&&(n.css("opacity",0).show(),d=1),s=1;l>s;s++)n.animate({opacity:d},u,t.easing),d=1-d;n.animate({opacity:d},u,t.easing),n.queue(function(){r&&n.hide(),i()}),p>1&&c.splice.apply(c,[1,0].concat(c.splice(p,l+1))),n.dequeue()},e.effects.effect.shake=function(t,i){var s,n=e(this),a=["position","top","bottom","left","right","height","width"],o=e.effects.setMode(n,t.mode||"effect"),r=t.direction||"left",h=t.distance||20,l=t.times||3,u=2*l+1,d=Math.round(t.duration/u),c="up"===r||"down"===r?"top":"left",p="up"===r||"left"===r,f={},m={},g={},v=n.queue(),y=v.length;for(e.effects.save(n,a),n.show(),e.effects.createWrapper(n),f[c]=(p?"-=":"+=")+h,m[c]=(p?"+=":"-=")+2*h,g[c]=(p?"-=":"+=")+2*h,n.animate(f,d,t.easing),s=1;l>s;s++)n.animate(m,d,t.easing).animate(g,d,t.easing);n.animate(m,d,t.easing).animate(f,d/2,t.easing).queue(function(){"hide"===o&&n.hide(),e.effects.restore(n,a),e.effects.removeWrapper(n),i()}),y>1&&v.splice.apply(v,[1,0].concat(v.splice(y,u+1))),n.dequeue()},e.effects.effect.slide=function(t,i){var s,n=e(this),a=["position","top","bottom","left","right","width","height"],o=e.effects.setMode(n,t.mode||"show"),r="show"===o,h=t.direction||"left",l="up"===h||"down"===h?"top":"left",u="up"===h||"left"===h,d={};e.effects.save(n,a),n.show(),s=t.distance||n["top"===l?"outerHeight":"outerWidth"](!0),e.effects.createWrapper(n).css({overflow:"hidden"}),r&&n.css(l,u?isNaN(s)?"-"+s:-s:s),d[l]=(r?u?"+=":"-=":u?"-=":"+=")+s,n.animate(d,{queue:!1,duration:t.duration,easing:t.easing,complete:function(){"hide"===o&&n.hide(),e.effects.restore(n,a),e.effects.removeWrapper(n),i()}})},e.effects.effect.transfer=function(t,i){var s=e(this),n=e(t.to),a="fixed"===n.css("position"),o=e("body"),r=a?o.scrollTop():0,h=a?o.scrollLeft():0,l=n.offset(),u={top:l.top-r,left:l.left-h,height:n.innerHeight(),width:n.innerWidth()},d=s.offset(),c=e("<div class='ui-effects-transfer'></div>").appendTo(document.body).addClass(t.className).css({top:d.top-r,left:d.left-h,height:s.innerHeight(),width:s.innerWidth(),position:a?"fixed":"absolute"}).animate(u,t.duration,t.easing,function(){c.remove(),i()})}});
+/*!
+ * Bootstrap v3.3.7 (http://getbootstrap.com)
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+/*!
+ * Generated using the Bootstrap Customizer (http://getbootstrap.com/customize/?id=54f7fc07920351c5053c90e32cf11e19)
+ * Config saved to config.json and https://gist.github.com/54f7fc07920351c5053c90e32cf11e19
+ */
+if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires jQuery");+function(t){"use strict";var e=t.fn.jquery.split(" ")[0].split(".");if(e[0]<2&&e[1]<9||1==e[0]&&9==e[1]&&e[2]<1||e[0]>3)throw new Error("Bootstrap's JavaScript requires jQuery version 1.9.1 or higher, but lower than version 4")}(jQuery),+function(t){"use strict";function e(e,o){return this.each(function(){var s=t(this),n=s.data("bs.modal"),r=t.extend({},i.DEFAULTS,s.data(),"object"==typeof e&&e);n||s.data("bs.modal",n=new i(this,r)),"string"==typeof e?n[e](o):r.show&&n.show(o)})}var i=function(e,i){this.options=i,this.$body=t(document.body),this.$element=t(e),this.$dialog=this.$element.find(".modal-dialog"),this.$backdrop=null,this.isShown=null,this.originalBodyPad=null,this.scrollbarWidth=0,this.ignoreBackdropClick=!1,this.options.remote&&this.$element.find(".modal-content").load(this.options.remote,t.proxy(function(){this.$element.trigger("loaded.bs.modal")},this))};i.VERSION="3.3.7",i.TRANSITION_DURATION=300,i.BACKDROP_TRANSITION_DURATION=150,i.DEFAULTS={backdrop:!0,keyboard:!0,show:!0},i.prototype.toggle=function(t){return this.isShown?this.hide():this.show(t)},i.prototype.show=function(e){var o=this,s=t.Event("show.bs.modal",{relatedTarget:e});this.$element.trigger(s),this.isShown||s.isDefaultPrevented()||(this.isShown=!0,this.checkScrollbar(),this.setScrollbar(),this.$body.addClass("modal-open"),this.escape(),this.resize(),this.$element.on("click.dismiss.bs.modal",'[data-dismiss="modal"]',t.proxy(this.hide,this)),this.$dialog.on("mousedown.dismiss.bs.modal",function(){o.$element.one("mouseup.dismiss.bs.modal",function(e){t(e.target).is(o.$element)&&(o.ignoreBackdropClick=!0)})}),this.backdrop(function(){var s=t.support.transition&&o.$element.hasClass("fade");o.$element.parent().length||o.$element.appendTo(o.$body),o.$element.show().scrollTop(0),o.adjustDialog(),s&&o.$element[0].offsetWidth,o.$element.addClass("in"),o.enforceFocus();var n=t.Event("shown.bs.modal",{relatedTarget:e});s?o.$dialog.one("bsTransitionEnd",function(){o.$element.trigger("focus").trigger(n)}).emulateTransitionEnd(i.TRANSITION_DURATION):o.$element.trigger("focus").trigger(n)}))},i.prototype.hide=function(e){e&&e.preventDefault(),e=t.Event("hide.bs.modal"),this.$element.trigger(e),this.isShown&&!e.isDefaultPrevented()&&(this.isShown=!1,this.escape(),this.resize(),t(document).off("focusin.bs.modal"),this.$element.removeClass("in").off("click.dismiss.bs.modal").off("mouseup.dismiss.bs.modal"),this.$dialog.off("mousedown.dismiss.bs.modal"),t.support.transition&&this.$element.hasClass("fade")?this.$element.one("bsTransitionEnd",t.proxy(this.hideModal,this)).emulateTransitionEnd(i.TRANSITION_DURATION):this.hideModal())},i.prototype.enforceFocus=function(){t(document).off("focusin.bs.modal").on("focusin.bs.modal",t.proxy(function(t){document===t.target||this.$element[0]===t.target||this.$element.has(t.target).length||this.$element.trigger("focus")},this))},i.prototype.escape=function(){this.isShown&&this.options.keyboard?this.$element.on("keydown.dismiss.bs.modal",t.proxy(function(t){27==t.which&&this.hide()},this)):this.isShown||this.$element.off("keydown.dismiss.bs.modal")},i.prototype.resize=function(){this.isShown?t(window).on("resize.bs.modal",t.proxy(this.handleUpdate,this)):t(window).off("resize.bs.modal")},i.prototype.hideModal=function(){var t=this;this.$element.hide(),this.backdrop(function(){t.$body.removeClass("modal-open"),t.resetAdjustments(),t.resetScrollbar(),t.$element.trigger("hidden.bs.modal")})},i.prototype.removeBackdrop=function(){this.$backdrop&&this.$backdrop.remove(),this.$backdrop=null},i.prototype.backdrop=function(e){var o=this,s=this.$element.hasClass("fade")?"fade":"";if(this.isShown&&this.options.backdrop){var n=t.support.transition&&s;if(this.$backdrop=t(document.createElement("div")).addClass("modal-backdrop "+s).appendTo(this.$body),this.$element.on("click.dismiss.bs.modal",t.proxy(function(t){return this.ignoreBackdropClick?void(this.ignoreBackdropClick=!1):void(t.target===t.currentTarget&&("static"==this.options.backdrop?this.$element[0].focus():this.hide()))},this)),n&&this.$backdrop[0].offsetWidth,this.$backdrop.addClass("in"),!e)return;n?this.$backdrop.one("bsTransitionEnd",e).emulateTransitionEnd(i.BACKDROP_TRANSITION_DURATION):e()}else if(!this.isShown&&this.$backdrop){this.$backdrop.removeClass("in");var r=function(){o.removeBackdrop(),e&&e()};t.support.transition&&this.$element.hasClass("fade")?this.$backdrop.one("bsTransitionEnd",r).emulateTransitionEnd(i.BACKDROP_TRANSITION_DURATION):r()}else e&&e()},i.prototype.handleUpdate=function(){this.adjustDialog()},i.prototype.adjustDialog=function(){var t=this.$element[0].scrollHeight>document.documentElement.clientHeight;this.$element.css({paddingLeft:!this.bodyIsOverflowing&&t?this.scrollbarWidth:"",paddingRight:this.bodyIsOverflowing&&!t?this.scrollbarWidth:""})},i.prototype.resetAdjustments=function(){this.$element.css({paddingLeft:"",paddingRight:""})},i.prototype.checkScrollbar=function(){var t=window.innerWidth;if(!t){var e=document.documentElement.getBoundingClientRect();t=e.right-Math.abs(e.left)}this.bodyIsOverflowing=document.body.clientWidth<t,this.scrollbarWidth=this.measureScrollbar()},i.prototype.setScrollbar=function(){var t=parseInt(this.$body.css("padding-right")||0,10);this.originalBodyPad=document.body.style.paddingRight||"",this.bodyIsOverflowing&&this.$body.css("padding-right",t+this.scrollbarWidth)},i.prototype.resetScrollbar=function(){this.$body.css("padding-right",this.originalBodyPad)},i.prototype.measureScrollbar=function(){var t=document.createElement("div");t.className="modal-scrollbar-measure",this.$body.append(t);var e=t.offsetWidth-t.clientWidth;return this.$body[0].removeChild(t),e};var o=t.fn.modal;t.fn.modal=e,t.fn.modal.Constructor=i,t.fn.modal.noConflict=function(){return t.fn.modal=o,this},t(document).on("click.bs.modal.data-api",'[data-toggle="modal"]',function(i){var o=t(this),s=o.attr("href"),n=t(o.attr("data-target")||s&&s.replace(/.*(?=#[^\s]+$)/,"")),r=n.data("bs.modal")?"toggle":t.extend({remote:!/#/.test(s)&&s},n.data(),o.data());o.is("a")&&i.preventDefault(),n.one("show.bs.modal",function(t){t.isDefaultPrevented()||n.one("hidden.bs.modal",function(){o.is(":visible")&&o.trigger("focus")})}),e.call(n,r,this)})}(jQuery),+function(t){"use strict";function e(){var t=document.createElement("bootstrap"),e={WebkitTransition:"webkitTransitionEnd",MozTransition:"transitionend",OTransition:"oTransitionEnd otransitionend",transition:"transitionend"};for(var i in e)if(void 0!==t.style[i])return{end:e[i]};return!1}t.fn.emulateTransitionEnd=function(e){var i=!1,o=this;t(this).one("bsTransitionEnd",function(){i=!0});var s=function(){i||t(o).trigger(t.support.transition.end)};return setTimeout(s,e),this},t(function(){t.support.transition=e(),t.support.transition&&(t.event.special.bsTransitionEnd={bindType:t.support.transition.end,delegateType:t.support.transition.end,handle:function(e){return t(e.target).is(this)?e.handleObj.handler.apply(this,arguments):void 0}})})}(jQuery);
+/**
+ * bootbox.js [v4.4.0]
+ *
+ * http://bootboxjs.com/license.txt
+ */
+
+// @see https://github.com/makeusabrew/bootbox/issues/180
+// @see https://github.com/makeusabrew/bootbox/issues/186
+(function (root, factory) {
+
+  "use strict";
+  if (typeof define === "function" && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(["jquery"], factory);
+  } else if (typeof exports === "object") {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    // Browser globals (root is window)
+    root.bootbox = factory(root.jQuery);
+  }
+
+}(this, function init($, undefined) {
+
+  "use strict";
+
+  // the base DOM structure needed to create a modal
+  var templates = {
+    dialog:
+      "<div class='bootbox modal' tabindex='-1' role='dialog'>" +
+        "<div class='modal-dialog'>" +
+          "<div class='modal-content'>" +
+            "<div class='modal-body'><div class='bootbox-body'></div></div>" +
+          "</div>" +
+        "</div>" +
+      "</div>",
+    header:
+      "<div class='modal-header'>" +
+        "<h4 class='modal-title'></h4>" +
+      "</div>",
+    footer:
+      "<div class='modal-footer'></div>",
+    closeButton:
+      "<button type='button' class='bootbox-close-button close' data-dismiss='modal' aria-hidden='true'>&times;</button>",
+    form:
+      "<form class='bootbox-form'></form>",
+    inputs: {
+      text:
+        "<input class='bootbox-input bootbox-input-text form-control' autocomplete=off type=text />",
+      textarea:
+        "<textarea class='bootbox-input bootbox-input-textarea form-control'></textarea>",
+      email:
+        "<input class='bootbox-input bootbox-input-email form-control' autocomplete='off' type='email' />",
+      select:
+        "<select class='bootbox-input bootbox-input-select form-control'></select>",
+      checkbox:
+        "<div class='checkbox'><label><input class='bootbox-input bootbox-input-checkbox' type='checkbox' /></label></div>",
+      date:
+        "<input class='bootbox-input bootbox-input-date form-control' autocomplete=off type='date' />",
+      time:
+        "<input class='bootbox-input bootbox-input-time form-control' autocomplete=off type='time' />",
+      number:
+        "<input class='bootbox-input bootbox-input-number form-control' autocomplete=off type='number' />",
+      password:
+        "<input class='bootbox-input bootbox-input-password form-control' autocomplete='off' type='password' />"
+    }
+  };
+
+  var defaults = {
+    // default language
+    locale: "en",
+    // show backdrop or not. Default to static so user has to interact with dialog
+    backdrop: "static",
+    // animate the modal in/out
+    animate: true,
+    // additional class string applied to the top level dialog
+    className: null,
+    // whether or not to include a close button
+    closeButton: true,
+    // show the dialog immediately by default
+    show: true,
+    // dialog container
+    container: "body"
+  };
+
+  // our public object; augmented after our private API
+  var exports = {};
+
+  /**
+   * @private
+   */
+  function _t(key) {
+    var locale = locales[defaults.locale];
+    return locale ? locale[key] : locales.en[key];
+  }
+
+  function processCallback(e, dialog, callback) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    // by default we assume a callback will get rid of the dialog,
+    // although it is given the opportunity to override this
+
+    // so, if the callback can be invoked and it *explicitly returns false*
+    // then we'll set a flag to keep the dialog active...
+    var preserveDialog = $.isFunction(callback) && callback.call(dialog, e) === false;
+
+    // ... otherwise we'll bin it
+    if (!preserveDialog) {
+      dialog.modal("hide");
+    }
+  }
+
+  function getKeyLength(obj) {
+    // @TODO defer to Object.keys(x).length if available?
+    var k, t = 0;
+    for (k in obj) {
+      t ++;
+    }
+    return t;
+  }
+
+  function each(collection, iterator) {
+    var index = 0;
+    $.each(collection, function(key, value) {
+      iterator(key, value, index++);
+    });
+  }
+
+  function sanitize(options) {
+    var buttons;
+    var total;
+
+    if (typeof options !== "object") {
+      throw new Error("Please supply an object of options");
+    }
+
+    if (!options.message) {
+      throw new Error("Please specify a message");
+    }
+
+    // make sure any supplied options take precedence over defaults
+    options = $.extend({}, defaults, options);
+
+    if (!options.buttons) {
+      options.buttons = {};
+    }
+
+    buttons = options.buttons;
+
+    total = getKeyLength(buttons);
+
+    each(buttons, function(key, button, index) {
+
+      if ($.isFunction(button)) {
+        // short form, assume value is our callback. Since button
+        // isn't an object it isn't a reference either so re-assign it
+        button = buttons[key] = {
+          callback: button
+        };
+      }
+
+      // before any further checks make sure by now button is the correct type
+      if ($.type(button) !== "object") {
+        throw new Error("button with key " + key + " must be an object");
+      }
+
+      if (!button.label) {
+        // the lack of an explicit label means we'll assume the key is good enough
+        button.label = key;
+      }
+
+      if (!button.className) {
+        if (total <= 2 && index === total-1) {
+          // always add a primary to the main option in a two-button dialog
+          button.className = "btn-primary";
+        } else {
+          button.className = "btn-default";
+        }
+      }
+    });
+
+    return options;
+  }
+
+  /**
+   * map a flexible set of arguments into a single returned object
+   * if args.length is already one just return it, otherwise
+   * use the properties argument to map the unnamed args to
+   * object properties
+   * so in the latter case:
+   * mapArguments(["foo", $.noop], ["message", "callback"])
+   * -> { message: "foo", callback: $.noop }
+   */
+  function mapArguments(args, properties) {
+    var argn = args.length;
+    var options = {};
+
+    if (argn < 1 || argn > 2) {
+      throw new Error("Invalid argument length");
+    }
+
+    if (argn === 2 || typeof args[0] === "string") {
+      options[properties[0]] = args[0];
+      options[properties[1]] = args[1];
+    } else {
+      options = args[0];
+    }
+
+    return options;
+  }
+
+  /**
+   * merge a set of default dialog options with user supplied arguments
+   */
+  function mergeArguments(defaults, args, properties) {
+    return $.extend(
+      // deep merge
+      true,
+      // ensure the target is an empty, unreferenced object
+      {},
+      // the base options object for this type of dialog (often just buttons)
+      defaults,
+      // args could be an object or array; if it's an array properties will
+      // map it to a proper options object
+      mapArguments(
+        args,
+        properties
+      )
+    );
+  }
+
+  /**
+   * this entry-level method makes heavy use of composition to take a simple
+   * range of inputs and return valid options suitable for passing to bootbox.dialog
+   */
+  function mergeDialogOptions(className, labels, properties, args) {
+    //  build up a base set of dialog properties
+    var baseOptions = {
+      className: "bootbox-" + className,
+      buttons: createLabels.apply(null, labels)
+    };
+
+    // ensure the buttons properties generated, *after* merging
+    // with user args are still valid against the supplied labels
+    return validateButtons(
+      // merge the generated base properties with user supplied arguments
+      mergeArguments(
+        baseOptions,
+        args,
+        // if args.length > 1, properties specify how each arg maps to an object key
+        properties
+      ),
+      labels
+    );
+  }
+
+  /**
+   * from a given list of arguments return a suitable object of button labels
+   * all this does is normalise the given labels and translate them where possible
+   * e.g. "ok", "confirm" -> { ok: "OK, cancel: "Annuleren" }
+   */
+  function createLabels() {
+    var buttons = {};
+
+    for (var i = 0, j = arguments.length; i < j; i++) {
+      var argument = arguments[i];
+      var key = argument.toLowerCase();
+      var value = argument.toUpperCase();
+
+      buttons[key] = {
+        label: _t(value)
+      };
+    }
+
+    return buttons;
+  }
+
+  function validateButtons(options, buttons) {
+    var allowedButtons = {};
+    each(buttons, function(key, value) {
+      allowedButtons[value] = true;
+    });
+
+    each(options.buttons, function(key) {
+      if (allowedButtons[key] === undefined) {
+        throw new Error("button key " + key + " is not allowed (options are " + buttons.join("\n") + ")");
+      }
+    });
+
+    return options;
+  }
+
+  exports.alert = function() {
+    var options;
+
+    options = mergeDialogOptions("alert", ["ok"], ["message", "callback"], arguments);
+
+    if (options.callback && !$.isFunction(options.callback)) {
+      throw new Error("alert requires callback property to be a function when provided");
+    }
+
+    /**
+     * overrides
+     */
+    options.buttons.ok.callback = options.onEscape = function() {
+      if ($.isFunction(options.callback)) {
+        return options.callback.call(this);
+      }
+      return true;
+    };
+
+    return exports.dialog(options);
+  };
+
+  exports.confirm = function() {
+    var options;
+
+    options = mergeDialogOptions("confirm", ["cancel", "confirm"], ["message", "callback"], arguments);
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, false);
+    };
+
+    options.buttons.confirm.callback = function() {
+      return options.callback.call(this, true);
+    };
+
+    // confirm specific validation
+    if (!$.isFunction(options.callback)) {
+      throw new Error("confirm requires a callback");
+    }
+
+    return exports.dialog(options);
+  };
+
+  exports.prompt = function() {
+    var options;
+    var defaults;
+    var dialog;
+    var form;
+    var input;
+    var shouldShow;
+    var inputOptions;
+
+    // we have to create our form first otherwise
+    // its value is undefined when gearing up our options
+    // @TODO this could be solved by allowing message to
+    // be a function instead...
+    form = $(templates.form);
+
+    // prompt defaults are more complex than others in that
+    // users can override more defaults
+    // @TODO I don't like that prompt has to do a lot of heavy
+    // lifting which mergeDialogOptions can *almost* support already
+    // just because of 'value' and 'inputType' - can we refactor?
+    defaults = {
+      className: "bootbox-prompt",
+      buttons: createLabels("cancel", "confirm"),
+      value: "",
+      inputType: "text"
+    };
+
+    options = validateButtons(
+      mergeArguments(defaults, arguments, ["title", "callback"]),
+      ["cancel", "confirm"]
+    );
+
+    // capture the user's show value; we always set this to false before
+    // spawning the dialog to give us a chance to attach some handlers to
+    // it, but we need to make sure we respect a preference not to show it
+    shouldShow = (options.show === undefined) ? true : options.show;
+
+    /**
+     * overrides; undo anything the user tried to set they shouldn't have
+     */
+    options.message = form;
+
+    options.buttons.cancel.callback = options.onEscape = function() {
+      return options.callback.call(this, null);
+    };
+
+    options.buttons.confirm.callback = function() {
+      var value;
+
+      switch (options.inputType) {
+        case "text":
+        case "textarea":
+        case "email":
+        case "select":
+        case "date":
+        case "time":
+        case "number":
+        case "password":
+          value = input.val();
+          break;
+
+        case "checkbox":
+          var checkedItems = input.find("input:checked");
+
+          // we assume that checkboxes are always multiple,
+          // hence we default to an empty array
+          value = [];
+
+          each(checkedItems, function(_, item) {
+            value.push($(item).val());
+          });
+          break;
+      }
+
+      return options.callback.call(this, value);
+    };
+
+    options.show = false;
+
+    // prompt specific validation
+    if (!options.title) {
+      throw new Error("prompt requires a title");
+    }
+
+    if (!$.isFunction(options.callback)) {
+      throw new Error("prompt requires a callback");
+    }
+
+    if (!templates.inputs[options.inputType]) {
+      throw new Error("invalid prompt type");
+    }
+
+    // create the input based on the supplied type
+    input = $(templates.inputs[options.inputType]);
+
+    switch (options.inputType) {
+      case "text":
+      case "textarea":
+      case "email":
+      case "date":
+      case "time":
+      case "number":
+      case "password":
+        input.val(options.value);
+        break;
+
+      case "select":
+        var groups = {};
+        inputOptions = options.inputOptions || [];
+
+        if (!$.isArray(inputOptions)) {
+          throw new Error("Please pass an array of input options");
+        }
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with select requires options");
+        }
+
+        each(inputOptions, function(_, option) {
+
+          // assume the element to attach to is the input...
+          var elem = input;
+
+          if (option.value === undefined || option.text === undefined) {
+            throw new Error("given options in wrong format");
+          }
+
+          // ... but override that element if this option sits in a group
+
+          if (option.group) {
+            // initialise group if necessary
+            if (!groups[option.group]) {
+              groups[option.group] = $("<optgroup/>").attr("label", option.group);
+            }
+
+            elem = groups[option.group];
+          }
+
+          elem.append("<option value='" + option.value + "'>" + option.text + "</option>");
+        });
+
+        each(groups, function(_, group) {
+          input.append(group);
+        });
+
+        // safe to set a select's value as per a normal input
+        input.val(options.value);
+        break;
+
+      case "checkbox":
+        var values   = $.isArray(options.value) ? options.value : [options.value];
+        inputOptions = options.inputOptions || [];
+
+        if (!inputOptions.length) {
+          throw new Error("prompt with checkbox requires options");
+        }
+
+        if (!inputOptions[0].value || !inputOptions[0].text) {
+          throw new Error("given options in wrong format");
+        }
+
+        // checkboxes have to nest within a containing element, so
+        // they break the rules a bit and we end up re-assigning
+        // our 'input' element to this container instead
+        input = $("<div/>");
+
+        each(inputOptions, function(_, option) {
+          var checkbox = $(templates.inputs[options.inputType]);
+
+          checkbox.find("input").attr("value", option.value);
+          checkbox.find("label").append(option.text);
+
+          // we've ensured values is an array so we can always iterate over it
+          each(values, function(_, value) {
+            if (value === option.value) {
+              checkbox.find("input").prop("checked", true);
+            }
+          });
+
+          input.append(checkbox);
+        });
+        break;
+    }
+
+    // @TODO provide an attributes option instead
+    // and simply map that as keys: vals
+    if (options.placeholder) {
+      input.attr("placeholder", options.placeholder);
+    }
+
+    if (options.pattern) {
+      input.attr("pattern", options.pattern);
+    }
+
+    if (options.maxlength) {
+      input.attr("maxlength", options.maxlength);
+    }
+
+    // now place it in our form
+    form.append(input);
+
+    form.on("submit", function(e) {
+      e.preventDefault();
+      // Fix for SammyJS (or similar JS routing library) hijacking the form post.
+      e.stopPropagation();
+      // @TODO can we actually click *the* button object instead?
+      // e.g. buttons.confirm.click() or similar
+      dialog.find(".btn-primary").click();
+    });
+
+    dialog = exports.dialog(options);
+
+    // clear the existing handler focusing the submit button...
+    dialog.off("shown.bs.modal");
+
+    // ...and replace it with one focusing our input, if possible
+    dialog.on("shown.bs.modal", function() {
+      // need the closure here since input isn't
+      // an object otherwise
+      input.focus();
+    });
+
+    if (shouldShow === true) {
+      dialog.modal("show");
+    }
+
+    return dialog;
+  };
+
+  exports.dialog = function(options) {
+    options = sanitize(options);
+
+    var dialog = $(templates.dialog);
+    var innerDialog = dialog.find(".modal-dialog");
+    var body = dialog.find(".modal-body");
+    var buttons = options.buttons;
+    var buttonStr = "";
+    var callbacks = {
+      onEscape: options.onEscape
+    };
+
+    if ($.fn.modal === undefined) {
+      throw new Error(
+        "$.fn.modal is not defined; please double check you have included " +
+        "the Bootstrap JavaScript library. See http://getbootstrap.com/javascript/ " +
+        "for more details."
+      );
+    }
+
+    each(buttons, function(key, button) {
+
+      // @TODO I don't like this string appending to itself; bit dirty. Needs reworking
+      // can we just build up button elements instead? slower but neater. Then button
+      // can just become a template too
+      buttonStr += "<button data-bb-handler='" + key + "' type='button' class='btn " + button.className + "'>" + button.label + "</button>";
+      callbacks[key] = button.callback;
+    });
+
+    body.find(".bootbox-body").html(options.message);
+
+    if (options.animate === true) {
+      dialog.addClass("fade");
+    }
+
+    if (options.className) {
+      dialog.addClass(options.className);
+    }
+
+    if (options.size === "large") {
+      innerDialog.addClass("modal-lg");
+    } else if (options.size === "small") {
+      innerDialog.addClass("modal-sm");
+    }
+
+    if (options.title) {
+      body.before(templates.header);
+    }
+
+    if (options.closeButton) {
+      var closeButton = $(templates.closeButton);
+
+      if (options.title) {
+        dialog.find(".modal-header").prepend(closeButton);
+      } else {
+        closeButton.css("margin-top", "-10px").prependTo(body);
+      }
+    }
+
+    if (options.title) {
+      dialog.find(".modal-title").html(options.title);
+    }
+
+    if (buttonStr.length) {
+      body.after(templates.footer);
+      dialog.find(".modal-footer").html(buttonStr);
+    }
+
+
+    /**
+     * Bootstrap event listeners; used handle extra
+     * setup & teardown required after the underlying
+     * modal has performed certain actions
+     */
+
+    dialog.on("hidden.bs.modal", function(e) {
+      // ensure we don't accidentally intercept hidden events triggered
+      // by children of the current dialog. We shouldn't anymore now BS
+      // namespaces its events; but still worth doing
+      if (e.target === this) {
+        dialog.remove();
+      }
+    });
+
+    /*
+    dialog.on("show.bs.modal", function() {
+      // sadly this doesn't work; show is called *just* before
+      // the backdrop is added so we'd need a setTimeout hack or
+      // otherwise... leaving in as would be nice
+      if (options.backdrop) {
+        dialog.next(".modal-backdrop").addClass("bootbox-backdrop");
+      }
+    });
+    */
+
+    dialog.on("shown.bs.modal", function() {
+      dialog.find(".btn-primary:first").focus();
+    });
+
+    /**
+     * Bootbox event listeners; experimental and may not last
+     * just an attempt to decouple some behaviours from their
+     * respective triggers
+     */
+
+    if (options.backdrop !== "static") {
+      // A boolean true/false according to the Bootstrap docs
+      // should show a dialog the user can dismiss by clicking on
+      // the background.
+      // We always only ever pass static/false to the actual
+      // $.modal function because with `true` we can't trap
+      // this event (the .modal-backdrop swallows it)
+      // However, we still want to sort of respect true
+      // and invoke the escape mechanism instead
+      dialog.on("click.dismiss.bs.modal", function(e) {
+        // @NOTE: the target varies in >= 3.3.x releases since the modal backdrop
+        // moved *inside* the outer dialog rather than *alongside* it
+        if (dialog.children(".modal-backdrop").length) {
+          e.currentTarget = dialog.children(".modal-backdrop").get(0);
+        }
+
+        if (e.target !== e.currentTarget) {
+          return;
+        }
+
+        dialog.trigger("escape.close.bb");
+      });
+    }
+
+    dialog.on("escape.close.bb", function(e) {
+      if (callbacks.onEscape) {
+        processCallback(e, dialog, callbacks.onEscape);
+      }
+    });
+
+    /**
+     * Standard jQuery event listeners; used to handle user
+     * interaction with our dialog
+     */
+
+    dialog.on("click", ".modal-footer button", function(e) {
+      var callbackKey = $(this).data("bb-handler");
+
+      processCallback(e, dialog, callbacks[callbackKey]);
+    });
+
+    dialog.on("click", ".bootbox-close-button", function(e) {
+      // onEscape might be falsy but that's fine; the fact is
+      // if the user has managed to click the close button we
+      // have to close the dialog, callback or not
+      processCallback(e, dialog, callbacks.onEscape);
+    });
+
+    dialog.on("keyup", function(e) {
+      if (e.which === 27) {
+        dialog.trigger("escape.close.bb");
+      }
+    });
+
+    // the remainder of this method simply deals with adding our
+    // dialogent to the DOM, augmenting it with Bootstrap's modal
+    // functionality and then giving the resulting object back
+    // to our caller
+
+    $(options.container).append(dialog);
+
+    dialog.modal({
+      backdrop: options.backdrop ? "static": false,
+      keyboard: false,
+      show: false
+    });
+
+    if (options.show) {
+      dialog.modal("show");
+    }
+
+    // @TODO should we return the raw element here or should
+    // we wrap it in an object on which we can expose some neater
+    // methods, e.g. var d = bootbox.alert(); d.hide(); instead
+    // of d.modal("hide");
+
+   /*
+    function BBDialog(elem) {
+      this.elem = elem;
+    }
+
+    BBDialog.prototype = {
+      hide: function() {
+        return this.elem.modal("hide");
+      },
+      show: function() {
+        return this.elem.modal("show");
+      }
+    };
+    */
+
+    return dialog;
+
+  };
+
+  exports.setDefaults = function() {
+    var values = {};
+
+    if (arguments.length === 2) {
+      // allow passing of single key/value...
+      values[arguments[0]] = arguments[1];
+    } else {
+      // ... and as an object too
+      values = arguments[0];
+    }
+
+    $.extend(defaults, values);
+  };
+
+  exports.hideAll = function() {
+    $(".bootbox").modal("hide");
+
+    return exports;
+  };
+
+
+  /**
+   * standard locales. Please add more according to ISO 639-1 standard. Multiple language variants are
+   * unlikely to be required. If this gets too large it can be split out into separate JS files.
+   */
+  var locales = {
+    bg_BG : {
+      OK      : "Ок",
+      CANCEL  : "Отказ",
+      CONFIRM : "Потвърждавам"
+    },
+    br : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Sim"
+    },
+    cs : {
+      OK      : "OK",
+      CANCEL  : "Zrušit",
+      CONFIRM : "Potvrdit"
+    },
+    da : {
+      OK      : "OK",
+      CANCEL  : "Annuller",
+      CONFIRM : "Accepter"
+    },
+    de : {
+      OK      : "OK",
+      CANCEL  : "Abbrechen",
+      CONFIRM : "Akzeptieren"
+    },
+    el : {
+      OK      : "Εντάξει",
+      CANCEL  : "Ακύρωση",
+      CONFIRM : "Επιβεβαίωση"
+    },
+    en : {
+      OK      : "OK",
+      CANCEL  : "Cancel",
+      CONFIRM : "OK"
+    },
+    es : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Aceptar"
+    },
+    et : {
+      OK      : "OK",
+      CANCEL  : "Katkesta",
+      CONFIRM : "OK"
+    },
+    fa : {
+      OK      : "قبول",
+      CANCEL  : "لغو",
+      CONFIRM : "تایید"
+    },
+    fi : {
+      OK      : "OK",
+      CANCEL  : "Peruuta",
+      CONFIRM : "OK"
+    },
+    fr : {
+      OK      : "OK",
+      CANCEL  : "Annuler",
+      CONFIRM : "D'accord"
+    },
+    he : {
+      OK      : "אישור",
+      CANCEL  : "ביטול",
+      CONFIRM : "אישור"
+    },
+    hu : {
+      OK      : "OK",
+      CANCEL  : "Mégsem",
+      CONFIRM : "Megerősít"
+    },
+    hr : {
+      OK      : "OK",
+      CANCEL  : "Odustani",
+      CONFIRM : "Potvrdi"
+    },
+    id : {
+      OK      : "OK",
+      CANCEL  : "Batal",
+      CONFIRM : "OK"
+    },
+    it : {
+      OK      : "OK",
+      CANCEL  : "Annulla",
+      CONFIRM : "Conferma"
+    },
+    ja : {
+      OK      : "OK",
+      CANCEL  : "キャンセル",
+      CONFIRM : "確認"
+    },
+    lt : {
+      OK      : "Gerai",
+      CANCEL  : "Atšaukti",
+      CONFIRM : "Patvirtinti"
+    },
+    lv : {
+      OK      : "Labi",
+      CANCEL  : "Atcelt",
+      CONFIRM : "Apstiprināt"
+    },
+    nl : {
+      OK      : "OK",
+      CANCEL  : "Annuleren",
+      CONFIRM : "Accepteren"
+    },
+    no : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    pl : {
+      OK      : "OK",
+      CANCEL  : "Anuluj",
+      CONFIRM : "Potwierdź"
+    },
+    pt : {
+      OK      : "OK",
+      CANCEL  : "Cancelar",
+      CONFIRM : "Confirmar"
+    },
+    ru : {
+      OK      : "OK",
+      CANCEL  : "Отмена",
+      CONFIRM : "Применить"
+    },
+    sq : {
+      OK : "OK",
+      CANCEL : "Anulo",
+      CONFIRM : "Prano"
+    },
+    sv : {
+      OK      : "OK",
+      CANCEL  : "Avbryt",
+      CONFIRM : "OK"
+    },
+    th : {
+      OK      : "ตกลง",
+      CANCEL  : "ยกเลิก",
+      CONFIRM : "ยืนยัน"
+    },
+    tr : {
+      OK      : "Tamam",
+      CANCEL  : "İptal",
+      CONFIRM : "Onayla"
+    },
+    zh_CN : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "确认"
+    },
+    zh_TW : {
+      OK      : "OK",
+      CANCEL  : "取消",
+      CONFIRM : "確認"
+    }
+  };
+
+  exports.addLocale = function(name, values) {
+    $.each(["OK", "CANCEL", "CONFIRM"], function(_, v) {
+      if (!values[v]) {
+        throw new Error("Please supply a translation for '" + v + "'");
+      }
+    });
+
+    locales[name] = {
+      OK: values.OK,
+      CANCEL: values.CANCEL,
+      CONFIRM: values.CONFIRM
+    };
+
+    return exports;
+  };
+
+  exports.removeLocale = function(name) {
+    delete locales[name];
+
+    return exports;
+  };
+
+  exports.setLocale = function(name) {
+    return exports.setDefaults("locale", name);
+  };
+
+  exports.init = function(_$) {
+    return init(_$ || $);
+  };
+
+  return exports;
+}));
+
 /**
  * Copyright (c) 2007-2014 Ariel Flesler - aflesler<a>gmail<d>com | http://flesler.blogspot.com
  * Licensed under MIT
@@ -19370,266 +20367,6 @@ return paper;
 
 });
 
-/*! jquery-awesome-cursor - v0.1.5 - 2015-12-09
-* https://jwarby.github.io/jquery-awesome-cursor
-* Copyright (c) 2015 James Warwood; Licensed MIT */
-;(function(global, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define(['jquery'], factory);
-  } else if (typeof exports === 'object') {
-    factory(require('jquery'));
-  } else {
-    factory(global.jQuery);
-  }
-})(this, function($) {
-  'use strict';
-
-  /**
-   * Parse the user-supplied hotspot string.  Hotspot values as strings are used
-   * to set the cursor based on a human-readable value.
-   *
-   * ## Examples
-   *
-   * - `hotspot: 'center'`: the hotspot is in the center of the cursor
-   * - `hotspot: 'center left'`: the hotspot is centered vertically, and fixed
-   *                             to the left of the cursor horizontally
-   * - `hotspot: 'top right'`: the hotspot is at the top right
-   * - `hotspot: 'center top'`: the hotspot is centered horizontally, and fixed
-   *                            to the top of the cursor vertically
-   *
-   * @param {String} hotspot  The string descriptor for the hotspot location
-   * @param {Number} size     The size of the cursor
-   *
-   * @return {[Number]} an array with two elements, the x and y offsets for the
-   *                    hotspot
-   *
-   * @throws {Error} if `hotspot` is not a string, or `cursorSize` is not a
-   *                 number
-   */
-  var parseHotspotString = function(hotspot, cursorSize) {
-    var xOffset = 0,
-      yOffset = 0;
-
-    if (typeof hotspot !== 'string') {
-      $.error('Hotspot value is not a string and could not be parsed');
-    }
-
-    if (typeof cursorSize !== 'number') {
-      $.error('Cursor size must be a number');
-    }
-
-    hotspot.split(' ').forEach(function(part) {
-      switch (part) {
-        case 'center':
-          xOffset = cursorSize / 2;
-          yOffset = cursorSize / 2;
-          break;
-        case 'top':
-          yOffset = 0;
-          break;
-        case 'bottom':
-
-          /* Browsers will default to 0 0 if yOffset is the very last pixel,
-           * hence - 1
-           */
-          yOffset = cursorSize - 1;
-          break;
-        case 'left':
-          xOffset = 0;
-          break;
-        case 'right':
-          xOffset = cursorSize - 1;
-          break;
-      }
-    });
-
-    return [xOffset, yOffset];
-  };
-
-  /**
-   * Returns a new canvas with the same contents as `canvas`, flipped
-   * accordingly.
-   *
-   * @param {Canvas} canvas     The canvas to flip
-   * @param {String} direction  The direction flip the canvas in.  Can be one
-   *                            of:
-   *                              - 'horizontal'
-   *                              - 'vertical'
-   *                              - 'both'
-   *
-   * @return {Canvas} a new canvas with the flipped contents of the input canvas
-   */
-  function flipCanvas(canvas, direction) {
-    if ($.inArray(direction, ['horizontal', 'vertical', 'both']) === -1) {
-      $.error('Flip value must be one of horizontal, vertical or both');
-    }
-
-    var flippedCanvas = $('<canvas />')[0],
-      flippedContext;
-
-    flippedCanvas.width = canvas.width;
-    flippedCanvas.height = canvas.height;
-
-    flippedContext = flippedCanvas.getContext('2d');
-
-    if (direction === 'horizontal' || direction === 'both') {
-      flippedContext.translate(canvas.width, 0);
-      flippedContext.scale(-1, 1);
-    }
-
-    if (direction === 'vertical' || direction === 'both') {
-      flippedContext.translate(0, canvas.height);
-      flippedContext.scale(1, -1);
-    }
-
-    flippedContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-
-    return flippedCanvas;
-  }
-
-  $.fn.extend({
-    awesomeCursor: function(iconName, options) {
-      options = $.extend({}, $.fn.awesomeCursor.defaults, options);
-
-      if (typeof iconName !== 'string' || !iconName) {
-        $.error('First parameter must be the icon name, e.g. \'pencil\'');
-      }
-
-      options.size = typeof options.size === 'string' ?
-          parseInt(options.size, 10) : options.size;
-
-      if (typeof options.hotspot === 'string') {
-        options.hotspot = parseHotspotString(options.hotspot, options.size);
-      }
-
-      // Clamp hotspot coordinates between 0 and size - 1
-      options.hotspot = $.map(options.hotspot, function(coordinate) {
-        return Math.min(options.size - 1, Math.max(0, coordinate));
-      });
-
-      var cssClass = (function(name, template) {
-          if (typeof template === 'string') {
-            return template.replace(/%s/g, name);
-          } else if (typeof template === 'function') {
-            return template(name);
-          }
-
-          return name;
-        })(iconName, options.font.cssClass),
-        srcElement = $('<i />', {
-          class: cssClass,
-          style: 'position: absolute; left: -9999px; top: -9999px;'
-        }),
-        canvas = $('<canvas />')[0],
-        canvasSize = options.size,
-        hotspotOffset, unicode, dataURL, context;
-
-      // Render element to the DOM, otherwise `getComputedStyle` will not work
-      $('body').append(srcElement);
-
-      // Get the unicode value of the icon
-      unicode = window.getComputedStyle(srcElement[0], ':before')
-          .getPropertyValue('content');
-
-      // Remove the source element from the DOM
-      srcElement.remove();
-
-      // Increase the size of the canvas to account for the cursor's outline
-      if (options.outline) {
-        canvasSize += 2;
-      }
-
-      if (options.rotate) {
-
-        // @TODO: move this into it's own function
-        canvasSize = Math.ceil(Math.sqrt(
-          Math.pow(canvasSize, 2) + Math.pow(canvasSize, 2)
-        ));
-
-        hotspotOffset = (canvasSize - options.size) / 2;
-        canvas.width = canvasSize;
-        canvas.height = canvasSize;
-
-        context = canvas.getContext('2d');
-        context.translate(canvas.width / 2, canvas.height / 2);
-
-        // Canvas API works in radians, not degrees, hence `* Math.PI / 180`
-        context.rotate(options.rotate * Math.PI / 180);
-        context.translate(-canvas.width / 2, -canvas.height / 2);
-
-        // Translate hotspot offset
-        options.hotspot[0] += options.hotspot[0] !== canvas.width / 2 ?
-            hotspotOffset : 0;
-
-        options.hotspot[1] += options.hotspot[1] !== canvas.height / 2 ?
-            hotspotOffset : 0;
-      } else {
-
-        canvas.height = canvasSize;
-        canvas.width = canvasSize;
-
-        context = canvas.getContext('2d');
-      }
-
-      /* Firefox wraps the extracted unicode value in double quotes - #10
-       * Chrome 43+ is wrapping the extracted value in single quotes - #14
-       */
-      unicode = unicode.replace(/['"]/g, '');
-
-      // Draw the cursor to the canvas
-      context.fillStyle = options.color;
-      context.font = options.size + 'px ' + options.font.family;
-      context.textAlign = 'center';
-      context.textBaseline = 'middle';
-      context.fillText(unicode, canvasSize / 2, canvasSize / 2);
-
-      // Check for outline option
-      if (options.outline) {
-        context.lineWidth = 0.5;
-        context.strokeStyle = options.outline;
-        context.strokeText(unicode, canvasSize / 2, canvasSize / 2);
-      }
-
-      // Check flip option
-      if (options.flip) {
-        canvas = flipCanvas(canvas, options.flip);
-      }
-
-      dataURL = canvas.toDataURL('image/png');
-
-      $(this)
-
-        // Fixes issue with Chrome not setting cursor if already set
-        .css('cursor', '')
-        .css('cursor', [
-          'url(' + dataURL + ')',
-          options.hotspot[0],
-          options.hotspot[1],
-          ',',
-          'auto'
-        ].join(' '))
-      ;
-
-      // Maintain chaining
-      return this;
-    }
-  });
-
-  // Expose the defaults so that users can override them if they want to
-  $.fn.awesomeCursor.defaults = {
-    color: '#000000',
-    size: 18,
-    hotspot: [0, 0],
-    flip: '',
-    rotate: 0,
-    outline: null,
-    font: {
-      family: 'FontAwesome',
-      cssClass: 'fa fa-%s'
-    }
-  };
-});
-
 // i18next, v1.8.2
 // Copyright (c)2015 Jan Mühlemann (jamuhl).
 // Distributed under MIT license
@@ -19775,19 +20512,23 @@ return paper;
     'availableAnnotationDrawingTools': [
        'Rectangle', 'Ellipse', 'Freehand', 'Polygon', 'Pin'
     ],
-
+    'availableAnnotationStylePickers':[
+        'StrokeColor','FillColor','StrokeType'
+    ],
     'drawingToolsSettings': {
       // Additional tool settings.
       /**
        *'Pin': {
        *},
        **/
+      //'selectedColor': 'red',
       'doubleClickReactionTime': 300,
       'strokeColor': 'deepSkyBlue',
       'fillColor': 'deepSkyBlue',
       'fillColorAlpha': 0.0,
       'shapeHandleSize':10,
       'fixedShapeSize':10,
+      'newlyCreatedShapeStrokeWidthFactor':5,
       'hoverColor':'yellow'
     },
 
@@ -21836,6 +22577,200 @@ return paper;
 
 (function($) {
 
+  $.AnnotationUtils = function(){
+
+  };
+
+  function PaperItem(item){
+    this.item = item;
+  }
+
+  PaperItem.prototype  = {
+    getItem:function(){
+      return this.item;
+    },
+    translateByXY: function(x,y){
+      this.item.position.x +=x;
+      this.item.position.y +=y;
+    },
+
+    translateByPoint:function(point){
+      this.item.position = this.item.position.add(point);
+    },
+
+    setOnMouseDownListener:function(callback){
+      this.mouseDown = callback;
+    },
+
+    onMouseDown:function(){
+      this.mouseDown.call(this,this.item);
+    },
+
+    remove:function(){
+      this.item.remove();
+    },
+
+    rotate:function(angle,pivot){
+      pivot?this.item.rotate(angle,pivot):this.item.rotate(angle);
+    },
+
+    setPosition:function(point){
+      this.item.position = point;
+    },
+
+    getWidth:function(){
+      return this.item.width;
+    },
+
+    getHeight:function(){
+      return this.item.height;
+    },
+
+    addData:function(key,data){
+      this.item.data[key] = data;
+    },
+
+    getData: function(key){
+      return this.item.data[key];
+    },
+
+    resize:function(size){
+      this.item.size = size;
+    }
+  };
+
+  function Group(paperScope,opts){
+    var item = new paperScope.Group(opts);
+    PaperItem.call(this,item);
+  }
+
+  Group.prototype = Object.create(PaperItem.prototype,{});
+  Group.constructor = Group;
+
+  var Icon = function(paperScope,opts){
+    this.paperScope = paperScope;
+    var item = new paperScope.Raster(opts);
+    PaperItem.call(this,item);
+    if(opts && opts.onLoad){
+      this.item.onLoad = opts.onLoad;
+    }
+  };
+
+  Icon.prototype = Object.create(PaperItem.prototype, {});
+
+  Icon.constructor = Icon;
+
+
+  function PointText(paperScope,opts) {
+    var text = new paperScope.PointText(opts);
+    PaperItem.call(this,text);
+  }
+
+  PointText.prototype = Object.create(PaperItem.prototype);
+
+  PointText.prototype.resize = function(newSize){
+    this.item.fontSize = newSize;
+  };
+
+  PointText.constructor = PointText;
+
+  function PointTextIcon(paperScope,opts){
+    this.paperScope = paperScope;
+    opts.justification = 'center';
+    opts.font = 'FontAwesome';
+    this.content = opts.content;
+    PointText.call(this,paperScope,opts);
+
+    this.rasterMask.addData('self',this);
+  }
+
+  PointTextIcon.prototype = Object.create(PointText.prototype, {});
+
+  PointTextIcon.prototype.setPosition = function(point){
+    this.rasterMask.setPosition(point);
+    PointText.prototype.setPosition.call(this,point);
+  };
+
+  PointTextIcon.prototype.rotate = function(angle,pivot){
+    this.rasterMask.rotate(angle,pivot);
+    PointText.prototype.rotate.call(this,angle,pivot);
+  };
+  PointTextIcon.prototype.translateByPoint = function (point) {
+    this.rasterMask.translateByPoint(point);
+    PointText.prototype.translateByPoint.call(this,point);
+  };
+  PointTextIcon.prototype.translateByXY = function (x,y){
+    this.rasterMask.translateByXY(x,y);
+    PointText.prototype.translateByXY.call(this,x,y);
+  };
+  PointTextIcon.prototype.remove = function () {
+    this.rasterMask.remove();
+    PointText.prototype.remove.call(this);
+  };
+  PointTextIcon.prototype.resize = function (size) {
+    this.rasterMask.resize(new this.paperScope.Size(size,size));
+    PointText.prototype.resize.call(this,size);
+  };
+
+  PointTextIcon.prototype.getMask = function () {
+    return this.rasterMask;
+  };
+
+  PointTextIcon.prototype.constructor = PointTextIcon;
+
+  function DeleteActionIcon(paperScope,opts){
+    this.paperScope = paperScope;
+    opts.fillColor = opts.fillColor || 'black';
+    opts.fontSize = opts.size || (24 * 1 / paperScope.view.zoom);
+    opts.content = '\uf014';
+    this.rasterMask = new Icon(paperScope,{
+      name: opts.name.replace('delete','Delete_mask'),
+      size: new paperScope.Size(opts.fontSize ,opts.fontSize)
+    });
+    PointTextIcon.call(this,paperScope,opts);
+  }
+
+  DeleteActionIcon.prototype = Object.create(PointTextIcon.prototype, {});
+
+  DeleteActionIcon.prototype.setOnMouseDownListener = function (overlay) {
+    this.mouseDown = function () {
+      overlay.eventEmitter.publish('deleteShape.' + overlay.windowId, [this.getData('parent')]);
+    };
+  };
+
+  function RotationIcon(paperScope,opts){
+    this.paperScope = paperScope;
+    opts.justification = 'center';
+    opts.fillColor = opts.fillColor || 'black';
+    opts.fontSize = opts.size || (16 * 1 / paperScope.view.zoom);
+    opts.content = '\uf01e';
+    this.rasterMask = new Icon(paperScope,{
+      name: opts.name.replace('rotation','Rotation_mask'),
+      size: new paperScope.Size(opts.fontSize ,opts.fontSize)
+    });
+    PointTextIcon.call(this,paperScope,opts);
+  }
+
+  RotationIcon.prototype = Object.create(PointTextIcon.prototype, {});
+
+  RotationIcon.prototype.setOnMouseDownListener = function (overlay) {
+    this.mouseDown = function () {
+      overlay.mode = 'rotate';
+    };
+  };
+
+
+  $.AnnotationUtils.prototype = {
+    Icon:Icon,
+    PointText:PointText,
+    DeleteActionIcon:DeleteActionIcon,
+    RotationIcon:RotationIcon,
+    Group:Group
+  };
+
+}(Mirador));
+(function($) {
+
   $.AnnotationTooltip = function(options) {
 
     jQuery.extend(this, {
@@ -21908,7 +22843,7 @@ return paper;
             _this.eventEmitter.publish('annotationEditorAvailable.' + _this.windowId);
             _this.eventEmitter.publish('disableTooltips.' + _this.windowId);
 
-            jQuery(selector).parent().parent().draggable();
+            api.elements.tooltip.draggable();
 
             jQuery(selector).on("submit", function(event) {
               event.preventDefault();
@@ -21917,20 +22852,35 @@ return paper;
 
             jQuery(selector + ' a.cancel').on("click", function(event) {
               event.preventDefault();
+
+              var returnToPointer = function(){
+                _this.eventEmitter.publish('SET_STATE_MACHINE_POINTER.' + _this.windowId);
+                api.destroy();
+                if (params.onCancel) { params.onCancel(); }
+              };
+
               if (_this.activeEditor.isDirty()) {
-                if (!window.confirm("Do you want to cancel this annotation?")) {
-                  return false;
-                }
+                new $.DialogBuilder().confirm(i18n.t('cancelAnnotation'),function(result){
+                  if(!result){
+                    return;
+                  }
+                  returnToPointer();
+                });
+              }else{
+                returnToPointer();
               }
-              api.destroy();
-              if (params.onCancel) { params.onCancel(); }
+
             });
 
             jQuery(selector + ' a.save').on("click", function(event) {
               event.preventDefault();
-
+              if(!params.onSaveClickCheck()){
+                return;
+              }
               var annotation = _this.activeEditor.createAnnotation();
               if (params.onAnnotationCreated) { params.onAnnotationCreated(annotation); }
+              // return to pointer mode
+              _this.eventEmitter.publish('SET_STATE_MACHINE_POINTER.' + _this.windowId);
 
               api.destroy();
               //reenable viewer tooltips
@@ -21943,6 +22893,7 @@ return paper;
 
             _this.activeEditor.show(selector);
           }
+
         }
       });
       _this.activeEditorTip.qtip('show');
@@ -22029,14 +22980,19 @@ return paper;
 
       jQuery(selector + ' a.delete').on("click", function(event) {
         event.preventDefault();
-        if (!window.confirm("Do you want to delete this annotation?")) {
-          return false;
-        }
-        var display = jQuery(this).parents('.annotation-display');
-        var id = display.attr('data-anno-id');
-        _this.eventEmitter.publish('annotationDeleted.' + _this.windowId, [id]);
-        api.hide();
-        display.remove();
+        var elem = this;
+        new $.DialogBuilder().confirm(i18n.t('deleteAnnotation'),function(result){
+          if(!result){
+            return;
+          }
+          var display = jQuery(elem).parents('.annotation-display');
+          var id = display.attr('data-anno-id');
+          _this.eventEmitter.publish('annotationDeleted.' + _this.windowId, [id]);
+          _this.eventEmitter.publish('modeChange.' + _this.windowId, 'displayAnnotations');
+          api.hide();
+          display.remove();
+        });
+
       });
 
       jQuery(selector + ' a.edit').on("click", function(event) {
@@ -22047,6 +23003,12 @@ return paper;
         _this.freezeQtip(api, oaAnno, viewerParams);
         _this.removeAllEvents(api, viewerParams);
         _this.addEditorEvents(api, viewerParams);
+        _this.eventEmitter.publish('SET_ANNOTATION_EDITING.' + _this.windowId, {
+          "annotationId" : id,
+          "isEditable" : true,
+          "tooltip" : _this
+        });
+        _this.eventEmitter.publish('modeChange.' + _this.windowId, 'editingAnnotation');
       });
     },
 
@@ -22064,9 +23026,25 @@ return paper;
         var display = jQuery(this).parents('.annotation-editor');
         var id = display.attr('data-anno-id');
         var oaAnno = viewerParams.getAnnoFromRegion(id)[0];
+
         _this.activeEditor.updateAnnotation(oaAnno);
-        viewerParams.onAnnotationSaved(oaAnno);
-        _this.unFreezeQtip(api, oaAnno, viewerParams);
+
+        jQuery.when(viewerParams.onAnnotationSaved(oaAnno)).then(function(){
+
+          _this.unFreezeQtip(api, oaAnno, viewerParams);
+          _this.eventEmitter.publish('SET_ANNOTATION_EDITING.' + _this.windowId, {
+            "annotationId" : id,
+            "isEditable" : false,
+            "tooltip" : _this
+          });
+          _this.eventEmitter.publish('modeChange.' + _this.windowId, 'displayAnnotations');
+          // return to pointer mode
+          _this.eventEmitter.publish('SET_STATE_MACHINE_POINTER.' + _this.windowId);
+
+        },function(){
+          // confirmation rejected don't do anything
+        });
+
       });
 
       jQuery(selector + ' a.cancel').on("click", function(event) {
@@ -22075,6 +23053,14 @@ return paper;
         var id = display.attr('data-anno-id');
         var oaAnno = viewerParams.getAnnoFromRegion(id)[0];
         _this.unFreezeQtip(api, oaAnno, viewerParams);
+        _this.eventEmitter.publish('SET_ANNOTATION_EDITING.' + _this.windowId, {
+          "annotationId" : id,
+          "isEditable" : false,
+          "tooltip" : _this
+        });
+        _this.eventEmitter.publish('modeChange.' + _this.windowId, 'displayAnnotations');
+        // return to pointer mode
+        _this.eventEmitter.publish('SET_STATE_MACHINE_POINTER.' + _this.windowId);
       });
     },
 
@@ -22207,8 +23193,9 @@ return paper;
           annotation: oaAnno,
           windowId: this.windowId
         }));
-      this.activeEditor.show('form.annotation-tooltip');
+      this.activeEditor.show('form#annotation-editor-'+this.windowId);
       jQuery(api.elements.tooltip).removeClass("qtip-viewer");
+      api.elements.tooltip.draggable();
       if (viewerParams.onEnterEditMode) {
         viewerParams.onEnterEditMode(api, oaAnno);
       }
@@ -22988,7 +23975,7 @@ return paper;
     }, options);
 
     this.init();
-    this.bindEvents();
+    this.listenForActions();
   };
 
   $.OsdRegionDrawTool.prototype = {
@@ -22999,10 +23986,24 @@ return paper;
       this.svgOverlay.disable();
     },
 
-    enterEditMode: function() {
+    enterCreateMode: function() {
       this.osdViewer.setMouseNavEnabled(false);
       this.svgOverlay.show();
       this.svgOverlay.enable();
+    },
+
+    enterCreateShapeMode: function() {
+      if(!this.svgOverlay.inEditMode){
+        this.osdViewer.setMouseNavEnabled(false);
+        this.svgOverlay.show();
+        this.svgOverlay.enable();
+      }
+    },
+
+    enterEditMode: function() {
+      this.osdViewer.setMouseNavEnabled(false);
+      this.svgOverlay.show();
+      this.svgOverlay.enableEdit();
     },
 
     exitEditMode: function(showAnnotations) {
@@ -23015,84 +24016,6 @@ return paper;
       }
     },
 
-    deleteShape: function() {
-      var _this = this;
-      if (_this.svgOverlay.hoveredPath) {
-        var oaAnno = null;
-        for (var key in _this.annotationsToShapesMap) {
-          if (_this.annotationsToShapesMap.hasOwnProperty(key)) {
-            var shapeArray = _this.annotationsToShapesMap[key];
-            for (var idx = 0; idx < shapeArray.length; idx++) {
-              if (shapeArray[idx].name == _this.svgOverlay.hoveredPath.name) {
-                oaAnno = shapeArray[idx].data.annotation;
-                if (shapeArray.length == 1) {
-                  if (!window.confirm("Do you want to delete this shape and annotation?")) {
-                    return false;
-                  }
-                  _this.eventEmitter.publish('annotationDeleted.' + _this.windowId, [oaAnno['@id']]);
-                  this.svgOverlay.removeFocus();
-                  return true;
-                } else {
-                  if (!window.confirm("Do you want to delete this shape?")) {
-                    return false;
-                  }
-                  shapeArray.splice(idx, 1);
-                  // backward compatibility
-                  if (typeof oaAnno.on !== 'object') {
-                    oaAnno.on = {
-                      'selector': {
-                        'value': ''
-                      }
-                    };
-                  }
-                  oaAnno.on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
-                  _this.eventEmitter.publish('annotationUpdated.' + _this.windowId, [oaAnno]);
-                  this.svgOverlay.removeFocus();
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    saveEditedShape: function() {
-      var _this = this;
-      var oaAnnos = [];
-      for (var key in _this.annotationsToShapesMap) {
-        if (_this.annotationsToShapesMap.hasOwnProperty(key)) {
-          var shapeArray = _this.annotationsToShapesMap[key];
-          var annotationShapesAreEdited = false;
-          for (var i = 0; i < _this.svgOverlay.editedPaths.length; i++) {
-            for (var idx = 0; idx < shapeArray.length; idx++) {
-              if (shapeArray[idx].name == _this.svgOverlay.editedPaths[i].name) {
-                oaAnnos.push(shapeArray[idx].data.annotation);
-                // backward compatibility
-                if (typeof oaAnnos[oaAnnos.length - 1].on !== 'object') {
-                  oaAnnos[oaAnnos.length - 1].on = {
-                    'selector': {
-                      'value': ''
-                    }
-                  };
-                }
-                oaAnnos[oaAnnos.length - 1].on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
-                annotationShapesAreEdited = true;
-                break;
-              }
-            }
-            if (annotationShapesAreEdited) {
-              break;
-            }
-          }
-        }
-      }
-      for (var j = 0; j < oaAnnos.length; j++) {
-        _this.eventEmitter.publish('annotationUpdated.' + _this.windowId, [oaAnnos[j]]);
-      }
-      this.svgOverlay.restoreEditedShapes();
-    },
-
     render: function() {
       this.svgOverlay.restoreEditedShapes();
       this.svgOverlay.paperScope.activate();
@@ -23101,9 +24024,11 @@ return paper;
       _this.annotationsToShapesMap = {};
       var deferreds = jQuery.map(this.list, function(annotation) {
         var deferred = jQuery.Deferred();
-        var shapeArray;
-        if (typeof annotation.on === 'object') {
-          if (annotation.on.selector.value.indexOf('<svg') != -1) {
+        if(annotation.on && !annotation.on.selector){
+          // temporary until view for full list of annotations for current canvas is contributed
+          return deferred;
+        } else if (typeof annotation.on === 'object') {
+          if (annotation.on.selector.value.indexOf('<svg') !== -1) {
             shapeArray = _this.svgOverlay.parseSVG(annotation.on.selector.value, annotation);
           } else {
             var shape = annotation.on.selector.value.split('=')[1].split(',');
@@ -23116,7 +24041,7 @@ return paper;
           shapeArray = _this.svgOverlay.createRectangle(shapeObj, annotation);
         }
         _this.svgOverlay.restoreLastView(shapeArray);
-        _this.annotationsToShapesMap[$.genUUID()] = shapeArray;
+        _this.annotationsToShapesMap[annotation['@id']] = shapeArray;
         return deferred;
       });
       jQuery.when.apply(jQuery, deferreds).done(function() {
@@ -23128,15 +24053,66 @@ return paper;
         targetElement: jQuery(this.osdViewer.element),
         state: _this.state,
         eventEmitter: _this.eventEmitter,
-        windowId: _this.parent.windowId
+        windowId: _this.windowId
       });
       this.annoTooltip.initializeViewerUpgradableToEditor({
         container: windowElement,
         viewport: windowElement,
         getAnnoFromRegion: _this.getAnnoFromRegion.bind(this),
-        onAnnotationSaved: function(oaAnno) {
-          //save to endpoint
-          _this.eventEmitter.publish('annotationUpdated.' + _this.windowId, [oaAnno]);
+        onAnnotationSaved: function (oaAnno) {
+          var onAnnotationSaved = jQuery.Deferred();
+
+          if (!_this.svgOverlay.draftPaths.length) {
+            new $.DialogBuilder(windowElement).dialog({
+              message: i18n.t('editModalSaveAnnotationWithNoShapesMsg'),
+              buttons: {
+                success: {
+                  label: i18n.t('editModalBtnSaveWithoutShapes'),
+                  className: 'btn-success',
+                  callback: function () {
+                    oaAnno.on = {
+                      "@type": "oa:SpecificResource",
+                      "full": _this.state.getWindowObjectById(_this.windowId).canvasID
+                    };
+                    //save to endpoint
+                    _this.eventEmitter.publish('annotationUpdated.' + _this.windowId, [oaAnno]);
+                    onAnnotationSaved.resolve();
+                  }
+                },
+                danger: {
+                  label: i18n.t('editModalBtnDeleteAnnotation'),
+                  className: 'btn-danger',
+                  callback: function () {
+                    _this.eventEmitter.publish('annotationDeleted.' + _this.windowId, [oaAnno['@id']]);
+                    onAnnotationSaved.resolve();
+                  }
+                },
+                main: {
+                  label: i18n.t('cancel'),
+                  className: 'btn-default',
+                  callback: function () {
+                    onAnnotationSaved.reject();
+                  }
+                }
+              }
+
+            });
+
+          } else {
+            var svg = _this.svgOverlay.getSVGString(_this.svgOverlay.draftPaths);
+            oaAnno.on = {
+              "@type": "oa:SpecificResource",
+              "full": _this.state.getWindowObjectById(_this.windowId).canvasID,
+              "selector": {
+                "@type": "oa:SvgSelector",
+                "value": svg
+              }
+            };
+            //save to endpoint
+            _this.eventEmitter.publish('annotationUpdated.' + _this.windowId, [oaAnno]);
+            onAnnotationSaved.resolve();
+          }
+          return onAnnotationSaved.promise();
         }
       });
       this.svgOverlay.paperScope.view.draw();
@@ -23174,7 +24150,7 @@ return paper;
       }
       this.svgOverlay.paperScope.view.draw();
       if (_this.svgOverlay.availableExternalCommentsPanel) {
-        _this.eventEmitter.publish('annotationMousePosition.' + _this.parent.windowId, [annotations]);
+        _this.eventEmitter.publish('annotationMousePosition.' + _this.windowId, [annotations]);
         return;
       }
       _this.annoTooltip.showViewer({
@@ -23201,7 +24177,7 @@ return paper;
       });
     },
 
-    bindEvents: function() {
+    listenForActions: function() {
       var _this = this;
 
       _this.eventEmitter.subscribe('refreshOverlay.' + _this.windowId, function(event) {
@@ -23209,12 +24185,6 @@ return paper;
         _this.svgOverlay.deselectAll();
         _this.svgOverlay.mode = '';
         _this.render();
-      });
-      _this.eventEmitter.subscribe('deleteShape.' + _this.windowId, function(event) {
-        _this.deleteShape();
-      });
-      _this.eventEmitter.subscribe('updateEditedShape.' + _this.windowId, function(event) {
-        _this.saveEditedShape();
       });
 
       _this.eventEmitter.subscribe('updateTooltips.' + _this.windowId, function(event, location, absoluteLocation) {
@@ -23239,6 +24209,38 @@ return paper;
         }
         _this.svgOverlay.restoreDraftShapes();
       });
+
+      _this.eventEmitter.subscribe('SET_ANNOTATION_EDITING.' + _this.windowId, function(event, options) {
+        jQuery.each(_this.annotationsToShapesMap, function(key, paths) {
+          // if we have a matching annotationId, pass the boolean value on for each path, otherwise, always pass false
+          if (key === options.annotationId) {
+            if (options.isEditable) {
+              _this.eventEmitter.publish('SET_OVERLAY_TOOLTIP.' + _this.windowId, {"tooltip" : options.tooltip, "visible" : true, "paths" : paths});
+            } else {
+              _this.eventEmitter.publish('SET_OVERLAY_TOOLTIP.' + _this.windowId, {"tooltip" : null, "visible" : false, "paths" : []});
+            }
+            jQuery.each(paths, function(index, path) {
+              //just in case, force the shape to be non hovered
+              var tool = _this.svgOverlay.getTool(path);
+              tool.onHover(false, path);
+
+              path.data.editable = options.isEditable;
+              if (options.isEditable) {
+                path.data.currentStrokeValue = path.data.editStrokeValue;
+                path.strokeWidth = path.data.currentStrokeValue / _this.svgOverlay.paperScope.view.zoom;
+              } else {
+                path.data.currentStrokeValue = path.data.defaultStrokeValue;
+                path.strokeWidth = path.data.currentStrokeValue / _this.svgOverlay.paperScope.view.zoom;
+              }
+            });
+          } else {
+            jQuery.each(paths, function(index, path) {
+              path.data.editable = false;
+            });
+          }
+        });
+        _this.svgOverlay.paperScope.view.draw();
+      });
     },
 
     getAnnoFromRegion: function(regionId) {
@@ -23262,10 +24264,10 @@ return paper;
   };
 
   $.Ellipse.prototype = {
-    init: function() {
+    init: function () {
     },
 
-    createShape: function(initialPoint, overlay) {
+    createShape: function (initialPoint, overlay) {
       overlay.mode = 'create';
       var segments = [];
       // point indexes
@@ -23294,7 +24296,10 @@ return paper;
         name: overlay.getName(_this)
       });
       shape.dashArray = overlay.dashArray;
-      shape.strokeWidth = 1 / overlay.paperScope.view.zoom;
+      shape.data.defaultStrokeValue = 1;
+      shape.data.editStrokeValue = 5;
+      shape.data.currentStrokeValue = shape.data.defaultStrokeValue;
+      shape.strokeWidth = shape.data.currentStrokeValue / overlay.paperScope.view.zoom;
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
       shape.fillColor.alpha = overlay.fillColorAlpha;
@@ -23304,8 +24309,8 @@ return paper;
       this.updateSelection(true, shape, overlay);
       return shape;
     },
-    
-    updateSelection: function(selected, item, overlay) {
+
+    updateSelection: function (selected, item, overlay) {
       if (item._name.toString().indexOf(this.idPrefix) != -1) {
         if (item.segments.length > 10) {
           item.removeSegment(10);
@@ -23323,48 +24328,175 @@ return paper;
         item.segments[2].handleOut = new overlay.paperScope.Point(0, 0);
         item.segments[3].handleIn = new overlay.paperScope.Point(0, 0);
         item.segments[3].handleOut = outHandle;
+
         if (selected) {
-          item.segments[2].handleOut = new overlay.paperScope.Point(0, -20 / overlay.paperScope.view.zoom);
-          item.segments[2].handleOut = item.segments[2].handleOut.rotate(item.data.rotation, item.segments[2]);
+         // item.segments[2].handleOut = new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom);
+         // item.segments[2].data = 'rotation_handle';
+         // item.segments[2].handleOut = item.segments[2].handleOut.rotate(item.data.rotation, item.segments[2]);
           var point = item.segments[2].point.clone();
           point = point.add(item.segments[2].handleOut);
           if (item.contains(point)) {
             item.segments[2].handleOut = item.segments[2].handleOut.rotate(180, item.segments[2]);
           }
+
+          if (!item.data.deleteIcon) {
+            item.data.deleteIcon = new overlay.annotationUtils.DeleteActionIcon(overlay.paperScope, {
+              name: item.name + this.partOfPrefix + 'delete',
+              fillColor: item.selectedColor
+            });
+
+            item.data.deleteIcon.addData('parent', item);
+            item.data.deleteIcon.addData('pivot',item.segments[7].point);
+            item.data.deleteIcon.addData('type', 'deleteIcon');
+            item.data.deleteIcon.addData('self', item.data.deleteIcon);
+
+            item.data.deleteIcon.setPosition(item.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+            item.data.deleteIcon.setOnMouseDownListener(overlay);
+
+          }
+
+          if (!item.data.rotationIcon) {
+
+            item.data.rotationIcon = new overlay.annotationUtils.RotationIcon(overlay.paperScope, {
+              name: item.name + this.partOfPrefix + 'rotation',
+              fillColor: item.selectedColor
+            });
+
+            item.data.rotationIcon.addData('pivot',item.segments[3].point);
+            item.data.rotationIcon.addData('type', 'rotationIcon');
+            item.data.rotationIcon.addData('self', item.data.rotationIcon);
+            item.data.rotationIcon.addData('parent', item);
+
+            item.data.rotationIcon.setPosition(item.data.rotationIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+
+            item.data.rotationIcon.setOnMouseDownListener(overlay);
+
+          }
+
+          if (!item.data.group) {
+            item.data.group = new overlay.annotationUtils.Group(overlay.paperScope,[item,item.data.deleteIcon.getItem(),item.data.deleteIcon.getMask().getItem(),item.data.rotationIcon.getItem(),item.data.rotationIcon.getMask().getItem()]);
+          }
+
+          if(item.contains(item.data.deleteIcon.getItem().position)){
+            item.data.deleteIcon.setPosition(item.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+            item.data.deleteIcon.rotate(180,item.data.deleteIcon.getData('pivot'));
+            item.data.deleteIcon.rotate(180);
+          }
+
+          if(item.contains(item.data.rotationIcon.getItem().position)){
+            item.data.rotationIcon.setPosition(item.data.rotationIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+            item.data.rotationIcon.rotate(180,item.data.rotationIcon.getData('pivot'));
+            item.data.rotationIcon.rotate(180);
+          }
+
         } else {
+          if(item.data.group){
+            item.data.group.remove();
+            item.data.group = null;
+            overlay.paperScope.project.activeLayer.addChild(item);
+          }
+
+          if(item.data.deleteIcon){
+            item.data.deleteIcon.remove();
+            item.data.deleteIcon = null;
+          }
+
+          if(item.data.rotationIcon){
+            item.data.rotationIcon.remove();
+            item.data.rotationIcon = null;
+          }
+
           item.segments[2].handleOut = new overlay.paperScope.Point(0, 0);
         }
       }
     },
 
-    onHover:function(activate,shape,hoverColor){
+    onResize:function(item,overlay){
+      if(item._name.toString().indexOf(this.partOfPrefix)!== -1){
+        if(item._name.toString().indexOf('delete') !== -1){
+          item.data.self.setPosition(item.data.self.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.parent.data.rotation)));
+
+          if(item.data.parent.contains(item.position)){
+            item.data.self.rotate(180,item.data.self.getData('pivot'));
+            item.data.self.rotate(180);
+          }
+
+          item.data.self.resize(24 *  1 / overlay.paperScope.view.zoom);
+        }
+
+        if(item._name.toString().indexOf('rotation') !== -1){
+          item.data.self.setPosition(item.data.self.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.parent.data.rotation)));
+
+          if(item.data.parent.contains(item.position)){
+            item.data.self.rotate(180,item.data.self.getData('pivot'));
+            item.data.self.rotate(180);
+          }
+
+          item.data.self.resize(16 *  1 / overlay.paperScope.view.zoom);
+        }
+
+      }
+    },
+
+    onHover: function (activate, shape, hoverColor) {
       // shape needs to have hovered styles
-      if(activate && !shape.data.hovered){
+      if (activate && !shape.data.hovered) {
         shape.data.nonHoverStroke = shape.strokeColor.clone();
         shape.data.hovered = true;
         shape.strokeColor = hoverColor;
       }
       // shape is not longer hovered
-      if(!activate && shape.data.hovered){
+      if (!activate && shape.data.hovered) {
         shape.strokeColor = shape.data.nonHoverStroke.clone();
         delete shape.data.nonHoverStroke;
         delete shape.data.hovered;
       }
     },
 
-    onMouseUp: function(event, overlay) {
+    onMouseUp: function (event, overlay) {
       if (overlay.mode == 'create' && overlay.path) {
         overlay.onDrawFinish();
+      } else if (overlay.mode === 'translate' || overlay.mode === 'deform' && overlay.path) {
+        overlay.onEditFinish();
       }
     },
 
-    onMouseDrag: function(event, overlay) {
+    translate: function (event, overlay) {
+      for (var i = 0; i < overlay.path.segments.length; i++) {
+        overlay.path.segments[i].point.x += event.delta.x;
+        overlay.path.segments[i].point.y += event.delta.y;
+      }
+
+      overlay.path.data.rotationIcon.translateByXY(event.delta.x, event.delta.y);
+      overlay.path.data.deleteIcon.translateByXY(event.delta.x,event.delta.y);
+    },
+
+    rotate:function(event,overlay){
+      var center = overlay.path.position;
+      var rotation = Math.atan2(event.point.y - center.y + event.delta.y, event.point.x - center.x + event.delta.x) - Math.atan2(event.point.y - center.y, event.point.x - center.x);
+      rotation = rotation * (180 / Math.PI);
+
+
+      overlay.path.data.group.rotate(rotation,overlay.path.position);
+
+      overlay.path.data.deleteIcon.rotate(-rotation);
+      overlay.path.data.rotationIcon.rotate(-rotation);
+
+      overlay.path.data.rotation += rotation;
+    },
+
+    onMouseDrag: function (event, overlay) {
       if (overlay.mode == 'translate') {
-        for (var i = 0; i < overlay.path.segments.length; i++) {
-          overlay.path.segments[i].point.x += event.delta.x;
-          overlay.path.segments[i].point.y += event.delta.y;
-        }
-      } else if (overlay.mode == 'create' || overlay.mode == 'deform') {
+        this.translate(event, overlay);
+        return;
+      }
+
+      if (overlay.mode === 'rotate') {
+        this.rotate(event, overlay);
+        return;
+      }
+
+      if (overlay.mode == 'create' || overlay.mode == 'deform') {
         var idx = -1;
         for (var l = 0; l < overlay.path.segments.length; l++) {
           if (overlay.path.segments[l] == overlay.segment) {
@@ -23372,173 +24504,164 @@ return paper;
             break;
           }
         }
-        if (idx === -1) {
-          var segment = overlay.path.segments[2];
-          var center = overlay.path.position;
-          var oldPoint = new overlay.paperScope.Point(event.point.x - center.x, event.point.y - center.y);
-          var newPoint = new overlay.paperScope.Point(event.point.x - center.x + event.delta.x, event.point.y - center.y + event.delta.y);
-          var rotation = Math.atan2(newPoint.y, newPoint.x) - Math.atan2(oldPoint.y, oldPoint.x);
-          rotation = rotation * (180 / Math.PI);
-          overlay.path.rotate(rotation, overlay.path.position);
-          overlay.path.data.rotation += rotation;
-        } else {
-          var translation = new overlay.paperScope.Point(event.delta.x, event.delta.y);
-          var rot = overlay.path.data.rotation;
-          translation = translation.rotate(-rot);
-          var translationX = new overlay.paperScope.Point(translation.x, 0);
-          translationX = translationX.rotate(rot);
-          var translationY = new overlay.paperScope.Point(0, translation.y);
-          translationY = translationY.rotate(rot);
-          if (idx === 0 || idx === 4 || idx === 6 || idx === 8) {
-            translationX = translationX.multiply(2 / (1 + Math.sqrt(1 / 2)));
-            translationY = translationY.multiply(2 / (1 + Math.sqrt(1 / 2)));
-          }
-          var moveTopSize = idx === 0 || idx === 1 || idx === 2 || idx === 3 || idx === 4;
-          var moveBottomSize = idx === 6 || idx === 7 || idx === 8;
-          var moveRightSize = idx === 4 || idx === 5 || idx === 6;
-          var moveLeftSize = idx === 0 || idx === 8 || idx === 9;
-          if (moveTopSize) {
-            overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationY);
-            overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationY);
-            overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationY);
-            var trTop = translationY.clone();
-            trTop = trTop.multiply((1 + Math.sqrt(1 / 2)) / 2);
-            overlay.path.segments[0].point = overlay.path.segments[0].point.add(trTop);
-            overlay.path.segments[4].point = overlay.path.segments[4].point.add(trTop);
-            trTop = trTop.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
-            overlay.path.segments[6].point = overlay.path.segments[6].point.add(trTop);
-            overlay.path.segments[8].point = overlay.path.segments[8].point.add(trTop);
-          }
-          if (moveBottomSize) {
-            overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationY);
-            var trBottom = translationY.clone();
-            trBottom = trBottom.multiply((1 + Math.sqrt(1 / 2)) / 2);
-            overlay.path.segments[6].point = overlay.path.segments[6].point.add(trBottom);
-            overlay.path.segments[8].point = overlay.path.segments[8].point.add(trBottom);
-            trBottom = trBottom.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
-            overlay.path.segments[0].point = overlay.path.segments[0].point.add(trBottom);
-            overlay.path.segments[4].point = overlay.path.segments[4].point.add(trBottom);
-          }
-          if (moveTopSize || moveBottomSize) {
-            translationY = translationY.multiply(0.5);
-            overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationY);
-            overlay.path.segments[9].point = overlay.path.segments[9].point.add(translationY);
-          }
-          if (moveRightSize) {
-            overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationX);
-            var trRight = translationX.clone();
-            trRight = trRight.multiply((1 + Math.sqrt(1 / 2)) / 2);
-            overlay.path.segments[4].point = overlay.path.segments[4].point.add(trRight);
-            overlay.path.segments[6].point = overlay.path.segments[6].point.add(trRight);
-            trRight = trRight.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
-            overlay.path.segments[0].point = overlay.path.segments[0].point.add(trRight);
-            overlay.path.segments[8].point = overlay.path.segments[8].point.add(trRight);
-          }
-          if (moveLeftSize) {
-            overlay.path.segments[9].point = overlay.path.segments[9].point.add(translationX);
-            var trLeft = translationX.clone();
-            trLeft = trLeft.multiply((1 + Math.sqrt(1 / 2)) / 2);
-            overlay.path.segments[0].point = overlay.path.segments[0].point.add(trLeft);
-            overlay.path.segments[8].point = overlay.path.segments[8].point.add(trLeft);
-            trLeft = trLeft.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
-            overlay.path.segments[4].point = overlay.path.segments[4].point.add(trLeft);
-            overlay.path.segments[6].point = overlay.path.segments[6].point.add(trLeft);
-          }
-          if (moveRightSize || moveLeftSize) {
-            translationX = translationX.multiply(0.5);
-            overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationX);
-            overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationX);
-            overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationX);
-            overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationX);
-          }
-          var point = overlay.path.segments[2].point.clone();
-          point = point.add(overlay.path.segments[2].handleOut);
-          if (overlay.path.contains(point)) {
-            overlay.path.segments[2].handleOut = overlay.path.segments[2].handleOut.rotate(180, overlay.path.segments[2]);
-          }
+
+        var translation = new overlay.paperScope.Point(event.delta.x, event.delta.y);
+        var rot = overlay.path.data.rotation;
+        translation = translation.rotate(-rot);
+        var translationX = new overlay.paperScope.Point(translation.x, 0);
+        translationX = translationX.rotate(rot);
+        var translationY = new overlay.paperScope.Point(0, translation.y);
+        translationY = translationY.rotate(rot);
+        if (idx === 0 || idx === 4 || idx === 6 || idx === 8) {
+          translationX = translationX.multiply(2 / (1 + Math.sqrt(1 / 2)));
+          translationY = translationY.multiply(2 / (1 + Math.sqrt(1 / 2)));
         }
-        overlay.updateSelection(true, overlay.path, overlay);
+        var moveTopSize = idx === 0 || idx === 1 || idx === 2 || idx === 3 || idx === 4;
+        var moveBottomSize = idx === 6 || idx === 7 || idx === 8;
+        var moveRightSize = idx === 4 || idx === 5 || idx === 6;
+        var moveLeftSize = idx === 0 || idx === 8 || idx === 9;
+        if (moveTopSize) {
+          overlay.path.data.rotationIcon.translateByPoint(translationY);
+          overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationY);
+          overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationY);
+          overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationY);
+          var trTop = translationY.clone();
+          trTop = trTop.multiply((1 + Math.sqrt(1 / 2)) / 2);
+          overlay.path.segments[0].point = overlay.path.segments[0].point.add(trTop);
+          overlay.path.segments[4].point = overlay.path.segments[4].point.add(trTop);
+          trTop = trTop.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
+          overlay.path.segments[6].point = overlay.path.segments[6].point.add(trTop);
+          overlay.path.segments[8].point = overlay.path.segments[8].point.add(trTop);
+        }
+        if (moveBottomSize) {
+
+          overlay.path.data.deleteIcon.translateByPoint(translationY);
+
+          overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationY);
+          var trBottom = translationY.clone();
+          trBottom = trBottom.multiply((1 + Math.sqrt(1 / 2)) / 2);
+          overlay.path.segments[6].point = overlay.path.segments[6].point.add(trBottom);
+          overlay.path.segments[8].point = overlay.path.segments[8].point.add(trBottom);
+          trBottom = trBottom.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
+          overlay.path.segments[0].point = overlay.path.segments[0].point.add(trBottom);
+          overlay.path.segments[4].point = overlay.path.segments[4].point.add(trBottom);
+        }
+        if (moveTopSize || moveBottomSize) {
+          translationY = translationY.multiply(0.5);
+          overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationY);
+          overlay.path.segments[9].point = overlay.path.segments[9].point.add(translationY);
+        }
+        if (moveRightSize) {
+          overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationX);
+          var trRight = translationX.clone();
+          trRight = trRight.multiply((1 + Math.sqrt(1 / 2)) / 2);
+          overlay.path.segments[4].point = overlay.path.segments[4].point.add(trRight);
+          overlay.path.segments[6].point = overlay.path.segments[6].point.add(trRight);
+          trRight = trRight.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
+          overlay.path.segments[0].point = overlay.path.segments[0].point.add(trRight);
+          overlay.path.segments[8].point = overlay.path.segments[8].point.add(trRight);
+        }
+        if (moveLeftSize) {
+          overlay.path.segments[9].point = overlay.path.segments[9].point.add(translationX);
+          var trLeft = translationX.clone();
+          trLeft = trLeft.multiply((1 + Math.sqrt(1 / 2)) / 2);
+          overlay.path.segments[0].point = overlay.path.segments[0].point.add(trLeft);
+          overlay.path.segments[8].point = overlay.path.segments[8].point.add(trLeft);
+          trLeft = trLeft.multiply((1 - Math.sqrt(1 / 2)) / (1 + Math.sqrt(1 / 2)));
+          overlay.path.segments[4].point = overlay.path.segments[4].point.add(trLeft);
+          overlay.path.segments[6].point = overlay.path.segments[6].point.add(trLeft);
+        }
+        if (moveRightSize || moveLeftSize) {
+          translationX = translationX.multiply(0.5);
+          overlay.path.data.rotationIcon.translateByPoint(translationX);
+          overlay.path.data.deleteIcon.translateByPoint(translationX);
+          overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationX);
+          overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationX);
+          overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationX);
+          overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationX);
+        }
+        var point = overlay.path.segments[2].point.clone();
+        point = point.add(overlay.path.segments[2].handleOut);
+        if (overlay.path.contains(point)) {
+          overlay.path.segments[2].handleOut = overlay.path.segments[2].handleOut.rotate(180, overlay.path.segments[2]);
+          //overlay.path.data.rotationIcon.translateByPoint(overlay.path.segments[2].handleOut.multiply(2));
+        }
+
+        if(overlay.path.contains(overlay.path.data.deleteIcon.getItem().position)){
+          overlay.path.data.deleteIcon.rotate(180,overlay.path.data.deleteIcon.getData('pivot'));
+          overlay.path.data.deleteIcon.rotate(180);
+        }
+
+        if(overlay.path.contains(overlay.path.data.rotationIcon.getItem().position)){
+          overlay.path.data.rotationIcon.rotate(180,overlay.path.data.rotationIcon.getData('pivot'));
+          overlay.path.data.rotationIcon.rotate(180);
+        }
+
+        if (overlay.path.segments.length > 10) {
+          overlay.path.removeSegment(10);
+        }
+        overlay.path.smooth({from: -7, to: 1});
       }
     },
 
     onMouseMove: function(event, overlay) {
-      // Empty block.
+      var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
+      if(hitResult && hitResult.item._name.toString().indexOf(this.idPrefix)!==-1){
+        if(!overlay.disabled && overlay.hoveredPath && hitResult.item._name.toString().indexOf(overlay.hoveredPath._name.toString()) !==-1){
+          this.setCursor(hitResult,overlay);
+        }
+      }
+    },
+
+
+    setCursor:function(hitResult,overlay){
+
+      if(hitResult.type === 'stroke' || hitResult.type === 'handle-in' || hitResult.type === 'handle-out'){
+        jQuery(overlay.viewer.canvas).css('cursor','move');
+        return;
+      }
+
+      // mouse over attached icon
+      if(hitResult.type === 'pixel'){
+        jQuery(overlay.viewer.canvas).css('cursor', 'pointer');
+        return;
+      }
+
+      if(hitResult.segment){
+        jQuery(overlay.viewer.canvas).css('cursor','pointer');
+      }
+
     },
 
     onMouseDown: function(event, overlay) {
       var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
       if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) != -1) {
         if (overlay.mode != 'deform' && overlay.mode != 'translate' && overlay.mode != 'create') {
-          if (hitResult.type == 'segment' || hitResult.type == 'handle-out') {
+
+          if (hitResult.item._name.toString().indexOf(this.partOfPrefix) !== -1) {
+            hitResult.item.data.self.onMouseDown();
+            if(overlay.mode === 'rotate'){
+              overlay.path = hitResult.item.data.self.getItem().data.parent;
+            }
+            return;
+          }
+
+          if (hitResult.type === 'segment') {
             overlay.mode = 'deform';
             overlay.segment = null;
             overlay.path = null;
-            if (hitResult.type == 'handle-out') {
-              jQuery('body').awesomeCursor('repeat', {
-                color: 'white',
-                hotspot: 'center'
-              });
-            } else {
-              var cursor = '';
-              var rotation = hitResult.item.data.rotation;
-              switch (hitResult.segment) {
-                case hitResult.item.segments[0]:
-                  cursor = 'arrows-v';
-                  rotation -= 45;
-                  break;
-                case hitResult.item.segments[1]:
-                  cursor = 'arrows-v';
-                  break;
-                case hitResult.item.segments[2]:
-                  cursor = 'arrows-v';
-                  break;
-                case hitResult.item.segments[3]:
-                  cursor = 'arrows-v';
-                  break;
-                case hitResult.item.segments[4]:
-                  cursor = 'arrows-v';
-                  rotation += 45;
-                  break;
-                case hitResult.item.segments[5]:
-                  cursor = 'arrows-h';
-                  break;
-                case hitResult.item.segments[6]:
-                  cursor = 'arrows-v';
-                  rotation -= 45;
-                  break;
-                case hitResult.item.segments[7]:
-                  cursor = 'arrows-v';
-                  break;
-                case hitResult.item.segments[8]:
-                  cursor = 'arrows-v';
-                  rotation += 45;
-                  break;
-                case hitResult.item.segments[9]:
-                  cursor = 'arrows-h';
-                  break;
-                default:
-                  cursor = 'default';
-                  break;
-              }
-              jQuery('body').awesomeCursor(cursor, {
-                color: 'white',
-                hotspot: 'center',
-                rotate: rotation
-              });
-            }
-          } else {
+            this.setCursor(hitResult, overlay);
+          }
+
+          if (hitResult.type === 'stroke' || hitResult.type === 'handle-in' || hitResult.type === 'handle-out') {
             overlay.mode = 'translate';
             overlay.segment = null;
             overlay.path = null;
-            document.body.style.cursor = "move";
           }
-        } else {
-          document.body.style.cursor = "default";
         }
-      } else {
-        document.body.style.cursor = "default";
       }
-      if (overlay.mode == 'translate') {
+
+      if (overlay.mode === 'translate') {
         if (overlay.path) {
           overlay.segment = null;
           overlay.path = null;
@@ -23546,21 +24669,21 @@ return paper;
         } else {
           overlay.path = hitResult.item;
         }
-      } else if (overlay.mode == 'deform') {
+        return;
+      }
+
+      if (overlay.mode === 'deform') {
         if (overlay.path) {
           overlay.segment = null;
           overlay.path = null;
           overlay.mode = '';
-        } else if (hitResult.type == 'handle-out') {
-          overlay.path = hitResult.item;
-          overlay.segment = null;
         } else {
           overlay.path = hitResult.item;
           overlay.segment = hitResult.segment;
         }
-      } else {
-        overlay.path = this.createShape(event.point, overlay);
+        return;
       }
+      overlay.path = this.createShape(event.point, overlay);
     },
 
     onDoubleClick: function(event, overlay) {
@@ -23568,6 +24691,7 @@ return paper;
     }
   };
 }(Mirador));
+
 (function($) {
   $.Freehand = function(options) {
     jQuery.extend(this, {
@@ -23590,18 +24714,98 @@ return paper;
       var shape = new overlay.paperScope.Path({
         segments: [initialPoint],
         dashArray: overlay.dashArray,
-        strokeWidth: 1 / overlay.paperScope.view.zoom,
         strokeColor: overlay.strokeColor,
         name: overlay.getName(_this)
       });
+      shape.data.defaultStrokeValue = 1;
+      shape.data.editStrokeValue = 5;
+      shape.data.currentStrokeValue = shape.data.defaultStrokeValue;
+      shape.strokeWidth = shape.data.currentStrokeValue / overlay.paperScope.view.zoom;
       return shape;
     },
 
     updateSelection: function(selected, item, overlay) {
-      if (item._name.toString().indexOf(this.idPrefix) != -1) {
+      if (item._name.toString().indexOf(this.idPrefix) !== -1) {
+
         item.selected = selected;
+
+        if(selected){
+          if (!item.data.deleteIcon) {
+            item.data.deleteIcon = new overlay.annotationUtils.DeleteActionIcon(overlay.paperScope, {
+              name: item.name + this.partOfPrefix + 'delete',
+              fillColor:item.selectedColor
+            });
+            item.data.deleteIcon.addData('pivot',new overlay.paperScope.Point(this.getPivotPointForDeleteIcon(item)));
+            item.data.deleteIcon.addData('type', 'deleteIcon');
+            item.data.deleteIcon.addData('self', item.data.deleteIcon);
+            item.data.deleteIcon.addData('parent', item);
+
+            item.data.deleteIcon.setPosition(item.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+            item.data.deleteIcon.setOnMouseDownListener(overlay);
+          }
+        }else{
+
+          if(item.data.deleteIcon){
+            item.data.deleteIcon.remove();
+            item.data.deleteIcon = null;
+          }
+        }
       }
     },
+
+    onResize:function(item,overlay){
+      if(item._name.toString().indexOf(this.partOfPrefix)!== -1){
+        if(item._name.toString().indexOf('delete') !==-1){
+
+          item.data.self.setPosition(item.data.self.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+          item.data.self.resize(24 *  1 / overlay.paperScope.view.zoom);
+        }
+      }
+    },
+
+
+    getPivotPointForDeleteIcon:function(item){
+      var points = [];
+
+      for(var i=0;i<item.segments.length;i++){
+        points.push(item.segments[i].point);
+      }
+
+      return {
+        x:this.getGeometricCenterOfPoints(points).x,
+        y:this.getLowestPoint(points).y
+      };
+    },
+
+    getLowestPoint: function (points) {
+      var lx = 0;
+      var ly = 0;
+
+      for (var i = 0; i < points.length; i++) {
+        lx = Math.max(lx, points[i].x);
+        ly = Math.max(ly, points[i].y);
+      }
+
+      return {
+        x: lx,
+        y: ly
+      };
+    },
+
+    getGeometricCenterOfPoints: function (points) {
+      var cx = 0;
+      var cy = 0;
+      for(var i= 0;i<points.length;i++){
+        cx +=points[i].x;
+        cy +=points[i].y;
+      }
+
+      return {
+        x:cx/points.length,
+        y:cy/points.length
+      };
+    },
+
     onHover:function(activate,shape,hoverColor){
       // shape needs to have hovered styles
       if(activate && !shape.data.hovered){
@@ -23616,68 +24820,126 @@ return paper;
         delete shape.data.hovered;
       }
     },
+
     onMouseUp: function(event, overlay) {
-      if (overlay.path) {
-        overlay.path.simplify();
-        overlay.onDrawFinish();
+
+      if(overlay.mode === 'create'){
+        if (overlay.path) {
+          overlay.path.simplify();
+          overlay.onDrawFinish();
+        }
       }
     },
 
     onMouseDrag: function(event, overlay) {
-      if (overlay.mode === 'edit') {
+      if (overlay.mode === 'deform') {
         if (overlay.segment) {
           overlay.segment.point.x += event.delta.x;
           overlay.segment.point.y += event.delta.y;
           overlay.path.smooth();
-        } else if (overlay.path) {
+
+          var path = overlay.segment.path;
+          path.data.deleteIcon.addData('pivot',new overlay.paperScope.Point(this.getPivotPointForDeleteIcon(path)));
+          path.data.deleteIcon.setPosition(path.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+
+        }
+
+        return;
+      }
+
+      if (overlay.mode === 'translate') {
+        if (overlay.path) {
           overlay.path.position.x += event.delta.x;
           overlay.path.position.y += event.delta.y;
+          if (overlay.path.data.deleteIcon) {
+            overlay.path.data.deleteIcon.translateByXY(event.delta.x, event.delta.y);
+          }
         }
-      } else if (overlay.mode === 'create') {
-        overlay.path.add(event.point);
+        return;
       }
+
+      if (overlay.mode === 'create') {
+        overlay.path.add(event.point);
+
+        if(overlay.path.data.deleteIcon){
+          overlay.path.data.deleteIcon.addData('pivot',new overlay.paperScope.Point(this.getPivotPointForDeleteIcon(overlay.path)));
+          overlay.path.data.deleteIcon.setPosition(overlay.path.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+        }
+       }
     },
 
     onMouseMove: function(event, overlay) {
-      // Empty block.
+      var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
+      if(hitResult && hitResult.item._name.toString().indexOf(this.idPrefix)!==-1){
+        if(!overlay.disabled && overlay.hoveredPath && hitResult.item._name.toString().indexOf(overlay.hoveredPath._name.toString()) !==-1){
+          this.setCursor(hitResult,overlay);
+        }
+      }
+    },
+
+    setCursor:function(hitResult,overlay){
+      if(hitResult.type === 'stroke'){
+        jQuery(overlay.viewer.canvas).css('cursor','move');
+        return;
+      }
+      if(hitResult.type === 'handle-in' || hitResult.type === 'handle-out'){
+        jQuery(overlay.viewer.canvas).css('cursor','pointer');
+        return;
+      }
+
+      // mouse over attached icon
+      if(hitResult.type === 'pixel'){
+        jQuery(overlay.viewer.canvas).css('cursor', 'pointer');
+        return;
+      }
+
+      if(hitResult.segment){
+        jQuery(overlay.viewer.canvas).css('cursor','pointer');
+      }
+
     },
 
     onMouseDown: function(event, overlay) {
       var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
       if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) != -1) {
-        if (!overlay.path) {
-          overlay.mode = 'edit';
-          overlay.segment = null;
-          overlay.path = null;
-          document.body.style.cursor = "move";
-        } else {
-          document.body.style.cursor = "default";
+        if (hitResult.item._name.toString().indexOf(this.partOfPrefix) !== -1) {
+          hitResult.item.data.self.onMouseDown();
+          return;
         }
-      } else {
-        document.body.style.cursor = "default";
-      }
-      if (overlay.mode === '') {
-        overlay.path = this.createShape(event.point, overlay);
-      } else if (overlay.mode === 'edit') {
-        if (hitResult) {
-          if (event.modifiers.shift) {
-            if (hitResult.type == 'segment') {
-              hitResult.segment.remove();
-              hitResult.item.smooth();
-            }
-          } else if (overlay.path) {
-            overlay.segment = null;
-            overlay.path = null;
-            overlay.mode = '';
-          } else {
+
+        if (overlay.mode !== 'create') {
+
+          if (hitResult.type === 'stroke') {
+            overlay.mode = 'translate';
             overlay.path = hitResult.item;
-            if (hitResult.type == 'segment') {
-              overlay.segment = hitResult.segment;
-            } else if (hitResult.type == 'fill') {
-              overlay.paperScope.project.activeLayer.addChild(hitResult.item);
+            return;
+          }
+
+          if (hitResult.type === 'segment' || hitResult.type === 'handle-out' || hitResult.type === 'handle-in') {
+            // When shift is being pressed and segment point selected it deletes
+            if(event.modifiers.shift){
+              if(hitResult.item.segments.length > 2){
+                hitResult.segment.remove();
+                return;
+              }
+
             }
+            overlay.mode = 'deform';
+            overlay.segment = hitResult.segment;
+            overlay.path = hitResult.item;
+            return;
           }
         }
+      } else {
+        if(overlay.mode !=='create'){
+          overlay.mode = '';
+        }
+      }
+
+
+      if (overlay.mode === '') {
+        overlay.path = this.createShape(event.point, overlay);
+        return;
       }
     },
 
@@ -23686,11 +24948,13 @@ return paper;
     }
   };
 }(Mirador));
+
 (function($) {
   $.getTools = function(options) {
     if (this.svgOverlayTools) {
       return this.svgOverlayTools;
     }
+    options.partOfPrefix = '_partOf';
     this.svgOverlayTools = [new $.Rectangle(options), new $.Freehand(options), new $.Polygon(options), new $.Ellipse(options), new $.Pin(options)];
     return this.svgOverlayTools;
   };
@@ -23701,14 +24965,16 @@ return paper;
 
   $.Overlay = function(viewer, osdViewerId, windowId, state, eventEmitter) {
     var drawingToolsSettings = state.getStateProperty('drawingToolsSettings');
+    this.drawingToolsSettings = drawingToolsSettings;
     var availableAnnotationDrawingTools = state.getStateProperty('availableAnnotationDrawingTools');
     var availableExternalCommentsPanel = state.getStateProperty('availableExternalCommentsPanel');
     jQuery.extend(this, {
       disabled: true,
+      inEditMode: false,
       osdViewerId: osdViewerId,
       windowId: windowId,
       commentPanel: null,
-      mode: '', // Possible modes: 'create', 'translate', 'deform', 'edit' and '' as default.
+      mode: '', // Possible modes: 'create', 'translate', 'deform','rotate', 'edit' and '' as default.
       draftPaths: [],
       editedPaths: [],
       hoveredPath: null,
@@ -23720,7 +24986,9 @@ return paper;
       availableExternalCommentsPanel: availableExternalCommentsPanel,
       dashArray: [],
       fixedShapeSize: drawingToolsSettings.fixedShapeSize,
+      selectedColor: drawingToolsSettings.selectedColor || '#004c66',
       shapeHandleSize:drawingToolsSettings.shapeHandleSize,
+      partOfPrefix:'_partOf',
       hitOptions: {
         handles: true,
         stroke: true,
@@ -23729,21 +24997,24 @@ return paper;
       }
     });
 
-    // Initialization of overlay object.
     this.tools = $.getTools(drawingToolsSettings);
     this.currentTool = null;
     // Default colors.
-    this.strokeColor = drawingToolsSettings.fillColor;
+    this.dashArray = [];
+    this.strokeColor = drawingToolsSettings.strokeColor;
     this.fillColor = drawingToolsSettings.fillColor;
     this.fillColorAlpha = drawingToolsSettings.fillColorAlpha;
     this.viewer = viewer;
     this.canvas = document.createElement('canvas');
+    // workaround to remove focus from editor
+    jQuery(this.canvas).attr('tabindex', '0').mousedown(function(){ jQuery(this).focus();});
     this.canvas.id = 'draw_canvas_' + this.windowId;
     // Drawing of overlay border during development.
     // this.canvas.style.border = '1px solid yellow';
     this.viewer.canvas.appendChild(this.canvas);
 
     var _this = this;
+    this.slotWindowElement = state.getWindowElement(this.windowId);
     this.state = state;
     this.eventEmitter = eventEmitter;
     var _thisResize = function() {
@@ -23757,35 +25028,43 @@ return paper;
     this.viewer.addHandler('rotate', _thisResize);
     this.viewer.addHandler('constrain', _thisResize);
 
+    var _thisDestroy = function(){
+      _this.destroy();
+    };
+
+    this.viewer.addHandler('close',_thisDestroy);
+
+    _this.eventEmitter.subscribe('modeChange.' + _this.windowId,function(event,newMode){
+      _this.currentTool = '';
+    });
 
     _this.eventEmitter.subscribe('toggleDrawingTool.' + _this.windowId, function(event, tool) {
-      jQuery('#' + osdViewerId).parent().find('.hud-container').find('.draw-tool').removeClass('selected');
+      //qtip code should NOT be here
       if (_this.disabled) {
         jQuery('.qtip' + _this.windowId).qtip('hide');
         return;
       }
-      jQuery('#' + osdViewerId).parents(".window").find(".qtip-viewer").hide();
+      jQuery('#' + osdViewerId).parents('.window').find('.qtip-viewer').hide();
       _this.currentTool = null;
       for (var i = 0; i < _this.tools.length; i++) {
-        if (_this.tools[i].logoClass == tool) {
+        if (_this.tools[i].logoClass === tool) {
           _this.currentTool = _this.tools[i];
-          jQuery('#' + osdViewerId).parent().find('.hud-container').find('.material-icons:contains(\'' + tool + '\')').parent('.draw-tool').addClass('selected');
         }
       }
     });
+
     _this.eventEmitter.subscribe('toggleDefaultDrawingTool.' + _this.windowId, function(event) {
-      jQuery('#' + osdViewerId).parent().find('.hud-container').find('.draw-tool').removeClass('selected');
+      //qtip code should NOT be here
       if (_this.disabled) {
         jQuery('.qtip' + _this.windowId).qtip('hide');
         return;
       }
-      jQuery('#' + osdViewerId).parents(".window").find(".qtip-viewer").hide();
+      jQuery('#' + osdViewerId).parents('.window').find('.qtip-viewer').hide();
       _this.currentTool = null;
       for (var i = 0; i < _this.availableAnnotationDrawingTools.length; i++) {
         for (var j = 0; j < _this.tools.length; j++) {
           if (_this.availableAnnotationDrawingTools[i] == _this.tools[j].name) {
             _this.currentTool = _this.tools[j];
-            jQuery('#' + osdViewerId).parent().find('.hud-container').find('.material-icons:contains(\'' + _this.tools[j].logoClass + '\')').parent('.draw-tool').addClass('selected');
             break;
           }
         }
@@ -23794,6 +25073,12 @@ return paper;
         }
       }
     });
+
+    var _thisHandleDeleteShapeEvent = function(event,shape){
+      _this.handleDeleteShapeEvent(event,shape);
+    };
+    _this.eventEmitter.subscribe('deleteShape.' + _this.windowId, _thisHandleDeleteShapeEvent);
+
     _this.eventEmitter.subscribe('changeBorderColor.' + _this.windowId, function(event, color) {
       _this.strokeColor = color;
       if (_this.hoveredPath) {
@@ -23801,6 +25086,7 @@ return paper;
         _this.paperScope.view.draw();
       }
     });
+
     _this.eventEmitter.subscribe('changeFillColor.' + _this.windowId, function(event, color, alpha) {
       _this.fillColor = color;
       _this.fillColorAlpha = alpha;
@@ -23810,8 +25096,20 @@ return paper;
         _this.paperScope.view.draw();
       }
     });
-    _this.eventEmitter.publish('initBorderColor.' + _this.windowId, _this.strokeColor);
-    _this.eventEmitter.publish('initFillColor.' + _this.windowId, [_this.fillColor, _this.fillColorAlpha]);
+
+    _this.eventEmitter.subscribe('toggleBorderType.' + _this.windowId, function (event, type) {
+      if (type == 'solid') {
+        _this.dashArray = [];
+      } else if (type == 'dashed') {
+        _this.dashArray = [5, 5];
+      } else if (type == 'dotdashed') {
+        _this.dashArray = [2, 5, 7, 5];
+      }
+      if (_this.hoveredPath) {
+        _this.hoveredPath.dashArray = _this.dashArray;
+        _this.paperScope.view.draw();
+      }
+    });
 
     this.resize();
     this.show();
@@ -23827,6 +25125,7 @@ return paper;
       this.paperScope.activate();
       this.paperScope.project.options.handleSize = _this.state.getStateProperty('shapeHandleSize');
       jQuery(_this.canvas).attr('keepalive', 'true');
+      this.annotationUtils = new $.AnnotationUtils();
       this.paperScope.view.onFrame = function(event) {
         if (_this.paperScope.snapPoint) {
           _this.paperScope.snapPoint.remove();
@@ -23856,28 +25155,75 @@ return paper;
       mouseTool.onMouseMove = _this.onMouseMove;
       mouseTool.onMouseDown = _this.onMouseDown;
       mouseTool.onDoubleClick = _this.onDoubleClick;
+      mouseTool.onKeyDown = function(event){};
       jQuery.data(document.body, 'draw_canvas_' + _this.windowId, mouseTool);
+
+      this.listenForActions();
+    },
+
+    handleDeleteShapeEvent: function (event, shape) {
+      var _this = this;
+      new $.DialogBuilder(this.slotWindowElement).confirm(i18n.t('deleteShape'), function (result) {
+        if (result) {
+          _this.deleteShape(shape);
+        }
+      });
+    },
+
+    listenForActions: function() {
+      var _this = this;
+
+      this.eventEmitter.subscribe('SET_OVERLAY_TOOLTIP.' + this.windowId, function(event, options) {
+        _this.annoTooltip = options.tooltip;
+        _this.annoEditorVisible = options.visible;
+        _this.draftPaths = options.paths;
+      });
+
+      this.eventEmitter.subscribe('CANCEL_ACTIVE_ANNOTATIONS.' + this.windowId, function(event) {
+        //for now, don't worry about getting user confirmation, just cancel everything
+        _this.clearDraftData();
+        _this.annoTooltip = null;
+        _this.annoEditorVisible = false;
+      });
+    },
+
+    deleteShape:function(shape){
+
+      for(var i=0;i<this.draftPaths.length;i++){
+        if(this.draftPaths[i]._name.toString() === shape._name.toString()){
+          this.draftPaths.splice(i,1);
+          break;
+        }
+      }
+      this.removeFocus();
+      shape.remove();
     },
 
     onMouseUp: function(event) {
       if (!this.overlay.disabled) {
         event.stopPropagation();
-        document.body.style.cursor = "default";
-        if (this.overlay.mode === 'deform' || this.overlay.mode === 'edit') {
-          this.overlay.segment = null;
-          this.overlay.path = null;
+        jQuery(this.overlay.viewer.canvas).css('cursor','default');
+        // if (this.overlay.mode === 'deform' || this.overlay.mode === 'edit') {
+        //   this.overlay.segment = null;
+        //   this.overlay.path = null;
+        // }
+        // if (this.overlay.mode != 'create') {
+        //   this.overlay.mode = '';
+        // }
+        if (this.overlay.currentTool) {
+          //we may not currently have a tool if the user is in edit mode and didn't click on an editable shape
+          this.overlay.currentTool.onMouseUp(event, this.overlay);
         }
-        if (this.overlay.mode != 'create') {
-          this.overlay.mode = '';
-        }
-        this.overlay.currentTool.onMouseUp(event, this.overlay);
       }
     },
 
     onMouseDrag: function(event) {
       if (!this.overlay.disabled) {
         event.stopPropagation();
-        this.overlay.currentTool.onMouseDrag(event, this.overlay);
+        if (this.overlay.currentTool) {
+          //we may not currently have a tool if the user is in edit mode and didn't click on an editable shape
+          this.overlay.currentTool.onMouseDrag(event, this.overlay);
+        }
       } else {
         var absolutePoint = {
           'x': event.event.clientX,
@@ -23893,12 +25239,14 @@ return paper;
       if (!this.overlay.disabled) {
         // We are in drawing mode
         if (this.overlay.paperScope.project.hitTest(event.point, this.overlay.hitOptions)) {
-          document.body.style.cursor = "pointer";
+          //document.body.style.cursor = 'pointer';
         } else {
-          document.body.style.cursor = "default";
+          jQuery(this.overlay.viewer.canvas).css('cursor','default');
         }
         event.stopPropagation();
-        this.overlay.currentTool.onMouseMove(event, this.overlay);
+        if (this.overlay.currentTool) {
+          this.overlay.currentTool.onMouseMove(event, this.overlay);
+        }
       } else {
         var absolutePoint = {
           'x': event.event.clientX,
@@ -23922,37 +25270,72 @@ return paper;
       } else {
         this.overlay.latestMouseDownTime = time;
         var hitResult = this.overlay.paperScope.project.hitTest(event.point, this.overlay.hitOptions);
-        if (hitResult && (!this.overlay.currentTool || (hitResult.item._name.toString().indexOf(this.overlay.currentTool.idPrefix) == -1 && this.overlay.mode === ''))) {
+
+        // no need for this check we have already disabled the current shape editing when not in edit mode
+        // by using the editable check, although having such info is okey to keep inside the code
+        //if (this.overlay.inEditMode) {
+          //if in edit mode, clear the current tool and mode in case the user clicked on an "empty" space // not okey what if i want to draw another shape
+          //if the user (re)clicked on an editable shape, the currentTool gets set below
+          //if the user has clicked on "empty" space, return and don't do anything more
+        //}
+
+        if(this.overlay.mode !== 'create'){
+          this.overlay.mode = '';
+          this.currentTool = null;
+        }
+
+        if (hitResult && this.overlay.mode !== 'create') {
+
+          var overlayEditable = false;
+          if (typeof hitResult.item.data.editable !== 'undefined') {
+            overlayEditable = hitResult.item.data.editable; // TODO should remove this editable variable when persisting the svg (will reduce length of string/memory)
+          }
+          // if item is part of shape it is editable
+          // part of shape items only appear when the shape is selected
+          if (hitResult.item._name.toString().indexOf(this.overlay.partOfPrefix) !== -1) {
+            overlayEditable = true;
+          }
+          if (!overlayEditable) {
+            return;
+          }
+
+        }
+
+        if (hitResult && (!this.overlay.currentTool || (hitResult.item._name.toString().indexOf(this.overlay.currentTool.idPrefix) === -1 && this.overlay.mode === ''))) {
           var prefix = hitResult.item._name.toString();
-          prefix = prefix.substring(0, prefix.lastIndexOf('_') + 1);
+          prefix = prefix.substring(0, prefix.indexOf('_') + 1);
+
+          // nasty workaround some names contain `_` inside their name
+          var longPrefix = hitResult.item._name.toString().split('_');
+
+          longPrefix = longPrefix[0] + '_' + longPrefix[1] + '_';
+
           for (var j = 0; j < this.overlay.tools.length; j++) {
-            if (this.overlay.tools[j].idPrefix == prefix) {
+
+            if (this.overlay.tools[j].idPrefix === prefix || this.overlay.tools[j].idPrefix === longPrefix) {
               this.overlay.eventEmitter.publish('toggleDrawingTool.' + this.overlay.windowId, this.overlay.tools[j].logoClass);
-              this.overlay.updateSelection(false, this.overlay.paperScope.project.activeLayer);
-              this.overlay.hoveredPath = null;
-              this.overlay.segment = null;
-              this.overlay.path = null;
-              this.overlay.mode = '';
               break;
             }
           }
         }
+
         if (this.overlay.currentTool) {
           this.overlay.currentTool.onMouseDown(event, this.overlay);
-          if (this.overlay.mode == 'translate' || this.overlay.mode == 'deform' || this.overlay.mode == 'edit') {
-            if (this.overlay.path && this.overlay.path.data.annotation) {
-              var inArray = false;
-              for (var i = 0; i < this.overlay.editedPaths.length; i++) {
-                if (this.overlay.editedPaths[i].name == this.overlay.path.name) {
-                  inArray = true;
-                  break;
-                }
-              }
-              if (!inArray) {
-                this.overlay.editedPaths.push(this.overlay.path);
-              }
-            }
-          }
+          // should check if this is used anywhere and remove it if not used
+          // if (this.overlay.mode === 'translate' || this.overlay.mode === 'deform' || this.overlay.mode === 'edit') {
+          //   if (this.overlay.path && this.overlay.path.data.annotation) {
+          //     var inArray = false;
+          //     for (var i = 0; i < this.overlay.editedPaths.length; i++) {
+          //       if (this.overlay.editedPaths[i].name === this.overlay.path.name) {
+          //         inArray = true;
+          //         break;
+          //       }
+          //     }
+          //     if (!inArray) {
+          //       this.overlay.editedPaths.push(this.overlay.path);
+          //     }
+          //   }
+          // }
         }
       }
       this.overlay.hover();
@@ -23960,6 +25343,7 @@ return paper;
     },
 
     onDoubleClick: function(event) {
+
       event.stopPropagation();
       if (this.overlay.currentTool) {
         this.overlay.currentTool.onDoubleClick(event, this.overlay);
@@ -23968,6 +25352,7 @@ return paper;
 
     fitFixedSizeShapes: function(shape) {
       shape.data.fixedSize = true;
+
       if (shape.name.toString().indexOf('pin_') != -1) {
         var scale = 1 / shape.bounds.width;
         scale *= this.fixedShapeSize / this.paperScope.view.zoom;
@@ -23976,12 +25361,12 @@ return paper;
     },
 
     updateSelection: function(selected, item) {
+
       if(item && item._name){
-        for (var i = 0; i < this.tools.length; i++) {
-          if (item._name.toString().indexOf(this.tools[i].idPrefix) != -1) {
-            this.tools[i].updateSelection(selected, item, this);
-            break;
-          }
+        var shapeTool = this.getTool(item);
+        if(shapeTool){
+          item.selectedColor = this.selectedColor;
+          shapeTool.updateSelection(selected, item, this);
         }
       }
     },
@@ -23995,8 +25380,8 @@ return paper;
       this.canvas.style.WebkitTransform = transform;
       this.canvas.style.msTransform = transform;
       this.canvas.style.transform = transform;
-      this.canvas.style.marginLeft = "0px";
-      this.canvas.style.marginTop = "0px";
+      this.canvas.style.marginLeft = '0px';
+      this.canvas.style.marginTop = '0px';
       if (this.paperScope && this.paperScope.view) {
         this.paperScope.view.viewSize = new this.paperScope.Size(this.canvas.width, this.canvas.height);
         this.paperScope.view.zoom = this.viewer.viewport.viewportToImageZoom(this.viewer.viewport.getZoom(true));
@@ -24011,33 +25396,57 @@ return paper;
           if (allItems[j].data.fixedSize) {
             this.fitFixedSizeShapes(allItems[j]);
           }
-          allItems[j].strokeWidth = 1 / this.paperScope.view.zoom;
+          if(this.getTool(allItems[j]).onResize){
+            this.getTool(allItems[j]).onResize(allItems[j],this);
+          }
+          allItems[j].strokeWidth = allItems[j].data.currentStrokeValue / this.paperScope.view.zoom;
           if (allItems[j].style) {
-            allItems[j].style.strokeWidth = 1 / this.paperScope.view.zoom;
+            allItems[j].style.strokeWidth = allItems[j].data.currentStrokeValue / this.paperScope.view.zoom;
           }
         }
       }
     },
 
     hover: function() {
-      if (!this.currentTool) {
-        if (this.hoveredPath) {
+
+      if(!this.currentTool){
+        return;
+      }
+
+      if (!this.currentTool && this.hoveredPath) {
+        this.updateSelection(false, this.hoveredPath);
+        this.hoveredPath = null;
+      }
+
+      if (this.hoveredPath) {
+
+        if (this.hoveredPath._name.toString().indexOf(this.currentTool.idPrefix) === -1) {
           this.updateSelection(false, this.hoveredPath);
           this.hoveredPath = null;
         }
-      } else if (this.hoveredPath) {
-        if (this.hoveredPath._name.toString().indexOf(this.currentTool.idPrefix) == -1) {
-          this.updateSelection(false, this.hoveredPath);
-          this.hoveredPath = null;
-        }
-        if (this.path && this.path._name.toString().indexOf(this.currentTool.idPrefix) != -1) {
+        if (this.path && this.path._name.toString().indexOf(this.currentTool.idPrefix) !== -1 ) {
+
+          //should make exception for the dynamically attached paths to shapes
+          if(this.currentTool.partOfPrefix && this.path._name.toString().indexOf(this.currentTool.partOfPrefix) !== -1){
+            return;
+          }
+
           if (this.hoveredPath) {
-            this.updateSelection(false, this.hoveredPath);
+            if(this.hoveredPath._name.toString() === this.path._name.toString() ){
+              return;
+            }else{
+              this.updateSelection(false, this.hoveredPath);
+            }
+
           }
           this.hoveredPath = this.path;
           this.updateSelection(true, this.hoveredPath);
         }
-      } else if (this.path && this.path._name.toString().indexOf(this.currentTool.idPrefix) != -1) {
+        return;
+
+      }
+
+      if (this.path && this.path._name.toString().indexOf(this.currentTool.idPrefix) != -1) {
         this.hoveredPath = this.path;
         this.updateSelection(true, this.hoveredPath);
       }
@@ -24088,7 +25497,10 @@ return paper;
         name: shape.name
       });
 
-      cloned.strokeWidth = 1 / this.paperScope.view.zoom;
+      cloned.data.defaultStrokeValue = 1;
+      cloned.data.editStrokeValue = 5;
+      cloned.data.currentStrokeValue = cloned.data.defaultStrokeValue;
+      cloned.strokeWidth = cloned.data.currentStrokeValue / this.paperScope.view.zoom;
       cloned.strokeColor = shape.strokeColor;
       cloned.dashArray = shape.dashArray;
       if (shape.fillColor) {
@@ -24150,7 +25562,7 @@ return paper;
       var paperItems = [];
       var svgParser = new DOMParser();
       var svgDOM = svgParser.parseFromString(svg, "text/xml");
-      if (svgDOM.documentElement.nodeName == "parsererror") {
+      if (svgDOM.documentElement.nodeName == 'parsererror') {
         return; // if svg is not valid XML structure - backward compatibility.
       }
       var svgTag = this.paperScope.project.importSVG(svg);
@@ -24178,7 +25590,7 @@ return paper;
           if (shapeArray[idx].name == this.editedPaths[i].name) {
             shapeArray[idx].segments = this.editedPaths[i].segments;
             shapeArray[idx].name = this.editedPaths[i].name;
-            shapeArray[idx].strokeWidth = 1 / this.paperScope.view.zoom;
+            shapeArray[idx].strokeWidth = shapeArray[idx].data.currentStrokeValue / this.paperScope.view.zoom;
             shapeArray[idx].strokeColor = this.editedPaths[i].strokeColor;
             shapeArray[idx].dashArray = this.editedPaths[i].dashArray;
             if (this.editedPaths[i].fillColor) {
@@ -24189,7 +25601,7 @@ return paper;
             }
             if (this.editedPaths[i].style) {
               shapeArray[idx].style = this.editedPaths[i].style;
-              shapeArray[idx].style.strokeWidth = 1 / this.paperScope.view.zoom;
+              shapeArray[idx].style.strokeWidth = shapeArray[idx].data.currentStrokeValue / this.paperScope.view.zoom;
             }
             shapeArray[idx].closed = this.editedPaths[i].closed;
             shapeArray[idx].data.rotation = this.editedPaths[i].data.rotation;
@@ -24222,23 +25634,25 @@ return paper;
 
     disable: function() {
       this.disabled = true;
-      this.eventEmitter.publish('hideDrawTools.' + this.windowId);
-      this.eventEmitter.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
-      this.eventEmitter.publish('disableFillColorPicker.' + this.windowId, this.disabled);
+      this.inEditMode = false;
       this.eventEmitter.publish('enableTooltips.' + this.windowId);
       this.deselectAll();
+    },
+
+    enableEdit: function() {
+      this.disabled = false;
+      this.inEditMode = true;
+      this.eventEmitter.publish('disableTooltips.' + this.windowId);
     },
 
     enable: function() {
       var setDefaultTool = this.disabled;
       this.disabled = false;
-      this.eventEmitter.publish('showDrawTools.' + this.windowId);
-      this.eventEmitter.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
-      this.eventEmitter.publish('disableFillColorPicker.' + this.windowId, this.disabled);
+      this.inEditMode = false;
       this.eventEmitter.publish('disableTooltips.' + this.windowId);
-      if (setDefaultTool) {
-        this.eventEmitter.publish('toggleDefaultDrawingTool.' + this.windowId);
-      }
+      // if (setDefaultTool) {
+      //   this.eventEmitter.publish('toggleDefaultDrawingTool.' + this.windowId);
+      // }
     },
 
     refresh: function() {
@@ -24289,6 +25703,7 @@ return paper;
     },
 
     onDrawFinish: function() {
+
       var shape = this.path;
       if (!shape) {
         return;
@@ -24296,44 +25711,84 @@ return paper;
       if (this.hoveredPath) {
         this.updateSelection(false, this.hoveredPath);
       }
+
+      // Set special style for newly created shapes
+      var newlyCreatedStrokeFactor = this.drawingToolsSettings.newlyCreatedShapeStrokeWidthFactor || 5;
+      shape.data.newlyCreated = true;
+      shape.data.currentStrokeValue *= newlyCreatedStrokeFactor;
+      shape.strokeWidth *= newlyCreatedStrokeFactor;
+
       this.hoveredPath = shape;
-      this.updateSelection(true, this.hoveredPath);
       this.segment = null;
       this.path = null;
       this.mode = '';
       this.draftPaths.push(shape);
-      var annoTooltip = new $.AnnotationTooltip({
-        targetElement: jQuery(this.canvas).parents('.mirador-osd'),
-        state: this.state,
-        eventEmitter: this.eventEmitter,
-        windowId: this.windowId
-      });
-      
+
+      shape.data.editable = true;
+
+      this.updateSelection(true, this.hoveredPath);
+      if (typeof this.annoTooltip === 'undefined' || !this.annoTooltip) {
+        this.annoTooltip = new $.AnnotationTooltip({
+          targetElement: jQuery(this.canvas).parents('.mirador-osd'),
+          state: this.state,
+          eventEmitter: this.eventEmitter,
+          windowId: this.windowId
+        });
+      }
+
       if (this.availableExternalCommentsPanel) {
         this.eventEmitter.publish('annotationShapeCreated.' + this.windowId, [this, shape]);
         return;
       }
       var _this = this;
-      annoTooltip.showEditor({
-        annotation: {},
-        onAnnotationCreated: function(oaAnno) {
-          var svg = _this.getSVGString(_this.draftPaths);
-          oaAnno.on = {
-            "@type": "oa:SpecificResource",
-            "full": _this.state.getWindowObjectById(_this.windowId).canvasID,
-            "selector": {
-              "@type": "oa:SvgSelector",
-              "value": svg
+      if (typeof this.annoEditorVisible === 'undefined' || !this.annoEditorVisible)  {
+        this.annoTooltip.showEditor({
+          annotation: {},
+          onSaveClickCheck: function () {
+            return _this.draftPaths.length;
+          },
+          onAnnotationCreated: function(oaAnno) {
+            //should remove the styles added for newly created annotation
+            for(var i=0;i<_this.draftPaths.length;i++){
+              if(_this.draftPaths[i].data && _this.draftPaths[i].data.newlyCreated){
+                _this.draftPaths[i].strokeWidth /= newlyCreatedStrokeFactor;
+                _this.draftPaths[i].data.currentStrokeValue /=newlyCreatedStrokeFactor;
+                delete _this.draftPaths[i].data.newlyCreated;
+              }
             }
-          };
-          //save to endpoint
-          _this.eventEmitter.publish('annotationCreated.' + _this.windowId, [oaAnno, shape]);
-        },
-        onCancel: function() {
-          _this.clearDraftData();
-        },
-        onCompleted: function() {
-          _this.clearDraftData();
+
+            var svg = _this.getSVGString(_this.draftPaths);
+            oaAnno.on = {
+              "@type": "oa:SpecificResource",
+              "full": _this.state.getWindowObjectById(_this.windowId).canvasID,
+              "selector": {
+                "@type": "oa:SvgSelector",
+                "value": svg
+              }
+            };
+            //save to endpoint
+            _this.eventEmitter.publish('annotationCreated.' + _this.windowId, [oaAnno, shape]);
+          },
+          onCancel: function() {
+            _this.clearDraftData();
+            _this.annoTooltip = null;
+            _this.annoEditorVisible = false;
+          },
+          onCompleted: function() {
+            _this.clearDraftData();
+            _this.annoTooltip = null;
+            _this.annoEditorVisible = false;
+          }
+        });
+        _this.annoEditorVisible = true;
+      }
+    },
+
+    onEditFinish: function() {
+      var _this = this;
+      jQuery.each(this.draftPaths, function(index, value) {
+        if (_this.path.name === value.name) {
+          _this.draftPaths[index] = _this.path;
         }
       });
     },
@@ -24353,6 +25808,31 @@ return paper;
       _this.segment = null;
       _this.path = null;
       _this.mode = '';
+    },
+
+    // Should unsubscribe from all events
+    // Should have no references in order to be garbage collected
+    destroy:function(){
+      this.eventEmitter.unsubscribe('deleteShape.' + this.windowId);
+      this.eventEmitter.unsubscribe('toggleDrawingTool.' + this.windowId);
+      this.eventEmitter.unsubscribe('toggleBorderType.' + this.windowId);
+      this.eventEmitter.unsubscribe('toggleDefaultDrawingTool.' + this.windowId);
+      this.eventEmitter.unsubscribe('changeBorderColor.' + this.windowId);
+      this.eventEmitter.unsubscribe('changeFillColor.' + this.windowId);
+      this.eventEmitter.unsubscribe('changeBorderColor.' + this.windowId);
+      this.eventEmitter.unsubscribe('SET_OVERLAY_TOOLTIP.' + this.windowId);
+      this.eventEmitter.unsubscribe('CANCEL_ACTIVE_ANNOTATIONS.' + this.windowId);
+      this.eventEmitter.unsubscribe('modeChange.' + this.windowId);
+      this.eventEmitter.unsubscribe('CANCEL_ACTIVE_ANNOTATIONS.' + this.windowId);
+
+      this.viewer.removeAllHandlers('animation');
+      this.viewer.removeAllHandlers('open');
+      this.viewer.removeAllHandlers('animation-finish');
+      this.viewer.removeAllHandlers('update-viewport');
+      this.viewer.removeAllHandlers('resize');
+      this.viewer.removeAllHandlers('rotate');
+      this.viewer.removeAllHandlers('constrain');
+      this.viewer.removeAllHandlers('close');
     }
   };
 }(Mirador));
@@ -24363,7 +25843,7 @@ return paper;
       name: 'Pin',
       logoClass: 'room',
       idPrefix: 'pin_',
-      tooltip: 'pinTooltip'
+      tooltip: 'pinTooltip',
     }, options);
 
     this.init();
@@ -24388,7 +25868,10 @@ return paper;
       var shape = new overlay.paperScope.Path(pathData);
       shape.name = overlay.getName(_this);
       shape.dashArray = overlay.dashArray;
-      shape.strokeWidth = 1 / overlay.paperScope.view.zoom;
+      shape.data.defaultStrokeValue = 1;
+      shape.data.editStrokeValue = 5;
+      shape.data.currentStrokeValue = shape.data.defaultStrokeValue;
+      shape.strokeWidth = shape.data.currentStrokeValue / overlay.paperScope.view.zoom;
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
       shape.fillColor.alpha = overlay.fillColorAlpha;
@@ -24398,13 +25881,43 @@ return paper;
     },
 
     updateSelection: function(selected, item, overlay) {
-      var selectedStrokeColor = 'red';
-      //item.selected = selected;
-      if (item._name.toString().indexOf(this.idPrefix) != -1) {
-        if(selected){
-         item.strokeColor = selectedStrokeColor;
-        }else{
+      if (item._name.toString().indexOf(this.idPrefix) !== -1) {
+        if (selected) {
+          item.strokeColor = overlay.selectedColor;
+
+          if (!item.data.deleteIcon) {
+            item.data.deleteIcon = new overlay.annotationUtils.DeleteActionIcon(overlay.paperScope, {
+              name: item.name + this.partOfPrefix + 'delete',
+              fillColor : item.selectedColor
+            });
+
+            item.data.deleteIcon.addData('pivot', item.segments[0].point);
+            item.data.deleteIcon.addData('type', 'deleteIcon');
+            item.data.deleteIcon.addData('self', item.data.deleteIcon);
+            item.data.deleteIcon.addData('parent', item);
+
+            item.data.deleteIcon.setPosition(item.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+            item.data.deleteIcon.setOnMouseDownListener(overlay);
+
+          }
+
+        } else {
           item.strokeColor = overlay.strokeColor;
+
+          if (item.data.deleteIcon) {
+            item.data.deleteIcon.remove();
+            item.data.deleteIcon = null;
+          }
+
+        }
+      }
+    },
+
+    onResize:function(item,overlay){
+      if(item._name.toString().indexOf(this.partOfPrefix)!== -1){
+        if(item._name.toString().indexOf('delete')){
+          item.data.self.setPosition(item.data.self.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+          item.data.self.resize(24 *  1 / overlay.paperScope.view.zoom);
         }
       }
     },
@@ -24433,42 +25946,64 @@ return paper;
         if (overlay.path) {
           overlay.path.position.x += event.delta.x;
           overlay.path.position.y += event.delta.y;
+          if(overlay.path.data.deleteIcon){
+            overlay.path.data.deleteIcon.translateByXY(event.delta.x,event.delta.y);
+          }
         }
       }
     },
 
     onMouseMove: function(event, overlay) {
-      // Empty block.
+      var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
+      if(hitResult && hitResult.item._name.toString().indexOf(this.idPrefix)!==-1){
+        if(!overlay.disabled && overlay.hoveredPath && hitResult.item._name.toString().indexOf(overlay.hoveredPath._name.toString()) !==-1){
+          this.setCursor(hitResult,overlay);
+        }
+      }
     },
 
-    onMouseDown: function(event, overlay) {
+    setCursor:function(hitResult,overlay){
+      if(hitResult.type === 'stroke' || hitResult.type === 'handle-in' || hitResult.type === 'handle-out' || hitResult.type === 'segment'){
+        jQuery(overlay.viewer.canvas).css('cursor','move');
+        return;
+      }
+
+      // mouse over attached icon
+      if(hitResult.type === 'pixel'){
+        jQuery(overlay.viewer.canvas).css('cursor', 'pointer');
+        return;
+      }
+    },
+
+    onMouseDown: function (event, overlay) {
       var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
       if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) != -1) {
-        if (!overlay.path) {
+
+        if (hitResult.item._name.toString().indexOf(this.partOfPrefix) !== -1) {
+          hitResult.item.data.self.onMouseDown();
+          return;
+        }
+
+        if (overlay.mode !== 'translate') {
           overlay.mode = 'translate';
           overlay.segment = null;
           overlay.path = null;
-          document.body.style.cursor = "move";
+        }
+      }
+
+      if (overlay.mode === 'translate') {
+        if (overlay.path) {
+          overlay.segment = null;
+          overlay.path = null;
+          overlay.mode = '';
         } else {
-          document.body.style.cursor = "default";
+          overlay.path = hitResult.item;
         }
-      } else {
-        document.body.style.cursor = "default";
+        return;
       }
-      if (overlay.mode === '') {
-        overlay.path = this.createShape(event.point, overlay);
-        overlay.onDrawFinish();
-      } else if (overlay.mode === 'translate') {
-        if (hitResult) {
-          if (overlay.path) {
-            overlay.segment = null;
-            overlay.path = null;
-            overlay.mode = '';
-          } else {
-            overlay.path = hitResult.item;
-          }
-        }
-      }
+
+      overlay.path = this.createShape(event.point, overlay);
+      overlay.onDrawFinish();
     },
 
     onDoubleClick: function(event, overlay) {
@@ -24498,17 +26033,93 @@ return paper;
       var shape = new overlay.paperScope.Path({
         segments: [initialPoint],
         dashArray: overlay.dashArray,
-        strokeWidth: 1 / overlay.paperScope.view.zoom,
         strokeColor: overlay.strokeColor,
         name: overlay.getName(_this)
       });
+      shape.data.defaultStrokeValue = 1;
+      shape.data.editStrokeValue = 5;
+      shape.data.currentStrokeValue = shape.data.defaultStrokeValue;
+      shape.strokeWidth = shape.data.currentStrokeValue / overlay.paperScope.view.zoom;
       return shape;
     },
 
     updateSelection: function(selected, item, overlay) {
       if (item._name.toString().indexOf(this.idPrefix) != -1) {
         item.selected = selected;
+
+        if(selected){
+          if (!item.data.deleteIcon && overlay.mode !=='create') {
+            item.data.deleteIcon = new overlay.annotationUtils.DeleteActionIcon(overlay.paperScope, {
+              name: item.name + this.partOfPrefix + 'delete',
+              fillColor:item.selectedColor
+            });
+            item.data.deleteIcon.addData('pivot',new overlay.paperScope.Point(this.getPivotPointForDeleteIcon(item)));
+            item.data.deleteIcon.addData('type', 'deleteIcon');
+            item.data.deleteIcon.addData('self', item.data.deleteIcon);
+            item.data.deleteIcon.addData('parent', item);
+            item.data.deleteIcon.setPosition(item.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+            item.data.deleteIcon.setOnMouseDownListener(overlay);
+          }
+        }else{
+
+          if(item.data.deleteIcon){
+            item.data.deleteIcon.remove();
+            item.data.deleteIcon = null;
+          }
+        }
       }
+    },
+
+    onResize:function(item,overlay){
+      if(item._name.toString().indexOf(this.partOfPrefix)!== -1){
+        if(item._name.toString().indexOf('delete') !==-1){
+
+          item.data.self.setPosition(item.data.self.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+          item.data.self.resize(24 *  1 / overlay.paperScope.view.zoom);
+        }
+      }
+    },
+
+    getPivotPointForDeleteIcon:function(item){
+      var points = [];
+
+      for(var i=0;i<item.segments.length;i++){
+        points.push(item.segments[i].point);
+      }
+
+      return {
+        x:this.getGeometricCenterOfPoints(points).x,
+        y:this.getLowestPoint(points).y
+      };
+    },
+
+    getLowestPoint: function (points) {
+      var lx = 0;
+      var ly = 0;
+
+      for (var i = 0; i < points.length; i++) {
+        lx = Math.max(lx, points[i].x);
+        ly = Math.max(ly, points[i].y);
+      }
+
+      return {
+        x: lx,
+        y: ly
+      };
+    },
+
+    getGeometricCenterOfPoints: function (points) {
+      var cx = 0;
+      var cy = 0;
+      for(var i= 0;i<points.length;i++){
+        cx +=points[i].x;
+        cy +=points[i].y;
+      }
+
+      return {
+        x:cx/points.length,
+        y:cy/points.length
+      };
     },
 
     onHover:function(activate,shape,hoverColor){
@@ -24527,77 +26138,150 @@ return paper;
     },
 
     onMouseUp: function(event, overlay) {
-      // Empty block.
+
     },
 
     onMouseDrag: function(event, overlay) {
-      if (overlay.mode === 'edit') {
+      if (overlay.mode === 'deform') {
         if (overlay.segment) {
           overlay.segment.point.x += event.delta.x;
           overlay.segment.point.y += event.delta.y;
-        } else if (overlay.path) {
+
+          var path = overlay.segment.path;
+
+          if(path.data.deleteIcon){
+            path.data.deleteIcon.addData('pivot', new overlay.paperScope.Point(this.getPivotPointForDeleteIcon(path)));
+            path.data.deleteIcon.setPosition(path.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom)));
+          }
+
+          return;
+        }
+      }
+
+      if (overlay.mode === 'translate') {
+        if (overlay.path) {
           overlay.path.position.x += event.delta.x;
           overlay.path.position.y += event.delta.y;
+          if (overlay.path.data.deleteIcon) {
+            overlay.path.data.deleteIcon.translateByXY(event.delta.x, event.delta.y);
+          }
+
         }
       }
     },
 
     onMouseMove: function(event, overlay) {
-      // Empty block.
+      var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
+      if(hitResult && hitResult.item._name.toString().indexOf(this.idPrefix)!==-1){
+        if(!overlay.disabled && overlay.hoveredPath && hitResult.item._name.toString().indexOf(overlay.hoveredPath._name.toString()) !==-1){
+          this.setCursor(hitResult,overlay);
+        }
+      }
+    },
+
+    setCursor:function(hitResult,overlay){
+      if(hitResult.type === 'stroke'){
+        jQuery(overlay.viewer.canvas).css('cursor','move');
+        return;
+      }
+
+      if(hitResult.type === 'handle-in' || hitResult.type === 'handle-out'){
+        jQuery(overlay.viewer.canvas).css('cursor','pointer');
+        return;
+      }
+
+      // mouse over attached icon
+      if(hitResult.type === 'pixel'){
+        jQuery(overlay.viewer.canvas).css('cursor', 'pointer');
+        return;
+      }
+
+      if(hitResult.segment){
+        jQuery(overlay.viewer.canvas).css('cursor','pointer');
+      }
     },
 
     onMouseDown: function(event, overlay) {
       var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
-      if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) != -1) {
-        if (!overlay.path) {
-          overlay.mode = 'edit';
-          overlay.segment = null;
-          overlay.path = null;
-          document.body.style.cursor = "move";
-        } else {
-          document.body.style.cursor = "default";
+      if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) !== -1) {
+
+        if (hitResult.item._name.toString().indexOf(this.partOfPrefix) !== -1) {
+          hitResult.item.data.self.onMouseDown();
+          return;
         }
-      } else {
-        document.body.style.cursor = "default";
-      }
-      if (overlay.mode === '') {
-        overlay.path = this.createShape(event.point, overlay);
-      } else if (overlay.mode === 'create') {
-        overlay.path.add(event.point);
-      } else if (overlay.mode === 'edit') {
-        if (hitResult) {
-          if (event.modifiers.shift) {
-            if (hitResult.type == 'segment') {
-              hitResult.segment.remove();
-            }
-          } else if (overlay.path) {
+
+        if (overlay.mode !== 'create') {
+          if (!overlay.path) {
+            overlay.mode = 'edit';
             overlay.segment = null;
             overlay.path = null;
-            overlay.mode = '';
+            document.body.style.cursor = "move";
           } else {
-            overlay.path = hitResult.item;
-            if (hitResult.type == 'segment') {
-              overlay.segment = hitResult.segment;
-            } else if (hitResult.type == 'fill') {
-              overlay.paperScope.project.activeLayer.addChild(hitResult.item);
-            }
+
+            document.body.style.cursor = "default";
           }
+
+          if (hitResult.type === 'stroke') {
+            overlay.mode = 'translate';
+            overlay.path = hitResult.item;
+            return;
+          }
+
+          if (hitResult.type === 'segment') {
+            // When shift is being pressed and segment point selected it deletes
+            if(event.modifiers.shift){
+              if(hitResult.item.segments.length > 2){
+                hitResult.segment.remove();
+                return;
+              }
+
+            }
+            overlay.mode = 'deform';
+            overlay.segment = hitResult.segment;
+            overlay.path = hitResult.item;
+            return;
+          }
+
+
+        }
+      } else {
+        if(overlay.mode !=='create'){
+          overlay.mode = '';
         }
       }
+
+      if (overlay.mode === '') {
+        overlay.path = this.createShape(event.point, overlay);
+
+        return;
+      }
+      if (overlay.mode === 'create') {
+        overlay.path.add(event.point);
+
+        return;
+      }
+
     },
 
     onDoubleClick: function(event, overlay) {
-      if (overlay.path) {
-        if (overlay.path.segments[0].point.getDistance(overlay.path.segments[overlay.path.segments.length - 1].point) < overlay.hitOptions.tolerance) {
-          overlay.path.closed = true;
-          overlay.path.fillColor = overlay.fillColor;
-          overlay.path.fillColor.alpha = overlay.fillColorAlpha;
+      if (overlay.mode === 'create') {
+        if (overlay.path && overlay.path.segments.length > 1) {
+
+          if (overlay.path.segments[0].point.getDistance(overlay.path.segments[overlay.path.segments.length - 1].point) * overlay.paperScope.view.zoom < overlay.hitOptions.tolerance) {
+            overlay.path.closed = true;
+            overlay.path.fillColor = overlay.fillColor;
+            overlay.path.fillColor.alpha = overlay.fillColorAlpha;
+            overlay.path.segments[overlay.path.segments.length - 1].remove();
+          }
+          overlay.onDrawFinish();
         }
+
       }
-      overlay.onDrawFinish();
+
     }
   };
 }(Mirador));
+
 (function($) {
   $.Rectangle = function(options) {
     jQuery.extend(this, {
@@ -24606,7 +26290,6 @@ return paper;
       idPrefix: 'rectangle_',
       tooltip: 'rectangleTooltip'
     }, options);
-
     this.init();
   };
 
@@ -24625,7 +26308,10 @@ return paper;
         name: overlay.getName(this)
       });
       shape.dashArray = overlay.dashArray;
-      shape.strokeWidth = 1 / overlay.paperScope.view.zoom;
+      shape.data.defaultStrokeValue = 1;
+      shape.data.editStrokeValue = 5;
+      shape.data.currentStrokeValue = shape.data.defaultStrokeValue;
+      shape.strokeWidth = shape.data.currentStrokeValue / overlay.paperScope.view.zoom;
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
       shape.fillColor.alpha = overlay.fillColorAlpha;
@@ -24643,7 +26329,7 @@ return paper;
       //   ┌ ─ ─ ─ ┐
       // 8 │       │ 4
       //   └ ─ ─ ─ ┘
-      // 7     6     5
+      // 7     6     5(initial point)
       // points 1 & 2 are workaround used to draw rotation handle
 
       segments.push(new overlay.paperScope.Point(initialPoint.x - 2 * pixel, initialPoint.y - 2 * pixel));
@@ -24658,23 +26344,101 @@ return paper;
       return segments;
     },
 
-    updateSelection: function(selected, item, overlay) {
+    updateSelection: function (selected, item, overlay) {
       if (item._name.toString().indexOf(this.idPrefix) != -1) {
-        item.fullySelected = selected;
+
+        if(item._name.toString().indexOf(this.partOfPrefix)!=-1){
+          return;
+        }
+
+        item.selected = selected;
         if (selected) {
-          item.segments[1].handleOut = new overlay.paperScope.Point(0, -20 / overlay.paperScope.view.zoom);
-          item.segments[1].handleOut = item.segments[1].handleOut.rotate(item.data.rotation, item.segments[1]);
+
+          //item.segments[1].handleOut = new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom);
+         // item.segments[1].handleOut = item.segments[1].handleOut.rotate(item.data.rotation, item.segments[1]);
+
+          if (!item.data.deleteIcon) {
+
+            item.data.deleteIcon = new overlay.annotationUtils.DeleteActionIcon(overlay.paperScope, {
+              name: item.name + this.partOfPrefix + 'delete',
+              fillColor: item.selectedColor
+            });
+
+            item.data.deleteIcon.addData('pivot',item.segments[6].point);
+            item.data.deleteIcon.addData('type', 'deleteIcon');
+            item.data.deleteIcon.addData('self', item.data.deleteIcon);
+            item.data.deleteIcon.addData('parent', item);
+
+            item.data.deleteIcon.setPosition(item.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+
+            item.data.deleteIcon.setOnMouseDownListener(overlay);
+
+          }
+
+          if (!item.data.rotationIcon) {
+
+            item.data.rotationIcon = new overlay.annotationUtils.RotationIcon(overlay.paperScope, {
+              name: item.name + this.partOfPrefix + 'rotation',
+              fillColor: item.selectedColor
+            });
+
+            item.data.rotationIcon.addData('pivot',item.segments[1].point);
+            item.data.rotationIcon.addData('type', 'rotationIcon');
+            item.data.rotationIcon.addData('self', item.data.rotationIcon);
+            item.data.rotationIcon.addData('parent', item);
+
+            item.data.rotationIcon.setPosition(item.data.rotationIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+
+            item.data.rotationIcon.setOnMouseDownListener(overlay);
+
+          }
+
+          if (!item.data.group) {
+            item.data.group = new overlay.annotationUtils.Group(overlay.paperScope,[item,item.data.deleteIcon.getItem(),item.data.deleteIcon.getMask().getItem(),item.data.rotationIcon.getItem(),item.data.rotationIcon.getMask().getItem()]);
+          }
+
           var point = item.segments[1].point.clone();
           point = point.add(item.segments[1].handleOut);
+
           if (item.contains(point)) {
             item.segments[1].handleOut = item.segments[1].handleOut.rotate(180, item.segments[1]);
           }
+
+          if(item.contains(item.data.deleteIcon.getItem().position)){
+            item.data.deleteIcon.setPosition(item.data.deleteIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+            item.data.deleteIcon.rotate(180,item.data.deleteIcon.getData('pivot'));
+            item.data.deleteIcon.rotate(180);
+          }
+
+          if(item.contains(item.data.rotationIcon.getItem().position)){
+            item.data.rotationIcon.setPosition(item.data.rotationIcon.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.rotation)));
+            item.data.rotationIcon.rotate(180,item.data.rotationIcon.getData('pivot'));
+            item.data.rotationIcon.rotate(180);
+          }
+
+          item.segments[1].handleOut.selected = false;
         } else {
+
+          if(item.data.group){
+            item.data.group.remove();
+            item.data.group = null;
+            overlay.paperScope.project.activeLayer.addChild(item);
+          }
+
+          if(item.data.deleteIcon){
+            item.data.deleteIcon.remove();
+            item.data.deleteIcon = null;
+          }
+
+          if(item.data.rotationIcon){
+            item.data.rotationIcon.remove();
+            item.data.rotationIcon = null;
+          }
           item.segments[1].handleOut = new overlay.paperScope.Point(0, 0);
         }
       }
     },
-    
+
     onHover:function(activate,shape,hoverColor){
       // shape needs to have hovered styles
       if(activate && !shape.data.hovered){
@@ -24698,18 +26462,46 @@ return paper;
     },
 
     onMouseUp: function(event, overlay) {
-      if (overlay.mode == 'create' && overlay.path) {
+      if (overlay.mode === 'create' && overlay.path) {
         overlay.onDrawFinish();
+      } else if (overlay.mode === 'translate' || overlay.mode === 'deform' && overlay.path) {
+        overlay.onEditFinish();
       }
     },
 
-    onMouseDrag: function(event, overlay) {
+    translate: function(event, overlay) {
+      for (var i = 0; i < overlay.path.segments.length; i++) {
+        overlay.path.segments[i].point.x += event.delta.x;
+        overlay.path.segments[i].point.y += event.delta.y;
+      }
+      overlay.path.data.rotationIcon.translateByXY(event.delta.x,event.delta.y);
+      overlay.path.data.deleteIcon.translateByXY(event.delta.x,event.delta.y);
+    },
+
+    rotate:function(event,overlay){
+      var center = overlay.path.position;
+      var rotation = Math.atan2(event.point.y - center.y + event.delta.y, event.point.x - center.x + event.delta.x) - Math.atan2(event.point.y - center.y, event.point.x - center.x);
+      rotation = rotation * (180 / Math.PI);
+
+      overlay.path.data.group.rotate(rotation,overlay.path.position);
+
+      overlay.path.data.deleteIcon.rotate(-rotation);
+      overlay.path.data.rotationIcon.rotate(-rotation);
+      overlay.path.data.rotation += rotation;
+    },
+
+    onMouseDrag: function (event, overlay) {
       if (overlay.mode == 'translate') {
-        for (var i = 0; i < overlay.path.segments.length; i++) {
-          overlay.path.segments[i].point.x += event.delta.x;
-          overlay.path.segments[i].point.y += event.delta.y;
-        }
-      } else if (overlay.mode == 'create' || overlay.mode == 'deform') {
+        this.translate(event, overlay);
+        return;
+      }
+
+      if (overlay.mode === 'rotate') {
+        this.rotate(event, overlay);
+        return;
+      }
+
+      if (overlay.mode == 'create' || overlay.mode == 'deform') {
         var idx = -1;
         for (var l = 0; l < overlay.path.segments.length; l++) {
           if (overlay.path.segments[l] == overlay.segment) {
@@ -24717,143 +26509,157 @@ return paper;
             break;
           }
         }
-        if (idx === -1) {
-          var segment = overlay.path.segments[1];
-          var center = overlay.path.position;
-          var oldPoint = new overlay.paperScope.Point(event.point.x - center.x, event.point.y - center.y);
-          var newPoint = new overlay.paperScope.Point(event.point.x - center.x + event.delta.x, event.point.y - center.y + event.delta.y);
-          var rotation = Math.atan2(newPoint.y, newPoint.x) - Math.atan2(oldPoint.y, oldPoint.x);
-          rotation = rotation * (180 / Math.PI);
-          overlay.path.rotate(rotation, overlay.path.position);
-          overlay.path.data.rotation += rotation;
-        } else {
-          var translation = new overlay.paperScope.Point(event.delta.x, event.delta.y);
-          var rot = overlay.path.data.rotation;
-          translation = translation.rotate(-rot);
-          var translationX = new overlay.paperScope.Point(translation.x, 0);
-          translationX = translationX.rotate(rot);
-          var translationY = new overlay.paperScope.Point(0, translation.y);
-          translationY = translationY.rotate(rot);
-          var moveTopSize = idx === 0 || idx === 1 || idx === 2 || idx === 3;
-          var moveBottomSize = idx === 5 || idx === 6 || idx === 7;
-          var moveRightSize = idx === 3 || idx === 4 || idx === 5;
-          var moveLeftSize = idx === 0 || idx === 7 || idx === 8;
-          if (moveTopSize) {
-            overlay.path.segments[0].point = overlay.path.segments[0].point.add(translationY);
-            overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationY);
-            overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationY);
-            overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationY);
-          }
-          if (moveBottomSize) {
-            overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationY);
-            overlay.path.segments[6].point = overlay.path.segments[6].point.add(translationY);
-            overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationY);
-          }
-          if (moveTopSize || moveBottomSize) {
-            translationY = translationY.multiply(0.5);
-            overlay.path.segments[4].point = overlay.path.segments[4].point.add(translationY);
-            overlay.path.segments[8].point = overlay.path.segments[8].point.add(translationY);
-          }
-          if (moveRightSize) {
-            overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationX);
-            overlay.path.segments[4].point = overlay.path.segments[4].point.add(translationX);
-            overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationX);
-          }
-          if (moveLeftSize) {
-            overlay.path.segments[0].point = overlay.path.segments[0].point.add(translationX);
-            overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationX);
-            overlay.path.segments[8].point = overlay.path.segments[8].point.add(translationX);
-          }
-          if (moveRightSize || moveLeftSize) {
-            translationX = translationX.multiply(0.5);
-            overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationX);
-            overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationX);
-            overlay.path.segments[6].point = overlay.path.segments[6].point.add(translationX);
-          }
-          var point = overlay.path.segments[1].point.clone();
-          point = point.add(overlay.path.segments[1].handleOut);
-          if (overlay.path.contains(point)) {
-            overlay.path.segments[1].handleOut = overlay.path.segments[1].handleOut.rotate(180, overlay.path.segments[1]);
-          }
+
+        var translation = new overlay.paperScope.Point(event.delta.x, event.delta.y);
+        var rot = overlay.path.data.rotation;
+        translation = translation.rotate(-rot);
+        var translationX = new overlay.paperScope.Point(translation.x, 0);
+        translationX = translationX.rotate(rot);
+        var translationY = new overlay.paperScope.Point(0, translation.y);
+        translationY = translationY.rotate(rot);
+        var moveTopSize = idx === 0 || idx === 1 || idx === 2 || idx === 3;
+        var moveBottomSize = idx === 5 || idx === 6 || idx === 7;
+        var moveRightSize = idx === 3 || idx === 4 || idx === 5;
+        var moveLeftSize = idx === 0 || idx === 7 || idx === 8;
+        if (moveTopSize) {
+          overlay.path.data.rotationIcon.translateByPoint(translationY);
+          overlay.path.segments[0].point = overlay.path.segments[0].point.add(translationY);
+          overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationY);
+          overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationY);
+          overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationY);
         }
+        if (moveBottomSize) {
+          overlay.path.data.deleteIcon.translateByPoint(translationY);
+
+          overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationY);
+          overlay.path.segments[6].point = overlay.path.segments[6].point.add(translationY);
+          overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationY);
+        }
+        if (moveTopSize || moveBottomSize) {
+          translationY = translationY.multiply(0.5);
+          overlay.path.segments[4].point = overlay.path.segments[4].point.add(translationY);
+          overlay.path.segments[8].point = overlay.path.segments[8].point.add(translationY);
+        }
+        if (moveRightSize) {
+          overlay.path.segments[3].point = overlay.path.segments[3].point.add(translationX);
+          overlay.path.segments[4].point = overlay.path.segments[4].point.add(translationX);
+          overlay.path.segments[5].point = overlay.path.segments[5].point.add(translationX);
+        }
+        if (moveLeftSize) {
+          overlay.path.segments[0].point = overlay.path.segments[0].point.add(translationX);
+          overlay.path.segments[7].point = overlay.path.segments[7].point.add(translationX);
+          overlay.path.segments[8].point = overlay.path.segments[8].point.add(translationX);
+        }
+        if (moveRightSize || moveLeftSize) {
+          translationX = translationX.multiply(0.5);
+          overlay.path.data.rotationIcon.translateByPoint(translationX);
+          overlay.path.data.deleteIcon.translateByPoint(translationX);
+
+          overlay.path.segments[1].point = overlay.path.segments[1].point.add(translationX);
+          overlay.path.segments[2].point = overlay.path.segments[2].point.add(translationX);
+          overlay.path.segments[6].point = overlay.path.segments[6].point.add(translationX);
+        }
+        var point = overlay.path.segments[1].point.clone();
+        point = point.add(overlay.path.segments[1].handleOut);
+        if (overlay.path.contains(point)) { // TODO should delete this
+          overlay.path.segments[1].handleOut = overlay.path.segments[1].handleOut.rotate(180, overlay.path.segments[1]);
+        }
+
+        if (overlay.path.contains(overlay.path.data.deleteIcon.getItem().position)) {
+          overlay.path.data.deleteIcon.rotate(180, overlay.path.data.deleteIcon.getData('pivot'));
+          overlay.path.data.deleteIcon.rotate(180);
+        }
+
+        if (overlay.path.contains(overlay.path.data.rotationIcon.getItem().position)) {
+          overlay.path.data.rotationIcon.rotate(180, overlay.path.data.rotationIcon.getData('pivot'));
+          overlay.path.data.rotationIcon.rotate(180);
+        }
+
+      }
+    },
+
+    onResize:function(item,overlay){
+      if(item._name.toString().indexOf(this.partOfPrefix)!== -1){
+        if(item._name.toString().indexOf('delete') !==-1){
+          item.data.self.setPosition(item.data.self.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.parent.data.rotation)));
+
+          if(item.data.parent.contains(item.position)){
+            item.data.self.rotate(180,item.data.self.getData('pivot'));
+            item.data.self.rotate(180);
+          }
+
+          item.data.self.resize(24 *  1 / overlay.paperScope.view.zoom);
+        }
+
+        if(item._name.toString().indexOf('rotation') !== -1){
+          item.data.self.setPosition(item.data.self.getData('pivot').add(new overlay.paperScope.Point(0, 21 / overlay.paperScope.view.zoom).rotate(item.data.parent.data.rotation)));
+
+          if(item.data.parent.contains(item.position)){
+            item.data.self.rotate(180,item.data.self.getData('pivot'));
+            item.data.self.rotate(180);
+          }
+
+          item.data.self.resize(16 *  1 / overlay.paperScope.view.zoom);
+        }
+
       }
     },
 
     onMouseMove: function(event, overlay) {
-      // Empty block.
+      var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
+      if(hitResult && hitResult.item._name.toString().indexOf(this.idPrefix)!==-1){
+        if(!overlay.disabled && overlay.hoveredPath && hitResult.item._name.toString().indexOf(overlay.hoveredPath._name.toString()) !==-1){
+          this.setCursor(hitResult,overlay);
+        }
+      }
+    },
+
+    setCursor:function(hitResult,overlay){
+
+      if(hitResult.type === 'stroke'){
+        jQuery(overlay.viewer.canvas).css('cursor','move');
+        return;
+      }
+
+      if(hitResult.type === 'pixel'){
+        jQuery(overlay.viewer.canvas).css('cursor', 'pointer');
+        return;
+      }
+
+      if(hitResult.segment){
+        jQuery(overlay.viewer.canvas).css('cursor','pointer');
+      }
+
     },
 
     onMouseDown: function(event, overlay) {
       var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
       if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) != -1) {
-        if (overlay.mode != 'deform' && overlay.mode != 'translate' && overlay.mode != 'create') {
-          if (hitResult.type == 'segment' || hitResult.type == 'handle-out') {
+        if (overlay.mode !== 'deform' && overlay.mode !== 'translate' && overlay.mode !== 'create') {
+          if (hitResult.item._name.toString().indexOf(this.partOfPrefix) !== -1) {
+            hitResult.item.data.self.onMouseDown(); // TODO should check this for memory leak
+            if(overlay.mode === 'rotate'){
+              overlay.path = hitResult.item.data.self.getItem().data.parent;
+            }
+            return;
+          }
+
+          if (hitResult.type === 'segment') {
             overlay.mode = 'deform';
             overlay.segment = null;
             overlay.path = null;
-            if (hitResult.type == 'handle-out') {
-              jQuery('body').awesomeCursor('repeat', {
-                color: 'white',
-                hotspot: 'center'
-              });
-            } else {
-              var cursor = '';
-              var rotation = hitResult.item.data.rotation;
-              switch (hitResult.segment) {
-                case hitResult.item.segments[0]:
-                  cursor = 'arrows-v';
-                  rotation -= 45;
-                  break;
-                case hitResult.item.segments[1]:
-                  cursor = 'arrows-v';
-                  break;
-                case hitResult.item.segments[2]:
-                  cursor = 'arrows-v';
-                  break;
-                case hitResult.item.segments[3]:
-                  cursor = 'arrows-v';
-                  rotation += 45;
-                  break;
-                case hitResult.item.segments[4]:
-                  cursor = 'arrows-h';
-                  break;
-                case hitResult.item.segments[5]:
-                  cursor = 'arrows-v';
-                  rotation -= 45;
-                  break;
-                case hitResult.item.segments[6]:
-                  cursor = 'arrows-v';
-                  break;
-                case hitResult.item.segments[7]:
-                  cursor = 'arrows-v';
-                  rotation += 45;
-                  break;
-                case hitResult.item.segments[8]:
-                  cursor = 'arrows-h';
-                  break;
-                default:
-                  cursor = 'default';
-                  break;
-              }
-              jQuery('body').awesomeCursor(cursor, {
-                color: 'white',
-                hotspot: 'center',
-                rotate: rotation
-              });
-            }
-          } else {
+            this.setCursor(hitResult, overlay);
+          }
+
+          if (hitResult.type === 'stroke') {
             overlay.mode = 'translate';
             overlay.segment = null;
             overlay.path = null;
-            document.body.style.cursor = "move";
           }
-        } else {
-          document.body.style.cursor = "default";
         }
-      } else {
-        document.body.style.cursor = "default";
       }
-      if (overlay.mode == 'translate') {
+
+      if (overlay.mode === 'translate') {
         if (overlay.path) {
           overlay.segment = null;
           overlay.path = null;
@@ -24861,27 +26667,29 @@ return paper;
         } else {
           overlay.path = hitResult.item;
         }
-      } else if (overlay.mode == 'deform') {
+        return;
+      }
+
+      if (overlay.mode === 'deform') {
         if (overlay.path) {
           overlay.segment = null;
           overlay.path = null;
           overlay.mode = '';
-        } else if (hitResult.type == 'handle-out') {
-          overlay.path = hitResult.item;
-          overlay.segment = null;
         } else {
           overlay.path = hitResult.item;
           overlay.segment = hitResult.segment;
         }
-      } else {
-        overlay.path = this.createShape(event.point, overlay);
+        return;
       }
+      overlay.path = this.createShape(event.point, overlay);
     },
 
     onDoubleClick: function(event, overlay) {
-      // Empty block.
+
     }
+
   };
+
 }(Mirador));
 
 /*
@@ -26525,6 +28333,7 @@ return paper;
       var _this = this;
       _this.eventEmitter.unsubscribe(('modeChange.' + _this.windowId));
 
+      this.createStateMachine();
       this.createRenderer();
       this.bindEvents();
       this.listenForActions();
@@ -26548,6 +28357,40 @@ return paper;
       var _this = this;
     },
 
+    createStateMachine: function() {
+      var _this = this;
+      this.layerState = StateMachine.create({
+        events: [
+          { name: 'startup', from: 'none', to: 'default' },
+          { name: 'defaultState', from: ['default', 'display', 'create', 'edit'], to: 'default' },
+          { name: 'displayAnnotations', from: ['default', 'display', 'create', 'edit', 'newShape'], to: 'display' },
+          { name: 'createAnnotation', from: ['default','display'], to: 'create' },
+          { name: 'createShape', from: 'edit', to: 'newShape'},
+          { name: 'editAnnotation', from: ['default','display', 'newShape'], to: 'edit' }
+        ],
+        callbacks: {
+          onstartup: function(event) {
+            _this.enterDefault();
+          },
+          ondefaultState: function(event) {
+            _this.enterDefault();
+          },
+          ondisplayAnnotations: function(event) {
+            _this.enterDisplayAnnotations();
+          },
+          oncreateAnnotation: function(event) {
+            _this.enterCreateAnnotation();
+          },
+          oncreateShape: function(event) {
+            _this.enterCreateShape();
+          },
+          oneditAnnotation: function(event) {
+            _this.enterEditAnnotation();
+          }
+        }
+      });
+    },
+
     createRenderer: function() {
       var _this = this;
       this.drawTool = new $.OsdRegionDrawTool({
@@ -26559,18 +28402,25 @@ return paper;
         state: _this.state,
         eventEmitter: _this.eventEmitter
       });
-      this.modeSwitch();
+      this.layerState.startup();
     },
 
     updateRenderer: function() {
       this.drawTool.list = this.annotationsList;
-      this.modeSwitch();
+      // this.modeSwitch();
     },
 
     modeSwitch: function() {
-      if (this.mode === 'displayAnnotations') { this.enterDisplayAnnotations(); }
-      else if (this.mode === 'editingAnnotations') { this.enterEditAnnotations(); }
-      else if (this.mode === 'default') { this.enterDefault(); }
+      if (this.mode === 'displayAnnotations') { this.layerState.displayAnnotations(); }
+      else if (this.mode === 'editingAnnotation') { this.layerState.editAnnotation(); }
+      else if (this.mode === 'creatingAnnotation') {
+        if (this.layerState.current !== 'edit') {
+          this.layerState.createAnnotation();
+        } else {
+          this.layerState.createShape();
+        }
+      }
+      else if (this.mode === 'default') { this.layerState.defaultState(); }
       else {}
     },
 
@@ -26579,9 +28429,17 @@ return paper;
       this.drawTool.render();
     },
 
-    enterEditAnnotations: function() {
-      this.drawTool.enterEditMode();
+    enterCreateAnnotation: function() {
+      this.drawTool.enterCreateMode();
       this.drawTool.render();
+    },
+
+    enterCreateShape: function() {
+      this.drawTool.enterCreateShapeMode();
+    },
+
+    enterEditAnnotation: function() {
+      this.drawTool.enterEditMode();
     },
 
     enterDefault: function() {
@@ -27284,18 +29142,28 @@ bindEvents: function() {
 
     init: function() {
       var _this = this;
-
+      var showStrokeStyle = false;
+      this.availableAnnotationStylePickers.forEach(function(picker){
+        if(picker == 'StrokeType'){
+          showStrokeStyle = true;
+        }
+      });
       var annotationProperties = this.canvasControls.annotations;
 
       if (annotationProperties.annotationLayer && this.annoEndpointAvailable) {
         this.annotationElement = jQuery(this.annotationTemplate({
           tools : _this.availableAnnotationTools,
           showEdit : annotationProperties.annotationCreation,
+          showStrokeStyle: showStrokeStyle,
           showRefresh : annotationProperties.annotationRefresh
         })).appendTo(this.container.find('.mirador-osd-annotation-controls'));
         this.annotationElement.hide();
         this.setQtips(this.annotationElement);
         this.setBorderFillColorPickers();
+      }
+
+      if(showStrokeStyle){
+        this.addStrokeStylePicker();
       }
 
       if (this.canvasControls.imageManipulation.manipulationLayer) {
@@ -27332,104 +29200,113 @@ bindEvents: function() {
       });
     },
 
+    addColorPicker:function(selector,options){
+      this.container.find(selector).spectrum(options);
+    },
+
+    getImagePath:function(imageName){
+      return this.state.getStateProperty('buildPath') + this.state.getStateProperty('imagesPath') + imageName;
+    },
+
+    setBackgroundImage:function(el,imageName){
+      el.css('background-image','url('+this.getImagePath(imageName)+')');
+    },
+
+    removeBackgroundImage:function(el){
+      el.css('background-image','');
+    },
+
+    addStrokeStylePicker:function(){
+      var _this = this;
+      var setBackground = {
+        'solid':function(el){
+          _this.setBackgroundImage(el,'border_type_1.png');
+        },
+        'dashed':function(el){
+          _this.setBackgroundImage(el, 'border_type_2.png');
+        },
+        'dotdashed':function(el){
+          _this.setBackgroundImage(el,  'border_type_3.png');
+        }
+      };
+
+      setBackground.solid(this.container.find('.mirador-line-type .solid'));
+      setBackground.dashed(this.container.find('.mirador-line-type .dashed'));
+      setBackground.dotdashed(this.container.find('.mirador-line-type .dotdashed'));
+
+      this.container.find('.mirador-line-type').on('mouseenter', function() {
+        _this.container.find('.type-list').stop().slideFadeToggle(300);
+      });
+      this.container.find('.mirador-line-type').on('mouseleave', function() {
+        _this.container.find('.type-list').stop().slideFadeToggle(300);
+      });
+      this.container.find('.mirador-line-type').find('ul li').on('click', function() {
+        var className = jQuery(this).find('i').attr('class').replace(/fa/, '').replace(/ /, '');
+        _this.removeBackgroundImage(_this.container.find('.mirador-line-type .border-type-image'));
+        setBackground[className](_this.container.find('.mirador-line-type .border-type-image'));
+        _this.eventEmitter.publish('toggleBorderType.' + _this.windowId, className);
+      });
+    },
+
     setBorderFillColorPickers: function() {
       var _this = this;
-      _this.container.find(".borderColorPicker").spectrum({
+      var defaultBorderColor = _this.state.getStateProperty('drawingToolsSettings').strokeColor,
+      defaultFillColor = _this.state.getStateProperty('drawingToolsSettings').fillColor,
+      defaultAlpha = _this.state.getStateProperty('drawingToolsSettings').fillColorAlpha,
+      colorObj = tinycolor(defaultFillColor);
+      colorObj.setAlpha(defaultAlpha);
+
+      this.addColorPicker('.borderColorPicker',{
         showInput: true,
-        showInitial: true,
+        showInitial: false,
         showPalette: true,
+        showButtons: false,
         showSelectionPalette: true,
+        hideAfterPaletteSelect: true,
         appendTo: 'parent',
         containerClassName: 'borderColorPickerPop'+_this.windowId,
         preferredFormat: "rgb",
-        show: function(color) {
-          jQuery.data(document.body, 'borderColorPickerPop' + _this.windowId, color);
-        },
-        change: function(color) {
-          jQuery.data(document.body, 'borderColorPickerPop' + _this.windowId, color);
-        },
-        move: function(color) {
-          jQuery.data(document.body, 'borderColorPickerPop' + _this.windowId, color);
-        },
         hide: function(color) {
-          color = jQuery.data(document.body, 'borderColorPickerPop' + _this.windowId);
-          if (color) {
-            _this.eventEmitter.publish('changeBorderColor.' + _this.windowId, color.toHexString());
-          }
+          _this.eventEmitter.publish('changeBorderColor.' + _this.windowId, color.toHexString());
+          jQuery(this).spectrum("set", color.toHexString());
         },
         maxSelectionSize: 4,
+        color: defaultBorderColor,
         palette: [
-          ["black", "red", "green", "blue"],
-          ["white", "cyan", "magenta", "yellow"]
+          [defaultBorderColor, "black", "red", "green"],
+          ["white", "blue", "magenta", "yellow"]
         ]
       });
 
       _this.container.find(".borderColorPicker").next(".sp-replacer").prepend("<i class='material-icons'>border_color</i>");
+      // _this.container.find(".borderColorPicker").next(".sp-replacer").append('<i class="fa fa-caret-down dropdown-icon"></i>');
 
-      var borderPicker = jQuery('.borderColorPickerPop'+_this.windowId);
-
-      borderPicker.find(".sp-cancel").html('<i class="fa fa-times-circle-o fa-fw"></i>Cancel');
-      borderPicker.find(".sp-cancel").parent().append('<a class="sp-choose" href="#"><i class="fa fa-thumbs-o-up fa-fw"></i>Choose</a>');
-      borderPicker.find('button.sp-choose').hide();
-
-      borderPicker.find('a.sp-cancel').on('click', function() {
-        jQuery.data(document.body, 'borderColorPickerPop' + _this.windowId, null);
-      });
-
-      jQuery._data(borderPicker.find(".sp-cancel")[0], "events").click.reverse();
-
-      borderPicker.find('a.sp-choose').on('click',function(){
-        borderPicker.find('button.sp-choose').click();
-      });
-
-      _this.container.find(".fillColorPicker").spectrum({
+      _this.addColorPicker('.fillColorPicker',{
         showInput: true,
-        showInitial: true,
+        showInitial: false,
         showAlpha: true,
         showPalette: true,
+        showButtons: false,
         showSelectionPalette: true,
+        hideAfterPaletteSelect: true,
         appendTo: 'parent',
+        clickoutFiresChange: true,
         containerClassName: 'fillColorPickerPop'+_this.windowId,
         preferredFormat: "rgb",
-        show: function(color) {
-          jQuery.data(document.body, 'fillColorPickerPop' + _this.windowId, color);
-        },
-        change: function(color) {
-          jQuery.data(document.body, 'fillColorPickerPop' + _this.windowId, color);
-        },
-        move: function(color) {
-          jQuery.data(document.body, 'fillColorPickerPop' + _this.windowId, color);
-        },
         hide: function(color) {
-          color = jQuery.data(document.body, 'fillColorPickerPop' + _this.windowId);
-          if (color) {
-            _this.eventEmitter.publish('changeFillColor.' + _this.windowId, [color.toHexString(), color.getAlpha()]);
-          }
+          _this.eventEmitter.publish('changeFillColor.' + _this.windowId, [color.toHexString(), color.getAlpha()]);
+          jQuery(this).spectrum("set", color);
         },
         maxSelectionSize: 4,
+        color: colorObj,
         palette: [
-          ["black", "red", "green", "blue"],
-          ["white", "cyan", "magenta", "yellow"]
+          [colorObj, "black", "red", "green"],
+          ["white", "blue", "magenta", "yellow"]
         ]
       });
 
       _this.container.find(".fillColorPicker").next(".sp-replacer").prepend("<i class='material-icons'>format_color_fill</i>");
-
-      var fillPicker = jQuery('.fillColorPickerPop'+_this.windowId);
-
-      fillPicker.find(".sp-cancel").html('<i class="fa fa-times-circle-o fa-fw"></i>Cancel');
-      fillPicker.find(".sp-cancel").parent().append('<a class="sp-choose" href="#"><i class="fa fa-thumbs-o-up fa-fw"></i>Choose</a>');
-      fillPicker.find('button.sp-choose').hide();
-
-      fillPicker.find('a.sp-cancel').on('click', function() {
-        jQuery.data(document.body, 'fillColorPickerPop' + _this.windowId, null);
-      });
-
-      jQuery._data(fillPicker.find(".sp-cancel")[0], "events").click.reverse();
-
-      fillPicker.find('a.sp-choose').on('click',function(){
-        fillPicker.find('button.sp-choose').click();
-      });
+      // _this.container.find(".fillColorPicker").next(".sp-replacer").append('<i class="fa fa-caret-down dropdown-icon"></i>');
     },
 
     annotationShow: function() {
@@ -27450,59 +29327,42 @@ bindEvents: function() {
 
     bindEvents: function() {
       var _this = this;
-      // this.container.find('.mirador-osd-back').on('click', function() {
-      //   _this.element.remove();
-      //   _this.element = jQuery(_this.template()).appendTo(_this.container);
-      //   _this.bindEvents();
-      // });
     },
 
     annotationTemplate: Handlebars.compile([
                                    '{{#if showEdit}}',
-                                   '<a class="mirador-osd-edit-mode hud-control" role="button" aria-label="Make a new annotation using mouse">',
-                                   '<i class="fa fa-lg fa-edit"></i>',
-                                   '</a>',
-                                   '<a class="hud-control draw-tool" style="color:#abcdef;">',
-                                   '|',
+                                   '<a class="mirador-osd-pointer-mode hud-control selected">',
+                                   '<i class="fa fa-mouse-pointer"></i>',
                                    '</a>',
                                    '{{#each tools}}',
-                                   '<a class="mirador-osd-{{this.logoClass}}-mode hud-control draw-tool" title="{{t this.tooltip}}">',
+                                   '<a class="mirador-osd-{{this.logoClass}}-mode hud-control mirador-osd-edit-mode" title="{{t this.tooltip}}">',
                                    '<i class="material-icons">{{this.logoClass}}</i>',
                                    '</a>',
                                    '{{/each}}',
-                                   '<a class="hud-control draw-tool" style="color:#abcdef;">',
-                                   '|',
+                                   '{{#if showStrokeStyle}}',
+                                   '<a class="hud-control mirador-line-type" role="button" aria-label="{{t "borderTypeTooltip"}}" title="{{t "borderTypeTooltip"}}">',
+                                   '<i class="material-icons mirador-border-icon">create</i>',
+                                   '<i class="border-type-image solid"></i>',
+                                   '<i class="fa fa-caret-down dropdown-icon"></i>',
+                                   '<ul class="dropdown type-list">',
+                                   '<li><i class="fa solid"></i> {{t "strokeStylePickerSolid"}}</li>',
+                                   '<li><i class="fa dashed"></i> {{t "strokeStylePickerDashed"}}</li>',
+                                   '<li><i class="fa dotdashed"></i> {{t "strokeStylePickerDotdashed"}}</li>',
+                                   '</ul>',
                                    '</a>',
-                                   '<a class="hud-control draw-tool" title="{{t "borderColorTooltip"}}">',
+                                   '{{/if}}',
+                                   '<a class="hud-control mirador-osd-color-picker" title="{{t "borderColorTooltip"}}">',
                                    '<input type="text" class="borderColorPicker"/>',
                                    '</a>',
-                                   '<a class="hud-control draw-tool" title="{{t "fillColorTooltip"}}">',
+                                   '<a class="hud-control mirador-osd-color-picker" title="{{t "fillColorTooltip"}}">',
                                    '<input type="text" class="fillColorPicker"/>',
                                    '</a>',
-                                   '<a class="hud-control draw-tool" style="color:#abcdef;">',
-                                   '|',
-                                   '</a>',
-                                   '<a class="hud-control draw-tool mirador-osd-delete-mode">',
-                                   '<i class="fa fa-lg fa-trash-o"></i>',
-                                   '</a>',
-                                   '<a class="hud-control draw-tool mirador-osd-save-mode">',
-                                   '<i class="fa fa-lg fa-save"></i>',
-                                   '</a>',
                                    '{{#if showRefresh}}',
-                                     '<a class="hud-control draw-tool mirador-osd-refresh-mode">',
+                                     '<a class="hud-control mirador-osd-refresh-mode">',
                                      '<i class="fa fa-lg fa-refresh"></i>',
                                      '</a>',
                                    '{{/if}}',
                                    '{{/if}}'
-                                   /*'<a class="mirador-osd-list hud-control">',
-                                   '<i class="fa fa-lg fa-list"></i>',
-                                   '</a>',*/
-                                   /*'<a class="mirador-osd-search hud-control" role="button">',
-                                   '<i class="fa fa-lg fa-search"></i>',
-                                   '</a>',*/
-                                   /*'<a class="mirador-osd-rect-tool hud-control" role="button">',
-                                   '<i class="fa fa-lg fa-gear"></i>',
-                                   '</a>',*/
     ].join('')),
 
     manipulationTemplate: Handlebars.compile([
@@ -27608,6 +29468,8 @@ bindEvents: function() {
           canvasControls: this.canvasControls,
           annoEndpointAvailable: this.annoEndpointAvailable,
           availableAnnotationTools: this.availableAnnotationTools,
+          availableAnnotationStylePickers: this.availableAnnotationStylePickers,
+          state: this.state,
           eventEmitter: this.eventEmitter
         });
       }
@@ -27627,13 +29489,14 @@ bindEvents: function() {
       //initial state is 'none'
       this.annoState = StateMachine.create({
         events: [
-          { name: 'startup',  from: 'none',  to: 'annoOff' },
-          { name: 'displayOn',  from: 'annoOff',  to: 'annoOnCreateOff' },
-          { name: 'refreshCreateOff',  from: 'annoOnCreateOff',  to: 'annoOnCreateOff' },
-          { name: 'createOn', from: ['annoOff','annoOnCreateOff'], to: 'annoOnCreateOn' },
-          { name: 'refreshCreateOn',  from: 'annoOnCreateOn',  to: 'annoOnCreateOn' },
-          { name: 'createOff',  from: 'annoOnCreateOn',    to: 'annoOnCreateOff' },
-          { name: 'displayOff', from: ['annoOnCreateOn','annoOnCreateOff'], to: 'annoOff' }
+          { name: 'startup', from: 'none', to: 'off' },
+          { name: 'displayOn', from: 'off', to: 'pointer'},
+          { name: 'displayOff', from: ['pointer', 'shape'], to: 'off'},
+          { name: 'choosePointer', from: ['pointer', 'shape'], to: 'pointer'},
+          { name: 'chooseShape', from: 'pointer', to: 'shape'},
+          { name: 'changeShape', from: 'shape', to: 'shape'},
+          { name: 'refresh', from: 'pointer', to: 'pointer'},
+          { name: 'refresh', from: 'shape', to: 'shape'}
         ],
         callbacks: {
           onstartup: function(event, from, to) {
@@ -27648,46 +29511,7 @@ bindEvents: function() {
                   _this.contextControls.annotationShow();
             }
             _this.eventEmitter.publish('modeChange.' + _this.windowId, 'displayAnnotations');
-            _this.eventEmitter.publish(('windowUpdated'), {
-              id: _this.windowId,
-              annotationState: to
-            });
-          },
-          onrefreshCreateOff: function(event, from, to) {
-            _this.eventEmitter.publish('modeChange.' + _this.windowId, 'displayAnnotations');
-            _this.eventEmitter.publish(('windowUpdated'), {
-              id: _this.windowId,
-              annotationState: to
-            });
-          },
-          oncreateOn: function(event, from, to) {
-            function enableEditingAnnotations() {
-              _this.eventEmitter.publish('HUD_ADD_CLASS.'+_this.windowId, ['.mirador-osd-edit-mode', 'selected']);
-              _this.eventEmitter.publish('modeChange.' + _this.windowId, 'editingAnnotations');
-            }
-            if (_this.annoEndpointAvailable) {
-              if (from === "annoOff") {
-                _this.contextControls.annotationShow();
-                enableEditingAnnotations();
-              } else {
-                enableEditingAnnotations();
-              }
-            }
-            _this.eventEmitter.publish(('windowUpdated'), {
-              id: _this.windowId,
-              annotationState: to
-            });
-          },
-          onrefreshCreateOn: function(event, from, to) {
-            _this.eventEmitter.publish('modeChange.' + _this.windowId, 'editingAnnotations');
-            _this.eventEmitter.publish(('windowUpdated'), {
-              id: _this.windowId,
-              annotationState: to
-            });
-          },
-          oncreateOff: function(event, from, to) {
-            _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-edit-mode', 'selected']);
-            _this.eventEmitter.publish('modeChange.' + _this.windowId, 'displayAnnotations');
+            _this.eventEmitter.publish('HUD_ADD_CLASS.'+_this.windowId, ['.mirador-osd-pointer-mode', 'selected']);
             _this.eventEmitter.publish(('windowUpdated'), {
               id: _this.windowId,
               annotationState: to
@@ -27696,6 +29520,8 @@ bindEvents: function() {
           ondisplayOff: function(event, from, to) {
             if (_this.annoEndpointAvailable) {
               _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-edit-mode', 'selected']);
+              _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-pointer-mode', 'selected']);
+              _this.eventEmitter.publish('CANCEL_ACTIVE_ANNOTATIONS.'+_this.windowId);
               _this.contextControls.annotationHide();
             }
             _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-annotations-layer', 'selected']);
@@ -27704,6 +29530,43 @@ bindEvents: function() {
               id: _this.windowId,
               annotationState: to
             });
+          },
+          onchoosePointer: function(event, from, to) {
+            _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-edit-mode', 'selected']);
+            _this.eventEmitter.publish('HUD_ADD_CLASS.'+_this.windowId, ['.mirador-osd-pointer-mode', 'selected']);
+            _this.eventEmitter.publish('CANCEL_ACTIVE_ANNOTATIONS.'+_this.windowId);
+            _this.eventEmitter.publish('modeChange.' + _this.windowId, 'displayAnnotations');
+            _this.eventEmitter.publish(('windowUpdated'), {
+              id: _this.windowId,
+              annotationState: to
+            });
+          },
+          onchooseShape: function(event, from, to, shape) {
+            _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-pointer-mode', 'selected']);
+            _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-edit-mode', 'selected']);
+            _this.eventEmitter.publish('HUD_ADD_CLASS.'+_this.windowId, ['.mirador-osd-'+shape+'-mode', 'selected']);
+            _this.eventEmitter.publish('modeChange.' + _this.windowId, 'creatingAnnotation');
+            _this.eventEmitter.publish('toggleDrawingTool.'+_this.windowId, shape);
+
+            _this.eventEmitter.publish(('windowUpdated'), {
+              id: _this.windowId,
+              annotationState: to
+            });
+          },
+          onchangeShape: function(event, from, to, shape) {
+            _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-pointer-mode', 'selected']);
+            _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-osd-edit-mode', 'selected']);
+            _this.eventEmitter.publish('HUD_ADD_CLASS.'+_this.windowId, ['.mirador-osd-'+shape+'-mode', 'selected']);
+            //don't need to trigger a mode change, just change tool
+            _this.eventEmitter.publish('toggleDrawingTool.'+_this.windowId, shape);
+
+            _this.eventEmitter.publish(('windowUpdated'), {
+              id: _this.windowId,
+              annotationState: to
+            });
+          },
+          onrefresh: function(event, from, to) {
+            //TODO
           }
         }
       });
@@ -27879,7 +29742,9 @@ bindEvents: function() {
         canvasControls: this.canvasControls,
         annoEndpointAvailable: this.annoEndpointAvailable,
         showNextPrev : this.imagesList.length !== 1,
+        availableAnnotationStylePickers: this.state.getStateProperty('availableAnnotationStylePickers'),
         availableAnnotationTools: this.availableAnnotationTools,
+        state: this.state,
         eventEmitter: this.eventEmitter
       });
 
@@ -27952,33 +29817,8 @@ bindEvents: function() {
         _this.element.find(elementSelector).fadeOut(duration, complete);
       });
 
-      _this.eventEmitter.subscribe('initBorderColor.' + _this.windowId, function(event, color) {
-        _this.element.find('.borderColorPicker').spectrum('set', color);
-      });
-      _this.eventEmitter.subscribe('initFillColor.' + _this.windowId, function(event, color, alpha) {
-        var colorObj = tinycolor(color);
-        colorObj.setAlpha(alpha);
-        _this.element.find('.fillColorPicker').spectrum('set', colorObj);
-      });
-      _this.eventEmitter.subscribe('disableBorderColorPicker.'+_this.windowId, function(event, disablePicker) {
-        if(disablePicker) {
-          _this.element.find('.borderColorPicker').spectrum("disable");
-        }else{
-          _this.element.find('.borderColorPicker').spectrum("enable");
-        }
-      });
-      _this.eventEmitter.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
-        if(disablePicker) {
-          _this.element.find('.fillColorPicker').spectrum("disable");
-        }else{
-          _this.element.find('.fillColorPicker').spectrum("enable");
-        }
-      });
-      _this.eventEmitter.subscribe('showDrawTools.'+_this.windowId, function(event) {
-        _this.element.find('.draw-tool').show();
-      });
-      _this.eventEmitter.subscribe('hideDrawTools.'+_this.windowId, function(event) {
-        _this.element.find('.draw-tool').hide();
+      _this.eventEmitter.subscribe('SET_STATE_MACHINE_POINTER.' + _this.windowId, function(event) {
+        _this.hud.annoState.choosePointer();
       });
       //Related to Annotations HUD
     },
@@ -27998,7 +29838,7 @@ bindEvents: function() {
         if (_this.hud.annoState.current === 'none') {
           _this.hud.annoState.startup(this);
         }
-        if (_this.hud.annoState.current === 'annoOff') {
+        if (_this.hud.annoState.current === 'off') {
           _this.hud.annoState.displayOn(this);
         } else {
           //make sure to force the controls back to auto fade
@@ -28068,13 +29908,21 @@ bindEvents: function() {
 
       //Annotation specific controls
       this.element.find('.mirador-osd-edit-mode').on('click', function() {
-        if (_this.hud.annoState.current === 'annoOnCreateOff') {
-          _this.hud.annoState.createOn();
-          //when a user is in Create mode, don't let the controls auto fade as it could be distracting to the user
-          _this.forceShowControls = true;
-          _this.element.find(".hud-control").stop(true, true).removeClass('hidden', _this.state.getStateProperty('fadeDuration'));
-        } else if (_this.hud.annoState.current === 'annoOnCreateOn') {
-          _this.hud.annoState.createOff();
+        var shape = jQuery(this).find('.material-icons').html();
+        if (_this.hud.annoState.current === 'pointer') {
+          _this.hud.annoState.chooseShape(shape);
+        } else {
+          _this.hud.annoState.changeShape(shape);
+        }
+        //when a user is in Create mode, don't let the controls auto fade as it could be distracting to the user
+        _this.forceShowControls = true;
+        _this.element.find(".hud-control").stop(true, true).removeClass('hidden', _this.state.getStateProperty('fadeDuration'));
+      });
+
+      this.element.find('.mirador-osd-pointer-mode').on('click', function() {
+        // go back to pointer mode
+        if (_this.hud.annoState.current === 'shape') {
+          _this.hud.annoState.choosePointer();
           //go back to allowing the controls to auto fade
           _this.forceShowControls = false;
         }
@@ -28084,25 +29932,6 @@ bindEvents: function() {
         //update annotation list from endpoint
         _this.eventEmitter.publish('updateAnnotationList.'+_this.windowId);
         _this.eventEmitter.publish('refreshOverlay.'+_this.windowId, '');
-      });
-      this.element.find('.mirador-osd-delete-mode').on('click', function() {
-        _this.eventEmitter.publish('deleteShape.'+_this.windowId, '');
-      });
-      this.element.find('.mirador-osd-save-mode').on('click', function() {
-        _this.eventEmitter.publish('updateEditedShape.'+_this.windowId, '');
-      });
-      this.element.find('.mirador-osd-edit-mode').on('click', function() {
-        _this.eventEmitter.publish('toggleDefaultDrawingTool.'+_this.windowId);
-      });
-
-      function make_handler(shapeMode) {
-        return function () {
-          _this.eventEmitter.publish('toggleDrawingTool.'+_this.windowId, shapeMode);
-        };
-      }
-      jQuery.each(_this.availableAnnotationTools, function(index, value) {
-        var shape = value.logoClass;
-        _this.element.find('.material-icons:contains(\'' + shape + '\')').on('click', make_handler(shape));
       });
       //Annotation specific controls
 
@@ -28425,23 +30254,28 @@ bindEvents: function() {
 
           _this.addAnnotationsLayer(_this.elemAnno);
 
-          // if current annoState is 'none' that means it has been initialized but not used
-          // use annotationState to choose event
-          if (_this.hud.annoState.current === 'none') {
-              _this.hud.annoState.startup(null);
-            if (_this.annotationState === 'annoOnCreateOff') {
-              _this.hud.annoState.displayOn(null);
-            } else if (_this.annotationState === 'annoOnCreateOn') {
-              _this.hud.annoState.createOn(null);
-            }
+          //get the state before resetting it so we can get back to that state
+          var originalState = _this.hud.annoState.current;
+          var selected = _this.element.find('.mirador-osd-edit-mode.selected');
+          var shape = null;
+          if (selected) {
+            shape = selected.find('.material-icons').html();
+          }
+          if (originalState === 'none') {
+            _this.hud.annoState.startup();
+          } else if (originalState === 'off') {
+            //original state if off, so don't need to do anything
           } else {
-            // if the current state is not 'none' then we need to update the annotations layer,
-            // with the current state, for the new canvas
-            if (_this.hud.annoState.current === 'annoOnCreateOff') {
-              _this.hud.annoState.refreshCreateOff(null);
-            } else if (_this.hud.annoState.current === 'annoOnCreateOn') {
-              _this.hud.annoState.refreshCreateOn(null);
-            }
+            _this.hud.annoState.displayOff();
+          }
+
+          if (originalState === 'pointer') {
+            _this.hud.annoState.displayOn();
+          } else if (originalState === 'shape') {
+            _this.hud.annoState.displayOn();
+            _this.hud.annoState.chooseShape(shape);
+          } else {
+            //original state if off, so don't need to do anything
           }
 
           // A hack. Pop the osd overlays layer after the canvas so
@@ -28459,6 +30293,7 @@ bindEvents: function() {
       });
     },
 
+    //TODO reuse annotationsLayer with IIIFManifestLayouts
     addAnnotationsLayer: function(element) {
       var _this = this;
       _this.annotationsLayer = new $.AnnotationsLayer({
@@ -29872,6 +31707,39 @@ bindEvents: function() {
 
 }(Mirador));
 
+(function ($) {
+  $.DialogBuilder = function (container) {
+    this.container = container || jQuery('.window');
+
+    bootbox.setDefaults({
+      container: this.container
+    });
+  };
+
+  $.DialogBuilder.prototype = {
+    confirm: function (message, callback) {
+      return this._attachEvents(bootbox.confirm(message, callback));
+    },
+    dialog: function(opts){
+      this._attachEvents(bootbox.dialog(opts));
+    },
+    _attachEvents:function(el){
+      var _this = this;
+      jQuery(el).on("shown.bs.modal",function(){
+        // set bigger z-index that one used in qtip
+        var zIndex = 20000;
+
+        jQuery(el).css('z-index',zIndex);
+        // workaround because bootstap does not support external configuration for backdrop parent
+        jQuery('.modal-backdrop').prependTo(_this.container).css('z-index',zIndex);
+      });
+      jQuery(el).on("hidden.bs.modal",function(){
+        jQuery('.modal-backdrop').remove();
+      });
+    }
+  };
+
+})(Mirador);
 (function($) {
   $.EventEmitter = function(config) {
     jQuery.extend(true, this, {
