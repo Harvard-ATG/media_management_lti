@@ -15,7 +15,7 @@ gulp.task('moveHTML', function(){
     .pipe(gulp.dest('build/app/templates'));
 });
 
-gulp.task('moveVendorSrc', ['moveMirador'], function(){
+gulp.task('moveVendorSrc', function(){
   return gulp.src(['src/vendor/**/*'])
     .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
@@ -130,7 +130,7 @@ gulp.task('clean', function(done) {
 });
 
 
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor', 'mirador']);
+gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
 
 gulp.task('connect', function(){
   connect.server({
