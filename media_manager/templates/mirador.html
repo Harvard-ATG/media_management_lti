@@ -20,20 +20,37 @@ window.appConfig = {{appConfig|safe}};
         "id": "viewer",
         "layout": "1x1",
         "data": data,
+        "windowSettings": {
+          "availableViews": ["ThumbnailsView", "ImageView"],
+          "viewType": "ThumbnailsView",
+          "layoutOptions": {
+            "newObject" : false,
+            "close": false,
+            "slotRight": false,
+            "slotLeft": false,
+            "slotAbove": false,
+            "slotBelow": false
+          },
+          "canvasControls": {
+            "annotations" : {
+              "annotationLayer": false
+            },
+            "imageManipulation": {
+              "manipulationLayer": false
+            }
+          }
+        },
         "windowObjects": [{
             "loadedManifest" : data[0].manifestUri,
             //"bottomPanel" : false,
             //"sidePanel" : false,
-            "annotationLayer" : false,
-            "viewType" : "ThumbnailsView" // ImageView|ThumbnailsView
+            "annotationLayer" : false
         }],
         "saveSession": false,
         "mainMenuSettings": {
-            'bookmark' : false,
-            'layout' : true,
-            'options' : false,
-            'fullScreenViewer': true
+          "show": false
         },
+        "displayLayout": false,
         "showAddFromURLBox": false,
     };
 

@@ -18,6 +18,10 @@ exec {'apt-get-update':
     command => 'apt-get update'
 }
 
+exec {'setup-nodejs-source':
+	command => 'wget -qO- https://deb.nodesource.com/setup_6.x | sudo bash -'
+}
+
 # make sure we have some basic tools and libraries available
 
 package {'redis-server':
@@ -156,19 +160,21 @@ exec {'create-project-db':
     logoutput => true,
 }
 
-# Install NodeJS and NPM
-
+# Setup NodeJS
 package {'nodejs':
     ensure => latest,
-    require => Exec['apt-get-update'],
+    require => [Exec['apt-get-update'],Exec['setup-nodejs-source']],
 }
-package {'nodejs-legacy':
-    ensure => latest,
-    require => Package['nodejs']
+exec {'install-node-modules':
+	cwd => '/vagrant/app',
+	command => 'npm install',
+	require => Package['nodejs'],
 }
-package {'npm':
-    ensure => latest,
-    require => Package['nodejs']
+file_line {'update PATH for node_modules':
+    ensure => present,
+    line => 'export PATH=/vagrant/app/node_modules/.bin:$PATH',
+    path => '/home/vagrant/.profile',
+    require => Exec['install-node-modules'],
 }
 
 # Ensure github.com ssh public key is in the .ssh/known_hosts file so
@@ -245,6 +251,7 @@ file_line {'add DJANGO_SETTINGS_MODULE env to postdeactivate':
     path => '/home/vagrant/.virtualenvs/media_management_lti/bin/postdeactivate',
     require => Exec['create-virtualenv'],
 }
+
 
 # Active this virtualenv upon login
 file {'/home/vagrant/.bash_profile':
