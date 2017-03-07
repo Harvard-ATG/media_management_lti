@@ -5,8 +5,8 @@ ALLOWED_HOSTS = ['*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-INSTALLED_APPS += ('debug_toolbar',)
-MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+#INSTALLED_APPS += ('debug_toolbar',)
+#MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 # For Django Debug Toolbar:
 INTERNAL_IPS = ('127.0.0.1', '10.0.2.2',)
