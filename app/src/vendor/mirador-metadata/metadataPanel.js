@@ -37,7 +37,7 @@
         metadatas = data.sequences[0].canvases.reduce(function(dict, canvas){
           var metadata = canvas.metadata || [];
           metadata.forEach(function(item) {
-            item.value = item.value || "No Value";
+            item.value = item.value || "";
             item.label = item.label || "";
           });
           dict[canvas['@id']] = {
