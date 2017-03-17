@@ -112,7 +112,7 @@ class StaticFilesStorage(storage.StaticFilesStorage):
                         (file_name, file_extension) = os.path.splitext(name)
                         new_file_path = os.path.join(root, "%s-%s%s" % (file_name, hash_result, file_extension))
                         hashed_files[orig_file_path] = new_file_path
-                        print "Renaming (copying) file %s to %s" % (orig_file_path, new_file_path)
+                        print "Copying file %s to %s" % (orig_file_path, new_file_path)
                         shutil.copyfile(orig_file_path, new_file_path)
 
         return hashed_files

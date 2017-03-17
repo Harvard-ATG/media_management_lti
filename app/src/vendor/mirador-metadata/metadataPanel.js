@@ -12,7 +12,6 @@
   var sidePanelVisibility = M.Window.prototype.sidePanelVisibility;
   M.Window.prototype.sidePanelVisibility = function(visible) {
     sidePanelVisibility.apply(this, arguments);
-    console.log("sidepanel mods", visible);
     var sidePanelElement = this.element.find('.sidePanel');
     var viewContainerElement = this.element.find('.view-container');
     if(visible) {
