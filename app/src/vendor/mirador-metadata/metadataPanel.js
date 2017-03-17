@@ -35,14 +35,19 @@
       var metadatas = [];
       $.getJSON(manifestUri, function(data) {
         metadatas = data.sequences[0].canvases.reduce(function(dict, canvas){
+          var metadata = canvas.metadata || [];
+          metadata.forEach(function(item) {
+            item.value = item.value || "No Value";
+            item.label = item.label || "";
+          });
           dict[canvas['@id']] = {
-            "datas": canvas.metadata || [],
-            "label": canvas.label
+            "label": canvas.label,
+            "description": canvas.description,
+            "metadata": metadata
           };
           return dict;
         }, {});
       });
-
 
       mirador.eventEmitter.subscribe('currentCanvasIDUpdated.' + windowId, function(event, data){
         var imageId = data;
@@ -51,16 +56,12 @@
         var $tabContent = $sidePanel.find(".tabContentArea").css("width", "calc(100% - 10px)");
 
         if(metadatas[imageId]){
-          template_context = {
+          html = metadata_template({
             "name": metadatas[imageId].label,
-            "metadata": metadatas[imageId].datas.map(function(md){
-              var value = md.value || "No Value";
-              var label = md.label || "";
-              return {"value": value, "label":label};
-            })
-          };
-          html = metadata_template(template_context);
-          $tabContent.html(html);
+            "description": metadatas[imageId].description,
+            "metadata": metadatas[imageId].metadata
+          });
+          $tabContent.html(html).css("overflow-y", "auto");
         }
       });
     });
@@ -70,6 +71,7 @@
   var metadata_template = Handlebars.compile([
     '<table class="metadata">',
       '<tr><td class="label">Image name</td><td class="information">{{name}}</td></tr>',
+      '<tr><td class="label">Description</td><td class="information">{{description}}</td></tr>',
       '{{#each metadata}}',
         '<tr><td class="label">{{label}}</td><td class="information">{{value}}</td></tr>',
       '{{/each}}',
