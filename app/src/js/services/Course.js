@@ -12,6 +12,19 @@ angular.module('media_manager')
         method: 'GET',
         isArray: true,
         url: host + '/courses/:id/collections/:collection_id'
+      },
+      'addWebImage': {
+        method: 'POST',
+        isArray: true,
+        url: host + '/courses/:id/images',
+        transformRequest: function(data) {
+          var url = data["url"];
+          var title = data["title"];
+          var transformed = {
+            "items": [{ "url": url, "title": title }]
+          };
+          return JSON.stringify(transformed);
+        }
       }
     }
   );
@@ -62,6 +75,7 @@ angular.module('media_manager')
       self.isLoadingImages.status = false;
       self.isLoading.status = false || self.isLoadingCollections.status;
     });
+    return this.images.$promise;
   };
   this.loadCollections = function() {
     var self = this;
@@ -72,6 +86,7 @@ angular.module('media_manager')
       self.isLoadingCollections.status = false;
       self.isLoading.status = false || self.isLoadingImages.status;
     });
+    return this.collections.$promise;
   };
   this.load = function() {
     if (!this.loaded) {
