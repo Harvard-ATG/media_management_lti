@@ -28,4 +28,5 @@ table.metadata td.label {
 table.metadata td.information {
     padding: .5em;
     width: 12.5em;
+    word-wrap: break-word;
 }
