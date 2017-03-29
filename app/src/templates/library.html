@@ -7,7 +7,7 @@
       <span us-spinner="{top:0,left:'50%'}"></span>
     </div>
     <button type="button" class="btn btn-primary" ng-click="wc.hideAddImage = !wc.hideAddImage">
-      <span ng-if="wc.hideAddImage">Add Image to Library</span>
+      <span ng-if="wc.hideAddImage">Add Images to Library</span>
       <span ng-if="!wc.hideAddImage">Hide Image Uploading</span>
     </button>
     <div uib-collapse="wc.hideAddImage" class="library-add-images"">
@@ -18,7 +18,7 @@
 
         <div class="library-buttons">
           <label for="uploadimages" class="button-library" ng-click="wc.addImageSource = 'file'">
-              <i class="glyphicon glyphicon-upload"></i> Upload image
+              <i class="glyphicon glyphicon-upload"></i> Upload images
           </label>
           <button class="button-library" ng-click="wc.addImageSource = 'web'">
               <i class="glyphicon glyphicon-link"></i> Add image from web
@@ -35,6 +35,7 @@
                     <div class="delete" ng-click="model.deleteFile()">&times;</div>
                 </li>
             </ul>
+            <p>The image name of the uploaded files can be edited after the images are uploaded to the library.</p>
             <input type="button" class="btn btn-primary" value="Upload" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
             <label>Number of files to upload:</label> {{wc.filesToUpload}} <i ng-if="wc.fileUploadSize > 0">({{wc.fileUploadSize}} MB)</i>
           </droplet>
@@ -44,18 +45,19 @@
           <form name="webimage">
             <div class="form-group">
               <label for="webimageurl">URL:</label>
-              <input ng-model="wc.webimage.url" id="webimageurl" ng-pattern="/^https?:\/\/.+$/" type="url" placeholder="Enter URL to web image" class="form-control">
+              <input ng-model="wc.webimage.url" id="webimageurl" name="url" ng-pattern="/^https?:\/\//" type="text" placeholder="Enter URL to web image" class="form-control">
+              {{wc.webimage.url.$valid}}
             </div>
             <div class="form-group">
               <label for="webimagetitle">Title:</label>
-              <input ng-model="wc.webimage.title" id="webimagetitle" type="text" placeholder="Enter a title for the image (optional)" class="form-control">
+              <input ng-model="wc.webimage.title" id="webimagetitle" name="title" type="text" placeholder="Enter a title for the image (optional)" class="form-control">
             </div>
             <div class="form-group" ng-if="wc.webimage.url != ''">
               <label for="webimagepreview" class="preview">Preview:</label>
               <img id="webimagepreview" class="preview" ng-src="{{wc.webimage.url}}" />
             </div>
             <div class="form-group">
-              <button id="webimage-btn" class="btn btn-primary" ng-disabled="wc.webimage.url.checkValidity()" ng-click="wc.onClickSubmitWebImage()">Add from web</button>
+              <button id="webimage-btn" class="btn btn-primary" ng-disabled="!webimage.url.$valid || webimage.url.$viewValue.length == 0" ng-click="wc.onClickSubmitWebImage()">Add from web</button>
             </div>
           </form>
         </div>
