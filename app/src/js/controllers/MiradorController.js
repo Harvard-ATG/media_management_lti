@@ -13,9 +13,9 @@ function(
 ) {
     var mr = this;
 
-    var miradorUrl = "/mirador/:collection_id";
+    var miradorUrl = "/mirador/:collection_id?resource_link_id="+AppConfig.resource_link_id;
     miradorUrl = miradorUrl.replace(':collection_id', $routeParams.collectionId);
-    
+
     mr.canRead = AppConfig.perms.read;
     mr.iframeSrc =  miradorUrl;
 

@@ -1,8 +1,10 @@
 angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable', 'ngAnimate'])
-.run(function(editableOptions){
+.run(function($http,editableOptions){
+  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
   editableOptions.theme = 'bs3';
 })
-.config(['$routeProvider', function($routeProvider){
+.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider){
+  $locationProvider.hashPrefix('!');
   $routeProvider
   .when('/', {
     redirectTo: "/collections"
@@ -43,9 +45,6 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
         return new Date(input);
     }
 })
-.run(function($http) {
-  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
-})
 .filter('ellipsit', [function(){
   return function(input, length){
     input = input || '';
@@ -74,5 +73,5 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
                 .replace(/>/g, '&gt;')
                 .replace(/</g, '&lt;');
     }
-});
+})
 ;

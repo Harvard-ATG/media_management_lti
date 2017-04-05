@@ -25,7 +25,7 @@ class CourseService(object):
             logger.info("Finding or creating API with course_identifiers=%s" % course_identifiers)
             course = self.find_or_create_course()
         return course
-    
+
     def find_or_create_course(self):
         '''
         Searches the API for a course with matching context identifiers (context_id and tool_consumer_instance_guid),
@@ -50,7 +50,7 @@ class CourseService(object):
         course.save()
         logger.info("Created course object with api_course_id=%s and course_identifiers=%s" % (api_course_id, course_identifiers))
         return course
-    
+
     def obtain_create_token(self, raise_exception=False):
         '''
         Returns an access token that has sufficient privilege to *create* a course.
@@ -68,19 +68,19 @@ class CourseService(object):
         '''
         user_id = self.lti_service.get_sis_user_id()
         perms = self.lti_service.get_perms()
-    
+
         if perms['edit']:
             scope_perm = 'write'
         else:
             scope_perm = 'read'
-    
+
         if course_instance is None:
             scope_obj = '*'
         else:
             scope_obj = str(course_instance.api_course_id)
-        
+
         scope = "%s:course:%s" % (scope_perm, scope_obj)
-    
+
         token_response = APIService().obtain_token(user_id, scope)
         access_token = token_response.get('access_token', None)
         if raise_exception and access_token is None:
@@ -109,7 +109,7 @@ class APIService(object):
         '''
         Searches the /courses endpoint for a course with matching course identifiers. Expects
         the course_identifiers to be a dictionary with the following keys:
-        
+
             - lti_context_id : the LTI launch parameter "context_id"
             - lti_tool_consumer_instance_guid : the LTI launch parameter "tool_consumer_instance_guid"
         '''
@@ -133,16 +133,16 @@ class APIService(object):
 
         post_data = {}
         post_data.update({"title": title})
-        post_data.update(course_identifiers)    
+        post_data.update(course_identifiers)
 
         logger.debug("API: request url: %s post data: %s" % (url, post_data))
-        
+
         r = requests.post(url, headers=self.headers, data=json.dumps(post_data))
         if r.status_code < 200 or r.status_code > 201:
             raise Exception("API: failed to create course. status_code=%s" % r.status_code)
-        
+
         logger.debug("API: created course with status_code: %s response content: %s" % (r.status_code, r.content))
-        
+
         data = r.json()
         if not data:
             raise Exception("API: created course, but response is empty")
@@ -150,7 +150,7 @@ class APIService(object):
             raise Exception("API: created course, but no course_id")
 
         return data
-    
+
     def obtain_token(self, user_id, scope):
         '''
         Obtains anaccess token for the given user_id and scope.
@@ -179,52 +179,44 @@ class APIService(object):
 class LTIService(object):
     def __init__(self, request):
         self.request = request
-        self.launch_params = self._get_launch_params()
 
-    def _get_launch_params(self):
-        launch_params = {}
-        if 'LTI_LAUNCH' in self.request.session:
-            launch_params.update(self.request.session['LTI_LAUNCH'])
-        else:
-            raise Exception("Missing LTI launch parameters")
-        return launch_params
+    def get_launch_param(self, name, default=None):
+        try:
+            launch_params = self.request.LTI
+        except AttributeError:
+            raise Exception("Error getting LTI launch parameters from the request. Ensure that django_auth_lti is configured properly.")
+        return launch_params.get(name, default)
 
     def get_course_identifiiers(self):
-        course_identifiers = {
+        return {
             "lti_context_id": self.get_context_id(),
-            "lti_tool_consumer_instance_guid": self.get_tool_consumer_instance_guid()
+            "lti_tool_consumer_instance_guid": self.get_tool_consumer_instance_guid(),
         }
-        return course_identifiers
 
     def get_user_id(self):
-        return self.launch_params.get('user_id', None)
-    
+        return self.get_launch_param('user_id', None)
+
     def get_sis_user_id(self):
-        return self.launch_params.get('lis_person_sourcedid', None)
-    
+        return self.get_launch_param('lis_person_sourcedid', None)
+
     def get_context_id(self):
-        return self.launch_params.get('context_id', None)
+        return self.get_launch_param('context_id', None)
 
     def get_context_title(self):
-        return self.launch_params.get('context_title', None)
+        return self.get_launch_param('context_title', None)
 
     def get_tool_consumer_instance_guid(self):
-        return self.launch_params.get('tool_consumer_instance_guid', None)
-    
+        return self.get_launch_param('tool_consumer_instance_guid', None)
+
     def get_perms(self):
-        perms = {
-            "read": False,
-            "edit": False,
+        roles = self.get_launch_param('roles', [])
+        role_str = '' if len(roles) == 0 else ','.join(self.get_launch_param('roles', []))
+        role_perms = {
+            "read": bool(re.search('Learner|Instructor|Administrator|TeachingAssistant', role_str)),
+            "edit": bool(re.search('Instructor|Administrator|TeachingAssistant', role_str)),
         }
-    
-        if 'roles' in self.launch_params:
-            role_str = ','. join(self.launch_params['roles'])
-            perms["read"] = bool(re.search('Learner|Instructor|Administrator|TeachingAssistant', role_str))
-            perms["edit"] = bool(re.search('Instructor|Administrator|TeachingAssistant', role_str))
-    
-        return perms
-    
+        return role_perms
+
     def has_perm(self, permission):
         perms = self.get_perms()
         return perms[permission] is True
-    

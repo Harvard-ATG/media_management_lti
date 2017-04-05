@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     lti_service = services.LTIService(request)
-    if not lti_service.has_perm("read"):
-        raise PermissionDenied
+    #if not lti_service.has_perm("read"):
+    #    raise PermissionDenied
 
     service = services.CourseService(lti_service)
     course = service.load_course()
@@ -23,9 +23,10 @@ def index(request):
         raise Exception("Course instance required to launch tool")
 
     access_token = service.obtain_user_token(course_instance=course)
-    
+
     app_config = {
         "perms": lti_service.get_perms(),
+        "resource_link_id": lti_service.get_launch_param('resource_link_id'),
         "course_id": course.api_course_id,
         "access_token": access_token,
         "media_management_api_url": settings.MEDIA_MANAGEMENT_API_URL,
@@ -55,4 +56,3 @@ def mirador(request, collection_id):
     }
 
     return render(request, 'mirador.html', context=context)
-
