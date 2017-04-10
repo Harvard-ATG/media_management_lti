@@ -59,6 +59,9 @@ input#uploadimages[type="file"] {
   max-width: 200px;
   max-height: 200px;
 }
+.library-source-web .error {
+  color: red;
+}
 .library-source-web input[type="url"]:invalid {
   border: 1px solid red;
   color: red;
