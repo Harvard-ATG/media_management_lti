@@ -55,7 +55,7 @@
             </div>
             <div class="form-group" ng-if="wc.webimage.url != ''">
               <label for="webimagepreview" class="preview">Preview:</label>
-              <webimage img="wc.webimage" imgcls="preview">
+              <webimage img="wc.webimage">
             </div>
             <div class="form-group">
               <button id="webimage-btn" class="btn btn-primary" ng-disabled="!webimage.url.$valid || webimage.url.$viewValue.length == 0" ng-click="wc.onClickSubmitWebImage()">Add from web</button>
