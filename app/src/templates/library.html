@@ -7,21 +7,28 @@
       <span us-spinner="{top:0,left:'50%'}"></span>
     </div>
     <button type="button" class="btn btn-primary" ng-click="wc.hideAddImage = !wc.hideAddImage">
-      <span ng-if="wc.hideAddImage">Add Image to Library</span>
+      <span ng-if="wc.hideAddImage">Add Images to Library</span>
       <span ng-if="!wc.hideAddImage">Hide Image Uploading</span>
     </button>
-    <div uib-collapse="wc.hideAddImage">
-      <h5>Step 1: Choose image files on your computer to upload to the library (limit 200 megabytes).</h5>
+    <div uib-collapse="wc.hideAddImage" class="library-add-images"">
+      <h5>Choose images to upload to the library or add from the web (limit 200 MB).
+        JPG, PNG, GIF, and TIF images supported.</h5>
       <section class="droplet image-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
 
-        <div class="notifications" ng-if="wc.notifications.messages.length > 0 && wc.notifications.getLocation() == 'upload'" ng-repeat="message in wc.notifications.messages track by $index">
-          <div class="alert alert-{{message.type}}" role="alert">{{message.content}}</div>
+        <notifications topic="'library'"></notifications>
+
+        <div class="library-buttons">
+          <label for="uploadimages" class="button-library" ng-click="wc.addImageSource = 'file'">
+              <i class="glyphicon glyphicon-upload"></i> Upload images
+          </label>
+          <button class="button-library" ng-click="wc.addImageSource = 'web'">
+              <i class="glyphicon glyphicon-link"></i> Add image from web
+          </button>
         </div>
 
-        <droplet ng-model="wc.Droplet.interface">
-          <droplet-upload-multiple ng-model="wc.Droplet.interface"></droplet-upload-multiple>
-          <div class="library-drag-area">
-            <i>Drag & Drop</i>
+        <div class="library-source-upload" ng-show="wc.addImageSource == 'file'">
+          <droplet ng-model="wc.Droplet.interface">
+            <droplet-upload-multiple id="uploadimages" ng-model="wc.Droplet.interface"></droplet-upload-multiple>
             <ul class="files files-queued">
                 <li ng-repeat="model in wc.Droplet.interface.getFiles(wc.Droplet.interface.FILE_TYPES.VALID)" uib-tooltip="{{model.file.name}}">
                     <droplet-preview ng-model="model" ng-show="model.isImage()"></droplet-preview>
@@ -29,17 +36,37 @@
                     <div class="delete" ng-click="model.deleteFile()">&times;</div>
                 </li>
             </ul>
-          </div>
-          <hr>
-          <h5>Step 2: Upload the above images to this image library.</h5>
-          <input type="button" class="btn btn-primary" value="Upload Images" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
-          <label>Number of files to upload:</label> {{wc.filesToUpload}} <i ng-if="wc.fileUploadSize > 0">({{wc.fileUploadSize}} MB)</i>
-        </droplet>
+            <p>The image name of the uploaded files can be edited after the images are uploaded to the library.</p>
+            <input type="button" class="btn btn-primary" value="Upload" ng-disabled="wc.Droplet.interface.isUploading() || wc.filesToUpload == 0" ng-click="wc.Droplet.uploadFiles()" />
+            <label>Number of files to upload:</label> {{wc.filesToUpload}} <i ng-if="wc.fileUploadSize > 0">({{wc.fileUploadSize}} MB)</i>
+          </droplet>
+        </div>
+
+        <div class="library-source-web" ng-show="wc.addImageSource == 'web'">
+          <form name="webimage">
+            <div class="form-group">
+              <label for="webimageurl">URL:</label>
+              <input ng-model="wc.webimage.url" id="webimageurl" name="url" ng-pattern="/^https?:\/\//" type="text" placeholder="Enter URL to web image" class="form-control">
+              {{wc.webimage.url.$valid}}
+            </div>
+            <div class="form-group">
+              <label for="webimagetitle">Title:</label>
+              <input ng-model="wc.webimage.title" id="webimagetitle" name="title" type="text" placeholder="Enter a title for the image (optional)" class="form-control">
+            </div>
+            <div class="form-group" ng-if="wc.webimage.url != ''">
+              <label for="webimagepreview" class="preview">Preview:</label>
+              <webimage img="wc.webimage">
+            </div>
+            <div class="form-group">
+              <button id="webimage-btn" class="btn btn-primary" ng-disabled="!webimage.url.$valid || webimage.url.$viewValue.length == 0" ng-click="wc.onClickSubmitWebImage()">Add from web</button>
+            </div>
+          </form>
+        </div>
+
       </section>
-      <hr>
     </div>
     <h4>
-      {{ wc.courseImages.length || 'No' }} available images in this image library
+      {{ wc.courseImages.length || 'No' }} images in this library
     </h4>
       <div style="margin-top: 20px">
           <div class="btn-group pull-left" uib-dropdown>
@@ -63,7 +90,7 @@
 
       <div style="clear:both; padding: 10px;" ng-show="wc.courseImages.length > 0">
           <ul class="files list-inline" ng-if="wc.layout == 'gallery'">
-            <li class="droplet-thumb" ng-if="courseImage.image_url" ng-repeat="courseImage in wc.courseImages track by $index">
+            <li class="droplet-thumb" ng-repeat="courseImage in wc.courseImages|filter:wc.courseImageHasUrl track by $index">
               <droplet-thumb ng-model="courseImage"></droplet-thumb>
               <div ng-hide="wc.inCollection(courseImage)" class="overlay" ng-click="wc.addToCollection(courseImage)">+</div>
               <div ng-show="wc.inCollection(courseImage)" class="overlay overlay-stay">

@@ -1,5 +1,5 @@
-<ol ng-controller="BreadcrumbsController" class="breadcrumbs">
-  <li ng-repeat="crumb in crumbs">
+<ol class="breadcrumbs">
+  <li ng-repeat="crumb in $ctrl.crumbs">
     <a ng-if="!$last" href="#{{crumb.route}}">{{crumb.text}}</a>
     <span ng-if="$last">{{crumb.text}}</span>
     <small ng-if="!$last"><span class="glyphicon glyphicon-chevron-right"></span></small>

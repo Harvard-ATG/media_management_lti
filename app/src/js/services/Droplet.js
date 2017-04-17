@@ -10,7 +10,7 @@ angular.module('media_manager')
     'Authorization': AppConfig.authorization_header
   };
 
-  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'zip'];
+  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'zip', 'tif', 'tiff'];
 
   ds.limits = {
     uploadSize:  200 * ONE_MEGABYTE,

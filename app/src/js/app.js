@@ -56,4 +56,23 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     }
     return out;
   };
-}]);
+}])
+.filter('newlines', [function(){
+  return function(text) {
+    return text.replace(/\n/g, '<br/>');
+  };
+}])
+.filter('rawhtml', ['$sce', function($sce){
+  return function(val) {
+    return $sce.trustAsHtml(val);
+  };
+}])
+.filter('nohtml', function () {
+    return function(text) {
+        return text
+                .replace(/&/g, '&amp;')
+                .replace(/>/g, '&gt;')
+                .replace(/</g, '&lt;');
+    }
+});
+;

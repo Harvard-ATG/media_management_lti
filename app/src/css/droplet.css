@@ -133,13 +133,6 @@ ul.files {
     list-style-type: none;
     transition: all .5s;
 }
-section.droplet droplet ul.files-queued {
-    background-color: #d3d3d3;
-    border: 1px dashed #666;
-    padding: 10px;
-    margin: 10px 5px;
-    min-height: 100px;
-}
 section.droplet droplet ul.files-queued li {
     z-index: 2;
 }

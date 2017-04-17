@@ -14,21 +14,57 @@ table.files tr:hover {
 table.files td > button {
   margin-left: 10px;
 }
-.library-drag-area {
-  position: relative;
-  width: calc(100% - 10px);
-  min-height: 100px;
+.library-add-images {
+  border: 1px solid #2e6da4;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
 }
-.library-drag-area i {
-  position: absolute;
-  top: 30%;
-  left: 28%;
-  z-index: 0;
-  font-size: 36px;
-  font-style: normal;
-  color: #fff;
+input#uploadimages[type="file"] {
+    display: none;
+}
+.button-library {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: transparent;
   display: inline-block;
+  padding: 6px 12px;
+  font-weight: bold;
+  cursor: pointer;
 }
+.button-library:hover {
+  background-color: #efefef;
+}
+.library-source-upload ul.files {
+  min-height: 100px;
+  border: 1px dashed #ccc;
+  background-color: #fff;
+  margin: 15px 0 10px 0;
+}
+.library-source-upload ul.files:before {
+  content: "drag and drop";
+  position: absolute;
+  left: 33%;
+  top: 45px;
+  font-size: 32px;
+  color: #ccc;
+}
+.library-source-web.mask .form-group {
+  opacity: 0.5;
+}
+.library-source-web label.preview {
+  vertical-align: top;
+}
+.library-source-web img.preview {
+  max-width: 200px;
+  max-height: 200px;
+}
+.library-source-web input[type="url"]:invalid {
+  border: 1px solid red;
+  color: red;
+}
+.library-source-web input[type="url"]:valid {}
+.library-source-web input[type="url"]:not(:placeholder-shown) {}
 
 .library-header {
   padding: .7em;

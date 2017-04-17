@@ -198,6 +198,50 @@ angular.module('media_manager')
     });
   };
 
+  wc.onClickSubmitWebImage = function() {
+    var $container = angular.element(".library-source-web");
+    var $btn = angular.element("#webimage-btn");
+    var data = {
+      "id": AppConfig.course_id,
+      "url": wc.webimage.url,
+      "title": wc.webimage.title
+    };
+
+    console.log("submitting web image", wc.webimage, data);
+
+    var reset = function() {
+      wc.webimage.url = "";
+      wc.webimage.title = "";
+    };
+    var mask = function() {
+      $container.addClass("mask");
+      $btn.attr("disabled", "disabled");
+    };
+    var unmask = function() {
+      $btn.removeAttr("disabled");
+      $container.removeClass("mask");
+    };
+
+    mask();
+    Course.addWebImage(data, function(results) {
+      console.log("submitted web image:", results);
+      wc.notifications.clear().success("Image added successfully", "library");
+      results.forEach(function(resource) {
+        CourseCache.addImage(resource);
+      });
+      reset();
+      unmask();
+    }, function(httpResponse) {
+      console.error(httpResponse);
+      var error = "Failed to add image.";
+      if(httpResponse.data && "detail" in httpResponse.data) {
+        error += "\n\n";
+        error += httpResponse.data.detail;
+      }
+      wc.notifications.clear().error(error, "library");
+      unmask();
+    });
+  };
 
   wc.onClickSortLibrary = function($event, choice) {
     $event.preventDefault();
@@ -224,6 +268,10 @@ angular.module('media_manager')
   wc.filesToUpload = 0;
   wc.fileUploadSize = 0;
   wc.notifications = Notifications;
+  wc.courseImageHasUrl = function(value, index, array) {
+    return value.image_url != "";
+  };
+  wc.webimage = {"title": "", "url": ""};
   wc.sortChoices = [
     {'label': 'Newest to Oldest', 'name': 'created', 'dir': 'desc'},
     {'label': 'Oldest to Newest', 'name': 'created', 'dir': 'asc'},
@@ -237,7 +285,7 @@ angular.module('media_manager')
 
   $scope.$on('$dropletReady', Droplet.onReady);
   $scope.$on('$dropletError', Droplet.onError(function(event, response) {
-    wc.notifications.clear().setLocation('upload').error(response);
+    wc.notifications.clear().error(response, "library");
   }));
   $scope.$on('$dropletFileAdded', Droplet.onFileAdded(function(event, model) {
     wc.filesToUpload = Droplet.getTotalValid();
@@ -246,7 +294,7 @@ angular.module('media_manager')
   }, function(event, model, msg) {
     wc.filesToUpload = Droplet.getTotalValid();
     wc.fileUploadSize = Droplet.getUploadSizeMB();
-    wc.notifications.clear().setLocation('upload').notify("warning", msg);
+    wc.notifications.clear().warn(msg, "library");
   }));
   $scope.$on('$dropletFileDeleted', Droplet.onFileDeleted(function() {
     wc.filesToUpload = Droplet.getTotalValid();
@@ -262,7 +310,7 @@ angular.module('media_manager')
       }
       wc.filesToUpload = Droplet.getTotalValid();
       wc.fileUploadSize = Droplet.getUploadSizeMB();
-      wc.notifications.clear().setLocation('upload').success("Images uploaded successfully");
+      wc.notifications.clear().success("Images uploaded successfully", "library");
   }));
 
   $scope.$watch('wc.layout', function(newVal, oldVal) {

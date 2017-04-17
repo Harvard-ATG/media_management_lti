@@ -38,34 +38,30 @@ describe('Notifications service', function(){
     });
   });
 
-  describe('location', function(){
-    var loc = "some location";
+  describe('topic', function(){
     beforeEach(function(){
-      notifications.location = undefined;
+      notifications.clear();
     });
-    describe('getLocation', function(){
-      it('should get the current notification', function(){
-        notifications.location = loc;
-        expect(notifications.getLocation()).toBe(loc);
+    describe('set message topic', function(){
+      it('should assign the specified topic', function(){
+        var topic = "my_topic";
+        notifications.success("my message", topic);
+        expect(notifications.getLast().topic).toBe(topic)
       });
-      it('should return "top" if there is no location', function(){
-        expect(notifications.getLocation()).toBe("top");
-      });
-    });
-    describe('setLocation', function(){
-      it('should set the location and return itself', function(){
-        var otherLoc = "asdfasdf";
-        notifications.setLocation(otherLoc);
-        expect(notifications.location).toBe(otherLoc);
+      it('should assign to the default topic if not specified', function(){
+        notifications.success("my message");
+        expect(notifications.getLast().topic).toBe(notifications.DEFAULT_TOPIC)
       });
     });
   });
 
   describe('clear', function(){
     it('should clear the messages array', function(){
-      var msg = "sadf";
-      var type = notifications.TYPE.INFO;
-      notifications.messages.push({"type": type, "content": msg});
+      notifications.clear();
+      expect(notifications.messages.length).toBe(0);
+      notifications.success("foo");
+      notifications.error("bar");
+      expect(notifications.messages.length).toBe(2)
       notifications.clear();
       expect(notifications.messages.length).toBe(0);
     });
