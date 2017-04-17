@@ -17,7 +17,7 @@ class CourseService(object):
     def from_request(cls, request):
         return cls(LTILaunch(request))
 
-    def load_course(self):
+    def load_course(self, raise_exception=False):
         '''
         Loads the current course model instance associated with the context identifiers.
         If none exists, it will attempt to find or create one.
@@ -29,6 +29,10 @@ class CourseService(object):
         except Course.DoesNotExist:
             logger.info("Finding or creating API with course_identifiers=%s" % course_identifiers)
             course = self.find_or_create_course()
+
+        if raise_exception and not course:
+            raise Exception("Error loading course instance")
+
         return course
 
     def find_or_create_course(self):
