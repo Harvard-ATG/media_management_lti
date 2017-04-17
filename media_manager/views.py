@@ -1,32 +1,26 @@
 from django.conf import settings
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
 from django.shortcuts import render
-from media_manager.models import Course
-from media_manager import services
+from media_manager.services import CourseService
+from media_manager.lti import LTILaunch
+from media_manager.decorators import require_permission
 
-import requests
-import json
-import re
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
 def index(request):
-    lti_service = services.LTIService(request)
-    #if not lti_service.has_perm("read"):
-    #    raise PermissionDenied
-
-    service = services.CourseService(lti_service)
-    course = service.load_course()
+    lti_launch = LTILaunch(request)
+    course_service = CourseService(lti_launch)
+    course = course_service.load_course()
     if not course:
         raise Exception("Course instance required to launch tool")
 
-    access_token = service.obtain_user_token(course_instance=course)
+    access_token = course_service.obtain_user_token(course_instance=course)
 
     app_config = {
-        "perms": lti_service.get_perms(),
-        "resource_link_id": lti_service.get_launch_param('resource_link_id'),
+        "perms": lti_launch.get_perms(),
+        "resource_link_id": lti_launch.get_resource_link_id(),
         "course_id": course.api_course_id,
         "access_token": access_token,
         "media_management_api_url": settings.MEDIA_MANAGEMENT_API_URL,
@@ -38,11 +32,8 @@ def index(request):
 
     return render(request, 'index.html', context=context)
 
+@require_permission("read")
 def mirador(request, collection_id):
-    lti_service = services.LTIService(request)
-    if not lti_service.has_perm("read"):
-        raise PermissionDenied
-
     manifest_uri = "{base_url}/collections/{collection_id}/manifest"
     manifest_uri = manifest_uri.format(base_url=settings.MEDIA_MANAGEMENT_API_URL, collection_id=collection_id)
     app_config = {

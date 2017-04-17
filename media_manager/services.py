@@ -1,5 +1,6 @@
 from django.conf import settings
 from media_manager.models import Course
+from media_manager.lti import LTILaunch
 
 import requests
 import json
@@ -9,15 +10,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CourseService(object):
-    def __init__(self, lti_service):
-        self.lti_service = lti_service
+    def __init__(self, lti_launch):
+        self.lti_launch = lti_launch
+
+    @classmethod
+    def from_request(cls, request):
+        return cls(LTILaunch(request))
 
     def load_course(self):
         '''
         Loads the current course model instance associated with the context identifiers.
         If none exists, it will attempt to find or create one.
         '''
-        course_identifiers = self.lti_service.get_course_identifiiers()
+        course_identifiers = self.lti_launch.get_course_identifiiers()
         try:
             logger.info("Attempting to load local course object with course_identifiers=%s" % course_identifiers)
             course = Course.objects.get(**course_identifiers)
@@ -32,12 +37,12 @@ class CourseService(object):
         or if none exists, creates a new course context in the API.
         '''
         create_token = self.obtain_create_token(raise_exception=True)
-        course_identifiers = self.lti_service.get_course_identifiiers()
+        course_identifiers = self.lti_launch.get_course_identifiiers()
         api = APIService(access_token=create_token)
         found = api.search_courses(course_identifiers)
         if len(found) == 0:
             logger.info("Search returned no results, so creating course.")
-            data = api.create_course(self.lti_service.get_context_title(), course_identifiers)
+            data = api.create_course(self.lti_launch.get_context_title(), course_identifiers)
             api_course_id = data['id']
         elif len(found) == 1:
             api_course_id = found[0]['id']
@@ -55,7 +60,7 @@ class CourseService(object):
         '''
         Returns an access token that has sufficient privilege to *create* a course.
         '''
-        user_id = self.lti_service.get_sis_user_id()
+        user_id = self.lti_launch.get_sis_user_id()
         token_response = APIService().obtain_token(user_id, "write:course:*")
         access_token = token_response.get('access_token', None)
         if raise_exception and access_token is None:
@@ -66,8 +71,8 @@ class CourseService(object):
         '''
         Returns an access token with permissions appropriate for the current user.
         '''
-        user_id = self.lti_service.get_sis_user_id()
-        perms = self.lti_service.get_perms()
+        user_id = self.lti_launch.get_sis_user_id()
+        perms = self.lti_launch.get_perms()
 
         if perms['edit']:
             scope_perm = 'write'
@@ -175,48 +180,3 @@ class APIService(object):
             raise Exception("API: obtained token, but response is empty")
 
         return data
-
-class LTIService(object):
-    def __init__(self, request):
-        self.request = request
-
-    def get_launch_param(self, name, default=None):
-        try:
-            launch_params = self.request.LTI
-        except AttributeError:
-            raise Exception("Error getting LTI launch parameters from the request. Ensure that django_auth_lti is configured properly.")
-        return launch_params.get(name, default)
-
-    def get_course_identifiiers(self):
-        return {
-            "lti_context_id": self.get_context_id(),
-            "lti_tool_consumer_instance_guid": self.get_tool_consumer_instance_guid(),
-        }
-
-    def get_user_id(self):
-        return self.get_launch_param('user_id', None)
-
-    def get_sis_user_id(self):
-        return self.get_launch_param('lis_person_sourcedid', None)
-
-    def get_context_id(self):
-        return self.get_launch_param('context_id', None)
-
-    def get_context_title(self):
-        return self.get_launch_param('context_title', None)
-
-    def get_tool_consumer_instance_guid(self):
-        return self.get_launch_param('tool_consumer_instance_guid', None)
-
-    def get_perms(self):
-        roles = self.get_launch_param('roles', [])
-        role_str = '' if len(roles) == 0 else ','.join(self.get_launch_param('roles', []))
-        role_perms = {
-            "read": bool(re.search('Learner|Instructor|Administrator|TeachingAssistant', role_str)),
-            "edit": bool(re.search('Instructor|Administrator|TeachingAssistant', role_str)),
-        }
-        return role_perms
-
-    def has_perm(self, permission):
-        perms = self.get_perms()
-        return perms[permission] is True
