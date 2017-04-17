@@ -11,7 +11,8 @@
       <span ng-if="!wc.hideAddImage">Hide Image Uploading</span>
     </button>
     <div uib-collapse="wc.hideAddImage" class="library-add-images"">
-      <h5>Choose images to upload to the library (limit 200 megabytes) or add from the web.</h5>
+      <h5>Choose images to upload to the library or add from the web (limit 200 MB).
+        JPG, PNG, GIF, and TIF images supported.</h5>
       <section class="droplet image-library" ng-class="{ uploading: wc.Droplet.interface.isUploading() }">
 
         <notifications topic="'library'"></notifications>
@@ -54,7 +55,7 @@
             </div>
             <div class="form-group" ng-if="wc.webimage.url != ''">
               <label for="webimagepreview" class="preview">Preview:</label>
-              <img id="webimagepreview" class="preview" ng-src="{{wc.webimage.url}}" />
+              <webimage img="wc.webimage">
             </div>
             <div class="form-group">
               <button id="webimage-btn" class="btn btn-primary" ng-disabled="!webimage.url.$valid || webimage.url.$viewValue.length == 0" ng-click="wc.onClickSubmitWebImage()">Add from web</button>
