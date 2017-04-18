@@ -19,4 +19,5 @@ import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^mirador/(?P<collection_id>[0-9]+)', views.mirador, name="mirador"),
+    url(r'^module/settings', views.module_settings, name="module_settings"),
 ]

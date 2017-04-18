@@ -29,3 +29,10 @@ class CourseModule(models.Model):
 
     def __unicode__(self):
         return "{0}".format(self.lti_resource_link_title)
+
+    def asData(self):
+        return {
+            "id": self.pk,
+            "collection_id": self.api_collection_id,
+            "resource_link_id": self.lti_resource_link_id,
+        }

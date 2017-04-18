@@ -7,4 +7,4 @@ django-redis-cache==1.5.3
 hiredis==0.2.0
 git+https://github.com/Harvard-ATG/django-auth-lti@master#egg=django-auth-lti
 git+https://github.com/Harvard-ATG/django-app-lti@master#egg=django-app-lti
-requests==2.9.1
+requests==2.13.0
