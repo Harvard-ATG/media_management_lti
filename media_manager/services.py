@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 class CourseService(object):
     def __init__(self, lti_launch):
         self.lti_launch = lti_launch
+        self.api_auth = APIAuthService(user_id=lti_launch.get_sis_user_id(), perms=lti_launch.get_perms())
 
     @classmethod
     def from_request(cls, request):
@@ -40,7 +41,7 @@ class CourseService(object):
         Searches the API for a course with matching context identifiers (context_id and tool_consumer_instance_guid),
         or if none exists, creates a new course context in the API.
         '''
-        create_token = self.obtain_create_token(raise_exception=True)
+        create_token = self.api_auth.obtain_create_token(raise_exception=True)
         course_identifiers = self.lti_launch.get_course_identifiiers()
         api = APIService(access_token=create_token)
         found = api.search_courses(course_identifiers)
@@ -60,28 +61,40 @@ class CourseService(object):
         logger.info("Created course object with api_course_id=%s and course_identifiers=%s" % (api_course_id, course_identifiers))
         return course
 
-    def obtain_create_token(self, raise_exception=False):
+    def obtain_user_token(self, course_instance):
+        return self.api_auth.obtain_user_token(course_instance=course_instance)
+
+class APIAuthService(object):
+    def __init__(self, user_id, perms):
+        self.user_id = user_id
+        self.perms = perms
+
+    def obtain_create_token(self):
         '''
         Returns an access token that has sufficient privilege to *create* a course.
         '''
-        user_id = self.lti_launch.get_sis_user_id()
-        token_response = APIService().obtain_token(user_id, "write:course:*")
-        access_token = token_response.get('access_token', None)
-        if raise_exception and access_token is None:
-            raise Exception("Failed to obtain an access token")
-        return access_token
+        if not self.perms['edit']:
+            raise Exception("Insufficient permission to obtain create token")
+        return self.obtain_token(course_instance=None, raise_exception=True)
 
-    def obtain_user_token(self, course_instance=None, raise_exception=False):
+    def obtain_user_token(self, course_instance=None):
         '''
-        Returns an access token with permissions appropriate for the current user.
+        Returns an access token to read or write to a specific course.
         '''
-        user_id = self.lti_launch.get_sis_user_id()
-        perms = self.lti_launch.get_perms()
+        if course_instance is None:
+            raise Exception("Course instance required to obtain a user token")
+        return self.obtain_token(course_instance=course_instance, raise_exception=True)
 
-        if perms['edit']:
+    def obtain_token(self, course_instance=None, raise_exception=False):
+        '''
+        Returns an access token for the current user.
+        '''
+        if self.perms['edit']:
             scope_perm = 'write'
-        else:
+        elif self.perms['read']:
             scope_perm = 'read'
+        else:
+            raise Exception("Insufficient permission to obtain token")
 
         if course_instance is None:
             scope_obj = '*'
@@ -90,7 +103,7 @@ class CourseService(object):
 
         scope = "%s:course:%s" % (scope_perm, scope_obj)
 
-        token_response = APIService().obtain_token(user_id, scope)
+        token_response = APIService().obtain_token(self.user_id, scope)
         access_token = token_response.get('access_token', None)
         if raise_exception and access_token is None:
             raise Exception("Failed to obtain an access token")

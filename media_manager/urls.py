@@ -17,7 +17,8 @@ from django.contrib import admin
 import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.app, name='index'),
+    url(r'^app$', views.app, name='app'),
     url(r'^mirador/(?P<collection_id>[0-9]+)', views.mirador, name="mirador"),
-    url(r'^module/settings', views.module_settings, name="module_settings"),
+    url(r'^endpoints/module$', views.module_endpoint, name="module_endpoint"),
 ]

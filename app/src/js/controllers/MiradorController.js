@@ -17,7 +17,10 @@ function(
     miradorUrl = miradorUrl.replace(':collection_id', $routeParams.collectionId);
 
     mr.canRead = AppConfig.perms.read;
+    mr.canEdit = AppConfig.perms.edit;
+    mr.showBreadcrumbs = !AppConfig.module.enabled;
     mr.iframeSrc =  miradorUrl;
+    mr.collection_id = $routeParams.collectionId;
 
     Breadcrumbs.home().addCrumb("Mirador", $location.url());
 }]);

@@ -1,20 +1,31 @@
 angular.module('media_manager')
 .factory('Course', ['$resource', 'AppConfig', function($resource, AppConfig){
   var host = AppConfig.media_management_api_url;
+  var headers = {
+    'Authorization': AppConfig.authorization_header
+  };
   return $resource(host + '/courses/:id',
     { id: '@id', image_id: '@image_id', collection_id: '@collection_id' }, {
+      'get': {
+        method: 'GET',
+        headers: headers,
+        url: host + '/courses/:id'
+      },
       'getImages': {
         method: 'GET',
+        headers: headers,
         isArray: true,
         url: host + '/courses/:id/images/:image_id'
       },
       'getCollections': {
         method: 'GET',
+        headers: headers,
         isArray: true,
         url: host + '/courses/:id/collections/:collection_id'
       },
       'addWebImage': {
         method: 'POST',
+        headers: headers,
         isArray: true,
         url: host + '/courses/:id/images',
         transformRequest: function(data) {
@@ -38,6 +49,7 @@ angular.module('media_manager')
   this.isLoadingCollections = {"status": false, "msg": "Loading collections..."};
   this.isLoadingImages = {"status": false, "msg": "Loading images..."};
   this.isLoading = {"status": false, "msg": "Loading..."};
+  this.error = {"message": ""};
   this.loaded = false;
   this.compareImages = null;
   this.sortType = null;
@@ -62,39 +74,62 @@ angular.module('media_manager')
     }
     return false;
   };
+  this.setLoadingStatus = function(params) {
+    if(params.hasOwnProperty("images")) {
+      this.isLoadingImages.status = !!params.images;
+    }
+    if(params.hasOwnProperty("collections")) {
+      this.isLoadingCollections.status = !!params.collections;
+    }
+    this.isLoading.status = this.isLoadingImages.status || this.isLoadingCollections.status;
+    return this;
+  };
+  this.setError = function(params) {
+    this.error.message = params.message || '';
+  };
   this.loadImages = function() {
     var self = this;
-    this.isLoading.status = true;
-    this.isLoadingImages.status = true;
+    this.setLoadingStatus({ images: true });
     this.images = Course.getImages({id: AppConfig.course_id});
     this.images.$promise.then(function(images) {
       self.sortImages();
       if (self.current_image === null) {
         self.current_image = images[0];
       }
-      self.isLoadingImages.status = false;
-      self.isLoading.status = false || self.isLoadingCollections.status;
+      self.setLoadingStatus({ images: false });
+    }).catch(function(r) {
+      console.log("Error loading images", r);
+      self.setLoadingStatus({ images: false });
     });
     return this.images.$promise;
-  };
+  }.bind(this);
   this.loadCollections = function() {
     var self = this;
-    this.isLoading.status = true;
-    this.isLoadingCollections.status = true;
+	  this.setLoadingStatus({ collections: true });
     this.collections = Course.getCollections({id: AppConfig.course_id});
     this.collections.$promise.then(function(collections) {
-      self.isLoadingCollections.status = false;
-      self.isLoading.status = false || self.isLoadingImages.status;
+      self.setLoadingStatus({ collections: false });
+    }).catch(function(reason) {
+      console.log("Error loading collections", reason);
+      self.setLoadingStatus({ collections: false });
     });
     return this.collections.$promise;
-  };
-  this.load = function() {
+  }.bind(this);
+  this.load = function(errorCallback) {
+    var self = this;
     if (!this.loaded) {
-      this.loadImages();
-      this.loadCollections();
-      this.loaded = true;
+      this.loadImages().then(this.loadCollections).then(function() {
+        self.loaded = true;
+      }).catch(function(r) {
+        self.loaded = false;
+        self.setLoadingStatus({ images: false, collections: false });
+        self.setError({ message: "Error loading data (Http code: " + r.status + ")" });
+        if(errorCallback) {
+          errorCallback(self.error);
+        }
+      });
     }
-  };
+  }.bind(this);
   this.reload = function() {
     this.loaded = false;
     this.load();

@@ -1,29 +1,49 @@
 angular.module('media_manager').controller('CollectionsController', [
     '$scope',
     'CourseCache',
+    'CourseModuleService',
     'CollectionBehavior',
     'AppConfig',
     'Breadcrumbs',
+    'Notifications',
     'Collection',
     '$q',
+    '$http',
     function(
     $scope,
     CourseCache,
+    CourseModuleService,
     CollectionBehavior,
     AppConfig,
     Breadcrumbs,
+    Notifications,
     Collection,
-    $q) {
+    $q,
+    $http) {
         var lc = this;
 
-        Breadcrumbs.home();
         CourseCache.load();
+        Breadcrumbs.home();
 
-        lc.collections = CourseCache.collections;
+        lc.CourseCache = CourseCache;
+        lc.notifications = Notifications;
+        lc.error = lc.CourseCache.error;
         lc.canEdit = AppConfig.perms.edit;
         lc.deleteCollectionModal = CollectionBehavior.deleteCollectionModal;
         lc.actuallyDeleteCollection = CollectionBehavior.actuallyDeleteCollection;
         lc.isLoadingCollections = CourseCache.isLoadingCollections;
+
+        lc.isPrimaryCollection = function(collection_id) {
+          return CourseModuleService.isPrimary(collection_id);
+        };
+
+        lc.setPrimaryCollection = function(collection_id) {
+          CourseModuleService.updateModuleCollection(collection_id).then(function successCallback(response) {
+            lc.notifications.success("Successfully updated primary collection");
+          }, function errorCallback(response) {
+            lc.notifications.success("Failure. Primary collection not updated ("+response.status+")");
+          });
+        };
 
         var dragEnabled = true;
         lc.dragControlListeners = {
@@ -35,7 +55,7 @@ angular.module('media_manager').controller('CollectionsController', [
             dragEnabled = false;
 
             var updates = [];
-            lc.collections.forEach(function(item, index, arr){
+            lc.CourseCache.collections.forEach(function(item, index, arr){
               var d = $q.defer();
               var newsort = index + 1;
               if(item.sort_order != newsort){
@@ -51,6 +71,7 @@ angular.module('media_manager').controller('CollectionsController', [
 
           }
         };
+
 
     }
 ]);

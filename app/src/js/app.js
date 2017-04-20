@@ -1,13 +1,15 @@
 angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xeditable', 'ngResource', 'angularSpinner', 'as.sortable', 'ngAnimate'])
-.run(function($http,editableOptions){
-  $http.defaults.headers.common.Authorization = 'Token ' + window.appConfig.access_token;
+.run(function(editableOptions){
   editableOptions.theme = 'bs3';
 })
 .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider){
   $locationProvider.hashPrefix('!');
   $routeProvider
   .when('/', {
-    redirectTo: "/collections"
+    redirectTo: function() {
+      console.log("Index redirecting to: ", window.appConfig.angular_route);
+      return window.appConfig.angular_route;
+    }
   })
   .when('/workspace', {
     templateUrl: "/static/app/templates/workspace.html",
