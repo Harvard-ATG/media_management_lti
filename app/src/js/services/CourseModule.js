@@ -5,7 +5,7 @@ angular.module('media_manager')
   service.collection_id = AppConfig.module.collection_id;
 
   service.updateModuleCollection = function(collection_id) {
-    var url = AppConfig.endpoints.module;
+    var url = AppConfig.module.endpoint;
     var data = {"collection_id": collection_id};
     var config = {};
     return $http.post(url, data, config).then(function() {

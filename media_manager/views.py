@@ -136,12 +136,10 @@ class MainView(JsonMixin):
             },
             "resource_link_id": self.helper.launch_resource_link_id(),
             "permissions": self.helper.launch_perms(),
-            "endpoints": {
-                "module": reverse("media_manager:module_endpoint"),
-            },
             "module": {
                 "collection_id": module_collection_id,
                 "enabled": module_enabled,
+                "endpoint": reverse("media_manager:module_endpoint"),
             },
             "angular_route": angular_route,
         }
