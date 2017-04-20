@@ -122,8 +122,10 @@ class MainView(JsonMixin):
         course_module = self.helper.get_course_module()
         module_enabled = bool(course_module is not None and course_module.api_collection_id)
         if module_enabled:
+            module_collection_id = course_module.api_collection_id
             angular_route = "/mirador/%s" % course_module.api_collection_id
         else:
+            module_collection_id = None
             angular_route = "/collections"
 
         config = {
@@ -138,7 +140,7 @@ class MainView(JsonMixin):
                 "module": reverse("media_manager:module_endpoint"),
             },
             "module": {
-                "collection_id": course_module.api_collection_id,
+                "collection_id": module_collection_id,
                 "enabled": module_enabled,
             },
             "angular_route": angular_route,
