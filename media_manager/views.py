@@ -16,6 +16,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CourseViewHelper(object):
+    '''
+    The CourseViewHelper provides methods for retrieving the Course and CourseModule
+    models that are associated with an LTI launch. It uses the CourseService to
+    interact with the Media Management API.
+    '''
     def __init__(self, request):
         self.request = request
         self.lti_launch = LTILaunch(request)
@@ -47,6 +52,11 @@ class CourseViewHelper(object):
         return self.course_service.obtain_user_token(course_instance=self.get_course_object())
 
 class Endpoint(object):
+    '''
+    Endpoint is a view for handling JSON-based request/responses in the app.
+    It dispatches to methods named after the HTTP request method and returns
+    the result as JSON.
+    '''
     def __init__(self, request):
         self.request = request
         self.lti_launch = LTILaunch(request)
@@ -64,6 +74,9 @@ class Endpoint(object):
         return HttpResponse(content=content, content_type='application/json', status=status)
 
 class ModuleEndpoint(Endpoint, JsonMixin):
+    '''
+    The Module endpoint is a view that interacts with the CourseModule model.
+    '''
     def __init__(self, request):
         self.request = request
         self.helper = CourseViewHelper(request)
@@ -106,18 +119,24 @@ class ModuleEndpoint(Endpoint, JsonMixin):
             result["data"] = module.asData() if module else False
         return result, code
 
-class MainView(JsonMixin):
+class PageView(JsonMixin):
+    '''
+    The PageView is a base class for views that render HTML.
+    It exists to include some helper classes that most page views will need.
+    '''
     def __init__(self, request):
         self.request = request
         self.helper = CourseViewHelper(request)
 
-    def render_index(self):
+    def render(self):
+        raise Exception("subclass responsibility")
 
-        if display_mirador:
-            return self.render_mirador(module.api_collection_id)
-        return self.render_collections()
-
-    def render_app(self):
+class AppView(PageView):
+    '''
+    The AppView renders and configures the AngularJS application which then has its
+    own routing mechanism.
+    '''
+    def render(self):
         course_object = self.helper.get_course_object()
         course_module = self.helper.get_course_module()
         module_enabled = bool(course_module is not None and course_module.api_collection_id)
@@ -146,9 +165,27 @@ class MainView(JsonMixin):
         context = {"appConfig": self.to_json(config)}
         return render(self.request, 'index.html', context=context)
 
-    def render_mirador(self, collection_id):
+class MiradorView(PageView):
+    '''
+    The MiradorView renders a minimal page with the Mirador IIIF image viewer.
+    It does not include any Angular components at all -- just enough to load
+    Mirador itself.
+
+    The intention is that this page will be iframed by AngularJS where needed. This
+    is mostly because it isn't easy to destroy and re-create Mirador at runtime when
+    a new configuration is needed. It's easier to just reload an iframe.
+
+    See also:
+        - http://www.projectmirador.org
+        - https://github.com/ProjectMirador/mirador
+    '''
+    def __init__(self, request, collection_id):
+        self.collection_id = collection_id
+        super(MiradorView, self).__init__(request)
+
+    def render(self):
         manifest_uri = "{base_url}/collections/{collection_id}/manifest"
-        manifest_uri = manifest_uri.format(base_url=settings.MEDIA_MANAGEMENT_API_URL, collection_id=collection_id)
+        manifest_uri = manifest_uri.format(base_url=settings.MEDIA_MANAGEMENT_API_URL, collection_id=self.collection_id)
         config = {
             "data": [{"manifestUri": manifest_uri, "location": "Harvard University"}]
         }
@@ -160,12 +197,12 @@ class MainView(JsonMixin):
 @require_permission("read")
 @require_http_methods(["GET"])
 def app(request):
-    return MainView(request).render_app()
+    return AppView(request).render()
 
 @require_permission("read")
 @require_http_methods(["GET"])
 def mirador(request, collection_id):
-    return MainView(request).render_mirador(collection_id)
+    return MiradorView(request, collection_id).render()
 
 @require_permission("edit")
 @csrf_exempt
