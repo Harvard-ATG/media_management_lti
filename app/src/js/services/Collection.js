@@ -4,14 +4,18 @@ angular.module('media_manager')
   var headers = {
     'Authorization': AppConfig.authorization_header
   };
-  return $resource(host + '/collections/:id',
-    { id: '@id' }, {
+  return $resource(host + '/collections/:id', { id: '@id' }, {
       'get': {
         method: 'GET',
         headers: headers,
         url: host + '/collections/:id'
       },
       'update': {
+        method: 'PUT',
+        headers: headers,
+        url: host + '/collections/:id'
+      },
+      'save': {
         method: 'POST',
         headers: headers,
         url: host + '/collections/:id'
