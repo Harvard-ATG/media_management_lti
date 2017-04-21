@@ -12,7 +12,7 @@ angular.module('media_manager')
         url: host + '/collections/:id'
       },
       'update': {
-        method: 'PUT',
+        method: 'POST',
         headers: headers,
         url: host + '/collections/:id'
       },
