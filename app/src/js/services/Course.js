@@ -23,6 +23,14 @@ angular.module('media_manager')
         isArray: true,
         url: host + '/courses/:id/collections/:collection_id'
       },
+      'updateCollectionOrder': {
+        method: 'PUT',
+        headers: headers,
+        url: host + '/courses/:id/collections',
+        transformRequest: function(data) {
+          return JSON.stringify({"sort_order": data['sort_order']})
+        }
+      },
       'addWebImage': {
         method: 'POST',
         headers: headers,
@@ -87,6 +95,9 @@ angular.module('media_manager')
   this.setError = function(params) {
     this.error.message = params.message || '';
   };
+  this.updateCollectionOrder = function(sort_order) {
+    return Course.updateCollectionOrder(sort_order).$promise;
+  },
   this.loadImages = function() {
     var self = this;
     this.setLoadingStatus({ images: true });

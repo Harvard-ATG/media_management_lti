@@ -41,37 +41,36 @@ angular.module('media_manager').controller('CollectionsController', [
           CourseModuleService.updateModuleCollection(collection_id).then(function successCallback(response) {
             lc.notifications.success("Successfully updated primary collection");
           }, function errorCallback(response) {
-            lc.notifications.success("Failure. Primary collection not updated ("+response.status+")");
+            lc.notifications.error("Failure. Primary collection not updated ("+response.status+")");
           });
         };
 
-        var dragEnabled = true;
+        lc.dragEnabled = true;
         lc.dragControlListeners = {
           accept: function (sourceItemHandleScope, destSortableScope) {
-            return dragEnabled;
+            return lc.dragEnabled;
           },
           orderChanged: function(event){
-            // disable ordering
-            dragEnabled = false;
+            console.log("orderChanged", event);
+            var sort_order = [], promise;
+            lc.dragEnabled = false;
 
-            var updates = [];
-            lc.CourseCache.collections.forEach(function(item, index, arr){
-              var d = $q.defer();
-              var newsort = index + 1;
-              if(item.sort_order != newsort){
-                arr[index].sort_order = newsort;
-                updates.push(Collection.update({id: item.id}, arr[index]).$promise);
-
-              }
-            });
-            $q.all(updates).then(function(){
-              // enable ordering
-              dragEnabled = true;
+            // update the sort_order attribute on each collection object
+            lc.CourseCache.collections.forEach(function(item, index, arr) {
+              item.sort_order = index + 1; // order is 1-based, not 0-based
+              sort_order.push(item.id);
             });
 
+            // persist the change (send to the server)
+            promise = lc.CourseCache.updateCollectionOrder({"id": AppConfig.course_id, "sort_order": sort_order});
+            promise.then(function() {
+              lc.dragEnabled = true;
+              lc.notifications.success("Successfully updated collection list.");
+            }).catch(function(r) {
+              lc.notifications.error("Failed to update collection list ("+r.status+")");
+              console.log(r);
+            });
           }
         };
-
-
     }
 ]);
