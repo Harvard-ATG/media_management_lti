@@ -1,8 +1,8 @@
 angular.module('media_manager').service('Breadcrumbs', function() {
-    var default_crumbs = [{"text": "Course Collections", "route": "/"}];
-    
+    var default_crumbs = [{"text": "Course Collections", "route": "/collections"}];
+
     this.crumbs = [];
-     
+
     this.addCrumb = function(text, route) {
         this.crumbs.push({"text": text, "route": route});
         return this;

@@ -1,15 +1,30 @@
 angular.module('media_manager')
 .factory('Collection', ['$resource',  'AppConfig', function($resource, AppConfig){
   var host = AppConfig.media_management_api_url;
-  return $resource(host + '/collections/:id',
-    { id: '@id' }, {
-      'saveImages': {
-        method: 'POST',
-        url: host + '/collections/:id/images',
-        isArray: true
+  var headers = {
+    'Authorization': AppConfig.authorization_header
+  };
+  return $resource(host + '/collections/:id', { id: '@id' }, {
+      'get': {
+        method: 'GET',
+        headers: headers,
+        url: host + '/collections/:id'
       },
       'update': {
-        method:'PUT'
+        method: 'PUT',
+        headers: headers,
+        url: host + '/collections/:id'
+      },
+      'save': {
+        method: 'POST',
+        headers: headers,
+        url: host + '/collections/:id'
+      },
+      'saveImages': {
+        method: 'POST',
+        headers: headers,
+        url: host + '/collections/:id/images',
+        isArray: true
       }
     }
   );
