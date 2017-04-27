@@ -102,7 +102,7 @@ describe("WorkspaceController", function(){
 
       spyOn(workspaceController.notifications, 'success');
       workspaceController.saveCollection("asdf").then(done());
-      expect(workspaceController.notifications.success).toHaveBeenCalledWith("asdf");
+      expect(workspaceController.notifications.success).toHaveBeenCalled();
     });
   });
 
