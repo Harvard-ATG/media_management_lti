@@ -17,8 +17,6 @@ http_static
 # web app
 node_modules
 bower_components
-/app/build/*
-!/app/build/empty
 app/.cache
 app/.config
 app/.npm
