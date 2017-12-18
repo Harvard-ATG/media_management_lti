@@ -18,5 +18,5 @@ SECURE_SETTINGS = {
         "client_secret": "",
     },
 
-    'google_analytics_tracking_id': "",
+    'google_analytics_tracking_id': None,
 }
