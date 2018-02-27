@@ -5,6 +5,8 @@ ALLOWED_HOSTS = ['*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+
 #INSTALLED_APPS += ('debug_toolbar',)
 #MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 

@@ -1,4 +1,4 @@
-Django==1.10.7
+Django==1.11.10
 # Postgres
 psycopg2==2.7.1
 # Redis Cache
@@ -8,4 +8,3 @@ hiredis==0.2.0
 requests==2.13.0
 
 git+https://github.com/Harvard-University-iCommons/django-auth-lti.git@v1.2.9#egg=django-auth-lti==1.2.9
-git+https://github.com/Harvard-ATG/django-app-lti@v1.0.2#egg=django-app-lti==1.0.2

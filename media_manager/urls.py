@@ -21,4 +21,6 @@ urlpatterns = [
     url(r'^app$', views.app, name='app'),
     url(r'^mirador/(?P<collection_id>[0-9]+)', views.mirador, name="mirador"),
     url(r'^endpoints/module$', views.module_endpoint, name="module_endpoint"),
+    url(r'^lti/launch$', views.LTILaunchView.as_view(), name="lti_launch"),
+    url(r'^lti/config$', views.LTIToolConfigView.as_view(), name="lti_config"),
 ]

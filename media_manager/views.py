@@ -1,10 +1,13 @@
 from django.conf import settings
 from django.shortcuts import render
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.views.generic import View
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from ims_lti_py.tool_config import ToolConfig
 from media_manager.models import CourseModule
 from media_manager.services import CourseService
 from media_manager.lti import LTILaunch
@@ -193,6 +196,82 @@ class MiradorView(PageView):
             "miradorConfig": self.to_json(config)
         }
         return render(self.request, 'mirador.html', context=context)
+
+class LTILaunchView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(LTILaunchView, self).dispatch(*args, **kwargs)
+
+    @method_decorator(login_required)
+    def post(self, request):
+        logging.debug('inside launch view: %s' % request.POST)
+        logging.debug(request.POST.get("resource_link_id"))
+        url = reverse('media_manager:index')
+        logging.debug('redirecting to url: %s' % url)
+        import django_auth_lti.patch_reverse
+        assert(django_auth_lti.patch_reverse == reverse, 'using patched reverse')
+        return HttpResponseRedirect(url+'?resource_link_id=%s' % request.POST.get("resource_link_id"))
+
+    def get(self, request):
+        return HttpResponse('This is the LTI launch endpoint.')
+
+class LTIToolConfigView(View):
+    '''
+    Outputs LTI configuration XML for Canvas as specified in the IMS Global Common Cartridge Profile.
+    The XML produced by this view can either be copy-pasted into the Canvas tool
+    settings, or exposed as an endpoint to Canvas by linking to this view.
+    '''
+    LAUNCH_URL = settings.LTI_SETUP.get('LAUNCH_URL', 'lti_launch')
+    TOOL_TITLE = settings.LTI_SETUP.get('TOOL_TITLE', 'LTI Tool')
+    TOOL_DESCRIPTION = settings.LTI_SETUP.get('TOOL_DESCRIPTION', '')
+    EXTENSION_PARAMETERS = settings.LTI_SETUP.get('EXTENSION_PARAMETERS', {})
+
+    def get_launch_url(self, **kwargs):
+        '''Returns the launch URL for the LTI tool.'''
+        force_secure = kwargs.pop('force_secure', False)
+        scheme = 'https' if force_secure or self.request.is_secure() else 'http'
+        base_url = '{scheme}://{host}'.format(scheme=scheme, host=self.request.get_host())
+        launch_url = self.LAUNCH_URL
+        url = base_url + reverse(launch_url)
+        return url
+
+    def set_ext_params(self, lti_tool_config):
+        '''
+        Sets extension parameters on the ToolConfig() instance.
+        This includes canvas-specific things like the course_navigation and privacy level:
+
+        {
+            "canvas.instructure.com": {
+                "privacy_level": "public",
+                "course_navigation": {
+                    "enabled": "true",
+                    "default": "disabled",
+                    "text": "MY tool",
+                }
+            }
+        }
+        '''
+        EXT_PARAMS = self.EXTENSION_PARAMETERS
+        for ext_key in EXT_PARAMS:
+            for ext_param in EXT_PARAMS[ext_key]:
+                ext_value = EXT_PARAMS[ext_key][ext_param]
+                lti_tool_config.set_ext_param(ext_key, ext_param, ext_value)
+
+    def get_tool_config(self):
+        '''Returns an instance of ToolConfig()'''
+        return ToolConfig(
+            title=self.TOOL_TITLE,
+            description=self.TOOL_DESCRIPTION,
+            launch_url=self.get_launch_url(),
+            secure_launch_url=self.get_launch_url(force_secure=True),
+        )
+
+    def get(self, request):
+        ''' Returns the LTI tool configuration as XML'''
+        lti_tool_config = self.get_tool_config()
+        self.set_ext_params(lti_tool_config)
+        return HttpResponse(lti_tool_config.to_xml(), content_type='text/xml', status=200)
+
 
 @require_permission("read")
 @require_http_methods(["GET"])
