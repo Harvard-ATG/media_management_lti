@@ -12,6 +12,10 @@ import json
 import logging
 from .secure import SECURE_SETTINGS
 
+# Ensure this middleware is imported early in the bootstrap process because we need django_auth_lti.patch_reverse
+# to monkey patch the django reverse() function, which automatically includes the resource_link_id in requests.
+import django_auth_lti.middleware_patched
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # NOTE: Since we have a settings module, we have to go one more directory up to get to
 # the project root

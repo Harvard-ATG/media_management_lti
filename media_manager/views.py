@@ -197,6 +197,9 @@ class MiradorView(PageView):
         }
         return render(self.request, 'mirador.html', context=context)
 
+import django_auth_lti.patch_reverse
+
+
 class LTILaunchView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -204,16 +207,11 @@ class LTILaunchView(View):
 
     @method_decorator(login_required)
     def post(self, request):
-        logging.debug('inside launch view: %s' % request.POST)
-        logging.debug(request.POST.get("resource_link_id"))
         url = reverse('media_manager:index')
-        logging.debug('redirecting to url: %s' % url)
-        import django_auth_lti.patch_reverse
-        assert(django_auth_lti.patch_reverse == reverse, 'using patched reverse')
-        return HttpResponseRedirect(url+'?resource_link_id=%s' % request.POST.get("resource_link_id"))
+        return HttpResponseRedirect(url)
 
     def get(self, request):
-        return HttpResponse('This is the LTI launch endpoint.')
+        return HttpResponse('This is the LTI launch endpoint. ')
 
 class LTIToolConfigView(View):
     '''
@@ -231,8 +229,7 @@ class LTIToolConfigView(View):
         force_secure = kwargs.pop('force_secure', False)
         scheme = 'https' if force_secure or self.request.is_secure() else 'http'
         base_url = '{scheme}://{host}'.format(scheme=scheme, host=self.request.get_host())
-        launch_url = self.LAUNCH_URL
-        url = base_url + reverse(launch_url)
+        url = base_url + reverse(self.LAUNCH_URL, exclude_resource_link_id=True)
         return url
 
     def set_ext_params(self, lti_tool_config):
