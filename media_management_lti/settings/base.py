@@ -12,6 +12,10 @@ import json
 import logging
 from .secure import SECURE_SETTINGS
 
+# Ensure this middleware is imported early in the bootstrap process because we need django_auth_lti.patch_reverse
+# to monkey patch the django reverse() function, which automatically includes the resource_link_id in requests.
+import django_auth_lti.middleware_patched
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # NOTE: Since we have a settings module, we have to go one more directory up to get to
 # the project root
@@ -33,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_auth_lti',
-    'django_app_lti',
     'media_manager',
 ]
 
@@ -46,7 +49,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django_auth_lti.middleware_patched.MultiLTILaunchAuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    #'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'media_management_lti.middleware.LtiExceptionMiddleware',
 ]
 
 # Authentication
@@ -105,11 +108,12 @@ DATABASES = {
 
 # Store sessions in default cache defined below
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_COOKIE_NAME = 'media_management_lti_sid'
 # NOTE: This setting only affects the session cookie, not the expiration of the session
 # being stored in the cache.  The session keys will expire according to the value of
-# SESSION_COOKIE_AGE (https://docs.djangoproject.com/en/1.8/ref/settings/#session-cookie-age),
-# which defaults to 2 weeks.
+# SESSION_COOKIE_AGE which defaults to 2 weeks.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
 # Cache
 # https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-CACHES
@@ -226,9 +230,8 @@ LOGGING = {
 LTI_SETUP = {
     "TOOL_TITLE": "Media Manager",
     "TOOL_DESCRIPTION": "Management of Medias",
-    "LAUNCH_URL": "lti:launch", # defaults to "lti:launch"
+    "LAUNCH_URL": "media_manager:lti_launch",
     "LAUNCH_REDIRECT_URL": "media_manager:index",
-    "INITIALIZE_MODELS": False, # can be: False | resource_only | resource_and_course | resource_and_course_users
     "EXTENSION_PARAMETERS": {
         "canvas.instructure.com": {
             "privacy_level": "public",

@@ -1,5 +1,8 @@
 from django.core.exceptions import PermissionDenied
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 class LTILaunchError(Exception):
     pass
@@ -7,12 +10,26 @@ class LTILaunchError(Exception):
 class LTILaunch(object):
     def __init__(self, request):
         self.request = request
-        self.launch_params = self._get_launch_params()
+        self._check_request()
+        self.launch_params = self._get_params()
 
-    def _get_launch_params(self):
+    def _check_request(self):
+        if not self.request.session:
+            raise LTILaunchError("Session is not initialized")
+        elif 'LTI_LAUNCH' not in self.request.session:
+            raise LTILaunchError("Session is missing LTI_LAUNCH dict.")
+        else:
+            session_keys = self.request.session['LTI_LAUNCH'].keys()
+            if len(session_keys) == 0:
+                raise LTILaunchError("Session LTI_LAUNCH dict is empty")
+
+        if not ('resource_link_id' in self.request.GET or 'resource_link_id' in self.request.POST):
+            raise LTILaunchError('Missing resource_link_id from GET/POST to lookup LTI_LAUNCH in session')
+
+    def _get_params(self):
         if hasattr(self.request, 'LTI') and self.request.LTI:
             return dict(self.request.LTI)
-        raise LTILaunchError("Missing LTI launch parameters")
+        return dict()
  
     def get_course_identifiiers(self):
         course_identifiers = {

@@ -41,7 +41,7 @@ class CourseService(object):
         Searches the API for a course with matching context identifiers (context_id and tool_consumer_instance_guid),
         or if none exists, creates a new course context in the API.
         '''
-        create_token = self.api_auth.obtain_create_token(raise_exception=True)
+        create_token = self.api_auth.obtain_create_token()
         course_identifiers = self.lti_launch.get_course_identifiiers()
         api = APIService(access_token=create_token)
         found = api.search_courses(course_identifiers)
