@@ -1666,8 +1666,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     background-image: url(data:image/gif;base64,R0lGODlhFAAUAPcAAAAAAJmZmZ2dnZ6enqKioqOjo6SkpKWlpaampqenp6ioqKmpqaqqqqurq/Hx8fLy8vT09PX19ff39/j4+Pn5+fr6+vv7+wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAUABQAAAihAP9FoPCvoMGDBy08+EdhQAIJCCMybCDAAYUEARBAlFiQQoMABQhKUJBxY0SPICEYHBnggEmDKAuoPMjS5cGYMxHW3IiT478JJA8M/CjTZ0GgLRekNGpwAsYABHIypcAgQMsITDtWJYBR6NSqMico9cqR6tKfY7GeBCuVwlipDNmefAtTrkSzB1RaIAoXodsABiZAEFB06gIBWC1mLVgBa0AAOw==);
 }
 
-.select2-container{box-sizing:border-box;display:inline-block;margin:0;position:relative;vertical-align:middle}.select2-container .select2-selection--single{box-sizing:border-box;cursor:pointer;display:block;height:28px;user-select:none;-webkit-user-select:none}.select2-container .select2-selection--single .select2-selection__rendered{display:block;padding-left:8px;padding-right:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.select2-container .select2-selection--single .select2-selection__clear{position:relative}.select2-container[dir="rtl"] .select2-selection--single .select2-selection__rendered{padding-right:8px;padding-left:20px}.select2-container .select2-selection--multiple{box-sizing:border-box;cursor:pointer;display:block;min-height:32px;user-select:none;-webkit-user-select:none}.select2-container .select2-selection--multiple .select2-selection__rendered{display:inline-block;overflow:hidden;padding-left:8px;text-overflow:ellipsis;white-space:nowrap}.select2-container .select2-search--inline{float:left}.select2-container .select2-search--inline .select2-search__field{box-sizing:border-box;border:none;font-size:100%;margin-top:5px;padding:0}.select2-container .select2-search--inline .select2-search__field::-webkit-search-cancel-button{-webkit-appearance:none}.select2-dropdown{background-color:white;border:1px solid #aaa;border-radius:4px;box-sizing:border-box;display:block;position:absolute;left:-100000px;width:100%;z-index:1051}.select2-results{display:block}.select2-results__options{list-style:none;margin:0;padding:0}.select2-results__option{padding:6px;user-select:none;-webkit-user-select:none}.select2-results__option[aria-selected]{cursor:pointer}.select2-container--open .select2-dropdown{left:0}.select2-container--open .select2-dropdown--above{border-bottom:none;border-bottom-left-radius:0;border-bottom-right-radius:0}.select2-container--open .select2-dropdown--below{border-top:none;border-top-left-radius:0;border-top-right-radius:0}.select2-search--dropdown{display:block;padding:4px}.select2-search--dropdown .select2-search__field{padding:4px;width:100%;box-sizing:border-box}.select2-search--dropdown .select2-search__field::-webkit-search-cancel-button{-webkit-appearance:none}.select2-search--dropdown.select2-search--hide{display:none}.select2-close-mask{border:0;margin:0;padding:0;display:block;position:fixed;left:0;top:0;min-height:100%;min-width:100%;height:auto;width:auto;opacity:0;z-index:99;background-color:#fff;filter:alpha(opacity=0)}.select2-hidden-accessible{border:0 !important;clip:rect(0 0 0 0) !important;height:1px !important;margin:-1px !important;overflow:hidden !important;padding:0 !important;position:absolute !important;width:1px !important}.select2-container--default .select2-selection--single{background-color:#fff;border:1px solid #aaa;border-radius:4px}.select2-container--default .select2-selection--single .select2-selection__rendered{color:#444;line-height:28px}.select2-container--default .select2-selection--single .select2-selection__clear{cursor:pointer;float:right;font-weight:bold}.select2-container--default .select2-selection--single .select2-selection__placeholder{color:#999}.select2-container--default .select2-selection--single .select2-selection__arrow{height:26px;position:absolute;top:1px;right:1px;width:20px}.select2-container--default .select2-selection--single .select2-selection__arrow b{border-color:#888 transparent transparent transparent;border-style:solid;border-width:5px 4px 0 4px;height:0;left:50%;margin-left:-4px;margin-top:-2px;position:absolute;top:50%;width:0}.select2-container--default[dir="rtl"] .select2-selection--single .select2-selection__clear{float:left}.select2-container--default[dir="rtl"] .select2-selection--single .select2-selection__arrow{left:1px;right:auto}.select2-container--default.select2-container--disabled .select2-selection--single{background-color:#eee;cursor:default}.select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__clear{display:none}.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b{border-color:transparent transparent #888 transparent;border-width:0 4px 5px 4px}.select2-container--default .select2-selection--multiple{background-color:white;border:1px solid #aaa;border-radius:4px;cursor:text}.select2-container--default .select2-selection--multiple .select2-selection__rendered{box-sizing:border-box;list-style:none;margin:0;padding:0 5px;width:100%}.select2-container--default .select2-selection--multiple .select2-selection__rendered li{list-style:none}.select2-container--default .select2-selection--multiple .select2-selection__placeholder{color:#999;margin-top:5px;float:left}.select2-container--default .select2-selection--multiple .select2-selection__clear{cursor:pointer;float:right;font-weight:bold;margin-top:5px;margin-right:10px}.select2-container--default .select2-selection--multiple .select2-selection__choice{background-color:#e4e4e4;border:1px solid #aaa;border-radius:4px;cursor:default;float:left;margin-right:5px;margin-top:5px;padding:0 5px}.select2-container--default .select2-selection--multiple .select2-selection__choice__remove{color:#999;cursor:pointer;display:inline-block;font-weight:bold;margin-right:2px}.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover{color:#333}.select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__choice,.select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__placeholder,.select2-container--default[dir="rtl"] .select2-selection--multiple .select2-search--inline{float:right}.select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__choice{margin-left:5px;margin-right:auto}.select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__choice__remove{margin-left:2px;margin-right:auto}.select2-container--default.select2-container--focus .select2-selection--multiple{border:solid black 1px;outline:0}.select2-container--default.select2-container--disabled .select2-selection--multiple{background-color:#eee;cursor:default}.select2-container--default.select2-container--disabled .select2-selection__choice__remove{display:none}.select2-container--default.select2-container--open.select2-container--above .select2-selection--single,.select2-container--default.select2-container--open.select2-container--above .select2-selection--multiple{border-top-left-radius:0;border-top-right-radius:0}.select2-container--default.select2-container--open.select2-container--below .select2-selection--single,.select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple{border-bottom-left-radius:0;border-bottom-right-radius:0}.select2-container--default .select2-search--dropdown .select2-search__field{border:1px solid #aaa}.select2-container--default .select2-search--inline .select2-search__field{background:transparent;border:none;outline:0;box-shadow:none;-webkit-appearance:textfield}.select2-container--default .select2-results>.select2-results__options{max-height:200px;overflow-y:auto}.select2-container--default .select2-results__option[role=group]{padding:0}.select2-container--default .select2-results__option[aria-disabled=true]{color:#999}.select2-container--default .select2-results__option[aria-selected=true]{background-color:#ddd}.select2-container--default .select2-results__option .select2-results__option{padding-left:1em}.select2-container--default .select2-results__option .select2-results__option .select2-results__group{padding-left:0}.select2-container--default .select2-results__option .select2-results__option .select2-results__option{margin-left:-1em;padding-left:2em}.select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option{margin-left:-2em;padding-left:3em}.select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option{margin-left:-3em;padding-left:4em}.select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option{margin-left:-4em;padding-left:5em}.select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option{margin-left:-5em;padding-left:6em}.select2-container--default .select2-results__option--highlighted[aria-selected]{background-color:#5897fb;color:white}.select2-container--default .select2-results__group{cursor:default;display:block;padding:6px}.select2-container--classic .select2-selection--single{background-color:#f7f7f7;border:1px solid #aaa;border-radius:4px;outline:0;background-image:-webkit-linear-gradient(top, #fff 50%, #eee 100%);background-image:-o-linear-gradient(top, #fff 50%, #eee 100%);background-image:linear-gradient(to bottom, #fff 50%, #eee 100%);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFFFF', endColorstr='#FFEEEEEE', GradientType=0)}.select2-container--classic .select2-selection--single:focus{border:1px solid #5897fb}.select2-container--classic .select2-selection--single .select2-selection__rendered{color:#444;line-height:28px}.select2-container--classic .select2-selection--single .select2-selection__clear{cursor:pointer;float:right;font-weight:bold;margin-right:10px}.select2-container--classic .select2-selection--single .select2-selection__placeholder{color:#999}.select2-container--classic .select2-selection--single .select2-selection__arrow{background-color:#ddd;border:none;border-left:1px solid #aaa;border-top-right-radius:4px;border-bottom-right-radius:4px;height:26px;position:absolute;top:1px;right:1px;width:20px;background-image:-webkit-linear-gradient(top, #eee 50%, #ccc 100%);background-image:-o-linear-gradient(top, #eee 50%, #ccc 100%);background-image:linear-gradient(to bottom, #eee 50%, #ccc 100%);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFEEEEEE', endColorstr='#FFCCCCCC', GradientType=0)}.select2-container--classic .select2-selection--single .select2-selection__arrow b{border-color:#888 transparent transparent transparent;border-style:solid;border-width:5px 4px 0 4px;height:0;left:50%;margin-left:-4px;margin-top:-2px;position:absolute;top:50%;width:0}.select2-container--classic[dir="rtl"] .select2-selection--single .select2-selection__clear{float:left}.select2-container--classic[dir="rtl"] .select2-selection--single .select2-selection__arrow{border:none;border-right:1px solid #aaa;border-radius:0;border-top-left-radius:4px;border-bottom-left-radius:4px;left:1px;right:auto}.select2-container--classic.select2-container--open .select2-selection--single{border:1px solid #5897fb}.select2-container--classic.select2-container--open .select2-selection--single .select2-selection__arrow{background:transparent;border:none}.select2-container--classic.select2-container--open .select2-selection--single .select2-selection__arrow b{border-color:transparent transparent #888 transparent;border-width:0 4px 5px 4px}.select2-container--classic.select2-container--open.select2-container--above .select2-selection--single{border-top:none;border-top-left-radius:0;border-top-right-radius:0;background-image:-webkit-linear-gradient(top, #fff 0%, #eee 50%);background-image:-o-linear-gradient(top, #fff 0%, #eee 50%);background-image:linear-gradient(to bottom, #fff 0%, #eee 50%);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFFFF', endColorstr='#FFEEEEEE', GradientType=0)}.select2-container--classic.select2-container--open.select2-container--below .select2-selection--single{border-bottom:none;border-bottom-left-radius:0;border-bottom-right-radius:0;background-image:-webkit-linear-gradient(top, #eee 50%, #fff 100%);background-image:-o-linear-gradient(top, #eee 50%, #fff 100%);background-image:linear-gradient(to bottom, #eee 50%, #fff 100%);background-repeat:repeat-x;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFEEEEEE', endColorstr='#FFFFFFFF', GradientType=0)}.select2-container--classic .select2-selection--multiple{background-color:white;border:1px solid #aaa;border-radius:4px;cursor:text;outline:0}.select2-container--classic .select2-selection--multiple:focus{border:1px solid #5897fb}.select2-container--classic .select2-selection--multiple .select2-selection__rendered{list-style:none;margin:0;padding:0 5px}.select2-container--classic .select2-selection--multiple .select2-selection__clear{display:none}.select2-container--classic .select2-selection--multiple .select2-selection__choice{background-color:#e4e4e4;border:1px solid #aaa;border-radius:4px;cursor:default;float:left;margin-right:5px;margin-top:5px;padding:0 5px}.select2-container--classic .select2-selection--multiple .select2-selection__choice__remove{color:#888;cursor:pointer;display:inline-block;font-weight:bold;margin-right:2px}.select2-container--classic .select2-selection--multiple .select2-selection__choice__remove:hover{color:#555}.select2-container--classic[dir="rtl"] .select2-selection--multiple .select2-selection__choice{float:right}.select2-container--classic[dir="rtl"] .select2-selection--multiple .select2-selection__choice{margin-left:5px;margin-right:auto}.select2-container--classic[dir="rtl"] .select2-selection--multiple .select2-selection__choice__remove{margin-left:2px;margin-right:auto}.select2-container--classic.select2-container--open .select2-selection--multiple{border:1px solid #5897fb}.select2-container--classic.select2-container--open.select2-container--above .select2-selection--multiple{border-top:none;border-top-left-radius:0;border-top-right-radius:0}.select2-container--classic.select2-container--open.select2-container--below .select2-selection--multiple{border-bottom:none;border-bottom-left-radius:0;border-bottom-right-radius:0}.select2-container--classic .select2-search--dropdown .select2-search__field{border:1px solid #aaa;outline:0}.select2-container--classic .select2-search--inline .select2-search__field{outline:0;box-shadow:none}.select2-container--classic .select2-dropdown{background-color:#fff;border:1px solid transparent}.select2-container--classic .select2-dropdown--above{border-bottom:none}.select2-container--classic .select2-dropdown--below{border-top:none}.select2-container--classic .select2-results>.select2-results__options{max-height:200px;overflow-y:auto}.select2-container--classic .select2-results__option[role=group]{padding:0}.select2-container--classic .select2-results__option[aria-disabled=true]{color:grey}.select2-container--classic .select2-results__option--highlighted[aria-selected]{background-color:#3875d7;color:#fff}.select2-container--classic .select2-results__group{cursor:default;display:block;padding:6px}.select2-container--classic.select2-container--open .select2-dropdown{border-color:#5897fb}
-
 /**
  * This file is the entry point for Less processing
  */
@@ -1747,8 +1745,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   /* background-color: black; */
 }
 .mirador-container .text-editor,
-.mirador-container .tags-editor,
-.mirador-container .select2-container {
+.mirador-container .tags-editor {
   padding: 5px;
   display: block;
   margin: 6px 0px 6px 0px;
@@ -1757,14 +1754,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   box-shadow: inset 0 0 7px gray;
   resize: vertical;
   border: 1px solid gray;
-  width: 200px;
-}
-.mirador-container .text-editor .select2-selection--multiple,
-.mirador-container .tags-editor .select2-selection--multiple,
-.mirador-container .select2-container .select2-selection--multiple {
-  border: none;
-  background-color: inherit;
-  font-size: 16px;
 }
 .mirador-container .annotation-display.annotation-tooltip .button-container {
   text-align: right;
@@ -1942,25 +1931,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   /*color: @gray-91;*/
   box-sizing: border-box;
 }
-.mirador-container input[type="submit"],
-.mirador-container input[type="text"] {
-  height: 25px;
-  border: 1px solid lightGray;
-  transition: border-color 0.3s ease-out;
-}
-.mirador-container input:focus {
-  outline: none;
-  border-color: deepskyblue;
-}
-.mirador-container input[type="submit"] {
-  color: gray;
-  background: #fff;
-}
-.mirador-container input[type="submit"]:hover {
-  outline: none;
-  border-color: deepskyblue;
-  color: #333;
-}
 .mirador-container {
   /* Full screen
   -------------------------------------------------------------------------- */
@@ -2019,7 +1989,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   color: gray;
   text-align: center;
   font-weight: normal;
-  margin: 0px;
 }
 .mirador-container .slot:hover h1 {
   color: lightGray;
@@ -2027,12 +1996,12 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .mirador-container .plus {
   font-size: 170px;
   font-weight: bold;
-  margin-bottom: 2%;
+  margin-bottom: 20px;
 }
 .mirador-container .slotIconContainer {
-  position: relative;
+  position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  margin-top: -260px;
   width: 100%;
   overflow: hidden;
   pointer-events: none;
@@ -2173,12 +2142,11 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   text-align: right;
 }
 .mirador-container .window {
-  position: absolute;
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
   background-color: #333;
-  top: 0%;
 }
 .mirador-container .manifest-info {
   overflow: auto;
@@ -2215,12 +2183,11 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   top: 0;
   box-sizing: border-box;
   background-color: rgba(255, 255, 255, 0.9);
-  z-index: 5;
+  z-index: 4;
   width: 45%;
   overflow-y: scroll;
   height: 80%;
   word-wrap: break-word;
-  font-size: 90%;
 }
 .mirador-container .thumbnail-view,
 .mirador-container .image-view,
@@ -2256,9 +2223,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   color: #b1b1b1;
   margin: 0px;
   height: 0px;
-}
-.mirador-container .v-direction-rtl {
-  direction: rtl;
 }
 .mirador-container {
   /* Disable outlines when canvas is focused
@@ -2447,12 +2411,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   transition: none;
   /*width: 100%*/
 }
-.mirador-container .mirador-osd-context-controls > div {
-  clear: both;
-}
-.mirador-container .mirador-osd-context-controls > div > a:first-child {
-  margin-bottom: 10px;
-}
 .mirador-container .mirador-osd-context-controls a {
   float: left;
   margin: 0 10px 0 0;
@@ -2464,14 +2422,10 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   left: 0px;
 }
 .mirador-container .mirador-manipulation-controls {
-  min-width: 364px;
-}
-.mirador-container .mirador-mirror {
-  -moz-transform: scale(-1, 1);
-  -webkit-transform: scale(-1, 1);
-  -o-transform: scale(-1, 1);
-  transform: scale(-1, 1);
-  filter: FlipH;
+  position: absolute;
+  top: 30px;
+  left: 0px;
+  min-width: 330px;
 }
 .mirador-container .mirador-osd-color-picker * {
   text-shadow: none;
@@ -2780,9 +2734,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .mirador-container .hud-control .ui-slider-range {
   background: deepskyblue;
 }
-.mirador-container .thumbnail-rtl {
-  float: right !important;
-}
 @media screen and (max-width: 768px) {
   .mirador-container #load-controls form {
     float: none;
@@ -3001,6 +2952,14 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   display: table;
   clear: both;
 }
+.mirador-container #load-controls input {
+  height: 25px;
+  border: 1px solid lightGray;
+  color: gray;
+  background: none;
+  border-radius: 2px;
+  transition: border-color 0.3s ease-out;
+}
 .mirador-container #manifest-search-form {
   float: left;
 }
@@ -3040,14 +2999,15 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   margin-top: 10px;
   border-top: 1px solid gray;
 }
-.mirador-container #workspace-select-menu {
+.mirador-container #workspace-select-menu,
+.mirador-container #workspaceContainer {
   position: absolute;
   height: 100%;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.94);
   display: none;
   overflow: hidden;
-  z-index: 6;
+  z-index: 5;
 }
 .mirador-container #workspace-select-menu {
   background-color: #333;
@@ -3124,6 +3084,20 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   opacity: 1;
   transition: all 0.2s ease-out;
   transform: translateX(0);
+  /*
+    h2 {
+      font-size: 1.5em;
+    }
+    h3 {
+      font-size: 1.25em;
+    }
+    h4 {
+      font-size: 1.0em;
+    }
+    h5 {
+      font-size: .75em;
+    }
+    */
 }
 .mirador-container .sidePanel .tabGroup {
   list-style-type: none;
@@ -3131,28 +3105,23 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   padding: 0;
 }
 .mirador-container .sidePanel .tab {
-  padding: 8px;
-  margin-right: 2px;
+  padding: 4px 6px;
+  border-left: 0;
+  border-bottom: 2px solid #000;
   display: inline-block;
   cursor: pointer;
-  background: #dddddd;
-  border-width: 1px 1px 0 1px;
-  border-color: #b1b1b1;
-  border-style: solid;
-  color: #666;
-  font-size: .9em;
+  border-radius: 3px 3px 0 0;
 }
 .mirador-container .sidePanel .tab:not(.selected):hover {
-  background: lightGray;
-  color: #333;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid #000;
+  padding: 4px 4px;
 }
 .mirador-container .sidePanel .tab.selected {
-  font-weight: bold;
-  color: #333;
-  background: #efefef;
-  border-top-width: 1px;
-  border-top-style: solid;
-  border-top-color: deepskyblue;
+  border: 2px solid #000;
+  border-bottom: 0;
+  border-radius: 3px 3px 0 0;
+  margin: 0 -2px;
 }
 .mirador-container .sidePanel .annotationListItem {
   list-style-type: none;
@@ -3182,15 +3151,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .mirador-container .sidePanel a:hover {
   text-decoration: none;
 }
-.mirador-container .sidePanel h2 {
-  font-size: 1em;
-}
-.mirador-container .sidePanel h3 {
-  font-size: .9em;
-}
-.mirador-container .sidePanel h4 {
-  font-size: .8em;
-}
 .mirador-container .sidePanel h1,
 .mirador-container .sidePanel h2,
 .mirador-container .sidePanel h3,
@@ -3207,7 +3167,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 }
 .mirador-container .tabContentArea {
   position: relative;
-  width: 270px;
+  width: 280px;
   height: 100%;
   float: left;
   background-color: #efefef;
@@ -3215,7 +3175,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   box-sizing: border-box;
   overflow: hidden;
   transition: all 0.3s ease;
-  margin-top: 8px;
 }
 .mirador-container .annotationsPanel ul {
   padding: 0;
@@ -3224,7 +3183,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .mirador-container .toc {
   margin: 0;
   overflow-y: scroll;
-  width: 270px;
+  width: 280px;
   padding: 0;
   position: absolute;
   box-sizing: border-box;
@@ -3232,8 +3191,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   top: 0px;
   bottom: 0;
   list-style-type: none;
-  margin-bottom: 30px;
-  /* fix overflow-y bug when .tabGroup is present */
+  font-size: 75%;
 }
 .mirador-container .toc a.toc-link {
   color: black;
@@ -3261,16 +3219,12 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   position: relative;
   margin-left: 8px;
   margin-bottom: 5px;
-  border-left: 4px solid #efefef;
 }
 .mirador-container .toc li.selected {
   cursor: pointer;
   overflow: hidden;
   border-left: 4px solid deepskyblue;
   transition: all 0.2s ease-out;
-}
-.mirador-container .toc > li {
-  margin-left: 0;
 }
 .mirador-container .toc-link i {
   color: rgba(0, 0, 0, 0.4);
@@ -3330,6 +3284,13 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 }
 .mirador-container .toc-link:hover .star {
   color: black;
+}
+.mirador-container .toc li:hover > h2 a.toc-link,
+.mirador-container .toc li:hover > h3 a.toc-link,
+.mirador-container .toc li:hover > h4 a.toc-link,
+.mirador-container .toc li:hover > h5 a.toc-link,
+.mirador-container .toc li:hover > h6 a.toc-link {
+  font-weight: bold;
 }
 .mirador-container {
   /*
@@ -3502,7 +3463,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   background-color: rgba(255, 255, 255, 0.94);
   display: none;
   overflow: hidden;
-  z-index: 6;
+  z-index: 5;
   right: 0;
   top: 0;
   padding: 10px;
@@ -3519,13 +3480,11 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   text-align: center;
 }
 .mirador-container .mirador-viewer .sub-title {
-  border-bottom: 1px solid #b1b1b1;
-  color: #333;
+  border-bottom: 2px solid #ccc;
+  color: #666;
   font-weight: bold;
   margin: 10px 20px 5px 20px;
   padding: 0 5px 5px 0;
-  font-size: 120%;
-  text-transform: uppercase;
 }
 .mirador-container .mirador-viewer .metadata-listing {
   width: 100%;
@@ -3534,16 +3493,15 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   box-sizing: border-box;
 }
 .mirador-container .mirador-viewer .metadata-item {
-  padding: 10px 0 5px 0;
+  padding: 5px 0;
 }
 .mirador-container .mirador-viewer .metadata-label,
 .mirador-container .mirador-viewer .metadata-value {
   line-height: 1.5;
 }
 .mirador-container .mirador-viewer .metadata-label {
-  color: #666;
+  color: #555;
   font-style: italic;
-  text-transform: uppercase;
 }
 .mirador-container .mirador-viewer .metadata-value {
   vertical-align: bottom;
@@ -3635,149 +3593,6 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-}
-.mirador-container .layersPanel h3 {
-  margin: 10px 0;
-}
-.layersPanel {
-  position: absolute;
-  width: 285px;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  overflow-y: scroll;
-}
-.layersPanel .layers-listing {
-  padding: 0;
-  list-style-type: none;
-  margin-top: 0;
-}
-.layersPanel .layers-list-item {
-  zoom: 1;
-  border-top: 1px solid #b1b1b1;
-  padding: 10px 10px 10px 0;
-  margin-right: 20px;
-}
-.layersPanel .layers-list-item:before,
-.layersPanel .layers-list-item:after {
-  content: "";
-  display: table;
-}
-.layersPanel .layers-list-item:after {
-  clear: both;
-}
-.layersPanel .layers-list-item > h4 {
-  margin-bottom: 5px;
-}
-.layersPanel .layers-list-item .thumb-container {
-  position: relative;
-  float: left;
-  width: 60px;
-  height: 60px;
-  margin-right: 10px;
-}
-.layersPanel .layers-list-item .thumb-container img {
-  position: relative;
-  margin: 0 auto;
-  max-height: 60px;
-  max-width: 60px;
-  display: block;
-  opacity: 0;
-  border: 1px solid gray;
-  box-shadow: inset 0 0 12px gray;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.layersPanel .layers-list-item .thumb-container img.loaded {
-  transition: all 0.2s ease-out;
-  opacity: 1;
-}
-.layersPanel .layers-list-item .thumb-container .spinner,
-.layersPanel .layers-list-item .thumb-container .failed,
-.layersPanel .layers-list-item .thumb-container .thumb-failed {
-  position: absolute;
-  display: inline-block;
-  width: 100%;
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0;
-  transition: all 0.2s ease-out;
-  color: #666;
-}
-.layersPanel .layers-list-item .thumb-container.awaiting-thumbnail .spinner {
-  opacity: 1;
-}
-.layersPanel .layers-list-item.requested .spinner {
-  opacity: 1;
-  transition: all 0.2s ease-out;
-}
-.layersPanel .layers-list-item.requested .thumb-container img {
-  transition: all 0.2s ease-out;
-  opacity: 0.5;
-}
-.layersPanel .layers-list-item.failed .failed {
-  opacity: 1;
-  transition: all 0.2s ease-out;
-}
-.layersPanel .layers-list-item.failed .thumb-container img {
-  transition: all 0.2s ease-out;
-  opacity: 0.5;
-}
-.layersPanel .layers-list-item.failed .thumb-failed {
-  opacity: 0;
-}
-.layersPanel .layers-list-item.failed .thumb-container.awaiting-thumbnail .spinner {
-  opacity: 0;
-  transition: all 0.2s ease-out;
-}
-.layersPanel .layers-list-item .visibility-toggle {
-  margin-bottom: 10px;
-}
-.layersPanel .disabled-overlay {
-  display: none;
-}
-.layersPanel.inactive > *:not(.disabled-overlay) {
-  display: none;
-}
-.layersPanel.inactive .disabled-overlay {
-  padding: 10px;
-  display: block;
-  box-sizing: border-box;
-  color: dimgray;
-}
-.mirador-container .search-results {
-  padding: 0 5px 0 0;
-  margin: 0;
-  position: absolute;
-  height: 100%;
-}
-.mirador-container .search-results select {
-  margin: 5px 0 10px 0;
-}
-.mirador-container .search-results-list {
-  position: relative;
-  height: 100%;
-}
-.mirador-container .search-results-list .search-results-messages {
-  border-top: 1px solid #b1b1b1;
-  padding-top: 10px;
-  margin-top: 10px;
-}
-.mirador-container .search-results-list .search-results-count {
-  font-size: .85em;
-}
-.mirador-container .search-results-list .search-results-container {
-  overflow-y: scroll;
-  position: absolute;
-  height: 70%;
-}
-.mirador-container .search-results-list .result-wrapper {
-  margin-bottom: 5px;
-}
-.mirador-container .search-results-list .result-wrapper .result-paragraph .highlight {
-  background-color: #ffff00;
 }
 
 @font-face {
