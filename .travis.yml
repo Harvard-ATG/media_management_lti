@@ -5,7 +5,7 @@ python:
 env:
 - DJANGO_SETTINGS_MODULE="media_management_lti.settings.local"
 install:
-- pip install -r media_management_lti/requirements/local.txt --use-mirrors
+- pip install -r media_management_lti/requirements/local.txt
 - cd app
 - npm install
 - bower install
