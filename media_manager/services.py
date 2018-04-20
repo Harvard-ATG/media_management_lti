@@ -64,6 +64,13 @@ class CourseService(object):
     def obtain_user_token(self, course_instance):
         return self.api_auth.obtain_user_token(course_instance=course_instance)
 
+    def get_collection(self, collection_id):
+        course_identifiers = self.lti_launch.get_course_identifiiers()
+        course = Course.objects.get(**course_identifiers)
+        user_token = self.api_auth.obtain_user_token(course_instance=course)
+        api = APIService(access_token=user_token)
+        return api.get_collection(collection_id)
+
 class APIAuthService(object):
     def __init__(self, user_id, perms):
         self.user_id = user_id
@@ -125,7 +132,7 @@ class APIService(object):
         if access_token is not None:
             self.headers['Authorization'] = "Token %s" % access_token
 
-        logger.debug("API: instance base_url=%s headers=%s" % (self.base_url, self.headers))
+        logger.info("API: instance base_url=%s headers=%s" % (self.base_url, self.headers))
 
     def search_courses(self, course_identifiers):
         '''
@@ -138,11 +145,11 @@ class APIService(object):
         url = "%s/courses" % self.base_url
         params = course_identifiers.copy()
 
-        logger.debug("API: request url: %s params: %s" % (url, params))
+        logger.info("API: request url: %s params: %s" % (url, params))
 
         r = requests.get(url, headers=self.headers, params=params)
         if r.status_code != 200:
-            logger.debug("API: no such course exists with course identifiers: %s" % course_identifiers)
+            logger.info("API: no such course exists with course identifiers: %s" % course_identifiers)
             return []
 
         return r.json()
@@ -157,13 +164,13 @@ class APIService(object):
         post_data.update({"title": title})
         post_data.update(course_identifiers)
 
-        logger.debug("API: request url: %s post data: %s" % (url, post_data))
+        logger.info("API: request url: %s post data: %s" % (url, post_data))
 
         r = requests.post(url, headers=self.headers, data=json.dumps(post_data))
         if r.status_code < 200 or r.status_code > 201:
             raise Exception("API: failed to create course. status_code=%s" % r.status_code)
 
-        logger.debug("API: created course with status_code: %s response content: %s" % (r.status_code, r.content))
+        logger.info("API: created course with status_code: %s response content: %s" % (r.status_code, r.content))
 
         data = r.json()
         if not data:
@@ -190,10 +197,30 @@ class APIService(object):
         if r.status_code != 200:
             raise Exception("API: failed to obtain token. status_code=%s text=%s" % (r.status_code, r.text))
 
-        logger.debug("API: obtained token: %s" % (r.text))
+        logger.info("API: obtained token: %s" % (r.text))
 
         data = r.json()
         if not data:
             raise Exception("API: obtained token, but response is empty")
 
         return data
+
+    def get_collection(self, collection_id):
+        '''
+        Retrieves data from /collections/:id endpoint.
+        '''
+        url = "%s/collections/%s" % (self.base_url, collection_id)
+
+        logger.info("API: request url: %s params: %s" % (url, collection_id))
+
+        r = requests.get(url, headers=self.headers)
+        if r.status_code != 200:
+            raise Exception("API: failed to get collection. status_code=%s" % r.status_code)
+
+        data = r.json()
+        if not data:
+            raise Exception("API: obtained ollection, but resopnse is empty")
+
+        return data
+
+

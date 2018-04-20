@@ -8,8 +8,10 @@
 
   <div class="row no-margin">
     <div ng-class="wc.hideLibrary ? 'col-md-12' : 'col-md-6'">
+
       <div id="image-collection-panel" class="panel panel-default">
         <div class="panel-heading">
+          <!-- Title -->
           <div class="form-inline">
             <div class="form-group">
               <label for="collectionTitleForm">Collection</label>
@@ -27,6 +29,8 @@
               <span ng-if="!wc.collection.description">Add Description</span>
             </button>
           </div>
+
+          <!-- Description -->
           <div class="form-inline" ng-class="{hidden: !collectionDescForm.$visible}">
             <div class="form-group">
               <label for="collectionDescForm" class="collection-desc-label">Description</label>
@@ -40,14 +44,28 @@
               </div>
             </div>
           </div>
+
+          <!-- IIIF Manifest -->
+          <div class="form-inline">
+            <label for="collectionManifestForm" class="collection-desc-label">IIIF Manifest</label>
+            <div class="form-control" style="overflow:hidden; width: 300px;" editable-textarea="wc.collection.custom_iiif_manifest_url" e-form="collectionManifestForm" e-name="collectionManifestForm" e-maxlength="255" onaftersave="wc.saveCollection('Collection manifest saved.')" ng-click="collectionManifestForm.$show()">
+              {{wc.collection.custom_iiif_manifest_url||''}}
+            </div>
+          </div>
         </div>
+
         <ul class="list-group">
           <li class="list-group-item">
+
+            <!-- Add Images via Library -->
             <button type="button" class="btn btn-primary" ng-click="wc.hideLibrary = !wc.hideLibrary">
               <span ng-if="wc.hideLibrary">Add Images</span>
               <span ng-if="!wc.hideLibrary">Close Library</span>
             </button>
+
+
           </li>
+
           <li class="list-group-item">
             <div ng-show="wc.isLoadingCollection.status || wc.isSavingCollection.status">
                 <span us-spinner="{top:'50%'}"></span>

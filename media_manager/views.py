@@ -187,10 +187,17 @@ class MiradorView(PageView):
         super(MiradorView, self).__init__(request)
 
     def render(self):
-        manifest_uri = "{base_url}/collections/{collection_id}/manifest"
-        manifest_uri = manifest_uri.format(base_url=settings.MEDIA_MANAGEMENT_API_URL, collection_id=self.collection_id)
+        course_service = CourseService.from_request(self.request)
+        collection_data = course_service.get_collection(self.collection_id)
+
+        custom_manifest_url = collection_data.get('custom_iiif_manifest_url', '').strip()
+        default_manifest_url = collection_data.get('default_iiif_manifest_url', '').strip()
+        manifest_uri = custom_manifest_url if custom_manifest_url else default_manifest_url
+
         config = {
-            "data": [{"manifestUri": manifest_uri, "location": "Harvard University"}]
+            "data": [
+                {"manifestUri": manifest_uri, "location": "Harvard University"}
+            ]
         }
         context = {
             "miradorConfig": self.to_json(config)
