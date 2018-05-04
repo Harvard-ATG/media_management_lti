@@ -10,13 +10,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CourseService(object):
-    def __init__(self, lti_launch):
+    def __init__(self, lti_launch, api_auth):
         self.lti_launch = lti_launch
-        self.api_auth = APIAuthService(user_id=lti_launch.get_sis_user_id(), perms=lti_launch.get_perms())
+        self.api_auth = api_auth
 
     @classmethod
     def from_request(cls, request):
-        return cls(LTILaunch(request))
+        lti_launch = LTILaunch(request)
+        api_auth = APIAuthService(user_id=lti_launch.get_sis_user_id(), perms=lti_launch.get_perms())
+        return cls(lti_launch, api_auth)
 
     def load_course(self, raise_exception=False):
         '''

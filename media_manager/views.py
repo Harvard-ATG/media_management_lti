@@ -27,7 +27,7 @@ class CourseViewHelper(object):
     def __init__(self, request):
         self.request = request
         self.lti_launch = LTILaunch(request)
-        self.course_service = CourseService(self.lti_launch)
+        self.course_service = CourseService.from_request(request)
         self.course_object = None
 
     def get_course_object(self):
@@ -181,6 +181,7 @@ class MiradorView(PageView):
     See also:
         - http://www.projectmirador.org
         - https://github.com/ProjectMirador/mirador
+        - https://github.com/ProjectMirador/mirador/wiki/Complete-Configuration-API
     '''
     def __init__(self, request, collection_id):
         self.collection_id = collection_id
@@ -191,14 +192,19 @@ class MiradorView(PageView):
         collection_data = course_service.get_collection(self.collection_id)
 
         custom_manifest_url = collection_data.get('custom_iiif_manifest_url', '').strip()
+        custom_canvas_id = collection_data.get('custom_iiif_canvas_id', '').strip()
         default_manifest_url = collection_data.get('default_iiif_manifest_url', '').strip()
+
         manifest_uri = custom_manifest_url if custom_manifest_url else default_manifest_url
+        canvas_id = custom_canvas_id if custom_manifest_url and custom_canvas_id else None
+        metadataPluginEnabled = not custom_manifest_url
 
         config = {
-            "data": [
-                {"manifestUri": manifest_uri, "location": "Harvard University"}
-            ]
+            "data": [{"manifestUri": manifest_uri, "location": "Harvard University"}],
+            "canvasID": canvas_id,
+            "metadataPluginEnabled": metadataPluginEnabled,
         }
+
         context = {
             "miradorConfig": self.to_json(config)
         }

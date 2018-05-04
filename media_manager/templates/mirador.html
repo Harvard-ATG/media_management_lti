@@ -29,8 +29,9 @@ window.miradorConfig = {{miradorConfig|safe}};
     if(config.imageViewEnabled) {
       windowObject.viewType = 'ImageView';
     }
-    if(config.canvasId) {
-      windowObject.canvasId = config.canvasId;
+    if(config.canvasID) {
+      windowObject.canvasID = config.canvasID;
+      windowObject.viewType = 'ImageView';
     }
 
     var miradorSettings = {
@@ -69,7 +70,11 @@ window.miradorConfig = {{miradorConfig|safe}};
     console.log("Loading mirador with settings: ", miradorSettings);
 
     window.mirador = Mirador(miradorSettings);
-    window.mirador.metadataPlugin();
+
+    if(config.metadataPluginEnabled) {
+        console.log("Enabled mirador metadata plugin");
+        window.mirador.metadataPlugin();
+    }
 })();
   </script>
 </body>

@@ -7,85 +7,84 @@
   </div>
 
   <div class="row no-margin">
+    <div class="col-md-12">
+
+    </div>
+  </div>
+
+  <div class="row">
     <div ng-class="wc.hideLibrary ? 'col-md-12' : 'col-md-6'">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Collection Information</h3>
+        </div>
+        <div class="panel-body">
+          <form name="infoForm" novalidate>
+            <div class="form-group">
+              <label for="collectionTitle">Title</label>
+              <input class="form-control" name="title" type="text" ng-model="wc.collection.title" id="collectionTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="collectionDescription">Description</label>
+              <textarea class="form-control" rows="3" ng-model="wc.collection.description" id="collectionDescription"></textarea>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="wc.saveCollection()" ng-disabled="!infoForm.$valid">Save Information</button>
+              <button class="btn btn-default" id="collectionAdvancedBtn" ng-click="wc.hideAdvanced = !wc.hideAdvanced">Advanced Settings</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div ng-show="wc.hideAdvanced" class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Advanced Settings</h3>
+        </div>
+        <div class="panel-body">
+          <div style="margin: 0 0 10px 0;">By default, the collection viewer (Mirador) will load images added to the collection unless specified otherwise.</div>
+          <div class="form-group">
+            <label for="collectionCustomManifest">Custom Manifest URL</label> <i>(customize which manifest the viewer will load)</i>
+            <input class="form-control" type="text" ng-model="wc.collection.custom_iiif_manifest_url" id="collectionCustomManifest">
+          </div>
+          <div class="form-group">
+            <label for="collectionCustomCanvas">Custom Canvas ID</label> <i>(customize which canvas the viewer will focus on)</i>
+            <input class="form-control" type="text" ng-model="wc.collection.custom_iiif_canvas_id" id="collectionCustomCanvas">
+          </div>
+          <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="wc.saveCollection()">Save Settings</button>
+        </div>
+      </div>
 
       <div id="image-collection-panel" class="panel panel-default">
         <div class="panel-heading">
-          <!-- Title -->
-          <div class="form-inline">
-            <div class="form-group">
-              <label for="collectionTitleForm">Collection</label>
-              <div class="input-group">
-                <div class="form-control" style="min-width: 200px" editable-text="wc.collection.title" e-form="collectionTitleForm" e-name="collectionTitleForm" e-maxlength="255" onaftersave="wc.saveCollection('Collection title saved.')" ng-click="collectionTitleForm.$show()">
-                  {{wc.collection.title||'Untitled'}}
-                </div>
-                <div class="input-group-btn">
-                  <button class="btn btn-primary" ng-click="collectionTitleForm.$show()" ng-hide="collectionTitleForm.$visible">Edit</button>
+          <h3 class="panel-title">Collection Images</h3>
+        </div>
+        <div class="panel-body">
+          <div ng-show="wc.isLoadingCollection.status || wc.isSavingCollection.status">
+            <span us-spinner="{top:'50%'}"></span>
+          </div>
+          <div ng-show="wc.collection.images.length == 0">Empty collection</div>
+          <ul class="list-inline" as-sortable="wc.dragControlListeners" ng-model="wc.collection.images">
+            <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images" as-sortable-item uib-tooltip="{{collectionImage.title}}">
+              <div style="position:relative;" as-sortable-item-handle>
+                <droplet-thumb ng-model="collectionImage"></droplet-thumb>
+                <div class="overlay" ng-click="wc.removeFromCollection(collectionImage.id)">-</div>
+                <div class="resize-overlay" ng-click="wc.imageView(collectionImage.course_image_id)">
+                  <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
                 </div>
               </div>
-            </div>
-            <button class="btn btn-default" ng-click="collectionDescForm.$show()" ng-hide="collectionDescForm.$visible">
-              <span ng-if="wc.collection.description">Edit Description</span>
-              <span ng-if="!wc.collection.description">Add Description</span>
-            </button>
-          </div>
+            </li>
+          </ul>
 
-          <!-- Description -->
-          <div class="form-inline" ng-class="{hidden: !collectionDescForm.$visible}">
-            <div class="form-group">
-              <label for="collectionDescForm" class="collection-desc-label">Description</label>
-              <div class="input-group">
-                <div class="form-control" style="overflow:hidden"  editable-textarea="wc.collection.description" e-form="collectionDescForm" e-name="collectionDescForm" e-rows="10" e-cols="50" onaftersave="wc.saveCollection('Collection description saved.')" ng-click="collectionDescForm.$show()">
-                  {{wc.collection.description||'No Description'}}
-                </div>
-                <div class="input-group-btn">
-                  <button class="btn btn-primary" ng-click="collectionDescForm.$show()" ng-hide="collectionDescForm.$visible">Edit</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- IIIF Manifest -->
-          <div class="form-inline">
-            <label for="collectionManifestForm" class="collection-desc-label">IIIF Manifest</label>
-            <div class="form-control" style="overflow:hidden; width: 300px;" editable-textarea="wc.collection.custom_iiif_manifest_url" e-form="collectionManifestForm" e-name="collectionManifestForm" e-maxlength="255" onaftersave="wc.saveCollection('Collection manifest saved.')" ng-click="collectionManifestForm.$show()">
-              {{wc.collection.custom_iiif_manifest_url||''}}
-            </div>
-          </div>
+          <div class="clearfix"></div>
+          <button type="button" class="btn btn-primary" style="margin-top: 10px;" ng-click="wc.hideLibrary = !wc.hideLibrary">
+            <span ng-if="wc.hideLibrary">Add Images</span>
+            <span ng-if="!wc.hideLibrary">Close Library</span>
+          </button>
         </div>
 
-        <ul class="list-group">
-          <li class="list-group-item">
-
-            <!-- Add Images via Library -->
-            <button type="button" class="btn btn-primary" ng-click="wc.hideLibrary = !wc.hideLibrary">
-              <span ng-if="wc.hideLibrary">Add Images</span>
-              <span ng-if="!wc.hideLibrary">Close Library</span>
-            </button>
-
-
-          </li>
-
-          <li class="list-group-item">
-            <div ng-show="wc.isLoadingCollection.status || wc.isSavingCollection.status">
-                <span us-spinner="{top:'50%'}"></span>
-            </div>
-            <div ng-show="wc.collection.images.length == 0">Empty collection</div>
-            <ul class="list-inline" as-sortable="wc.dragControlListeners" ng-model="wc.collection.images">
-              <li class="droplet-thumb" ng-repeat="collectionImage in wc.collection.images" as-sortable-item uib-tooltip="{{collectionImage.title}}">
-                <div style="position:relative;" as-sortable-item-handle>
-                  <droplet-thumb ng-model="collectionImage"></droplet-thumb>
-                  <div class="overlay" ng-click="wc.removeFromCollection(collectionImage.id)">-</div>
-                  <div class="resize-overlay" ng-click="wc.imageView(collectionImage.course_image_id)">
-                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                  </div>
-                </div>
-              </li>
-            </ul>
-            <div class="clearfix"></div>
-          </li>
-        </ul>
       </div>
+
     </div>
     <div ng-include="'/static/app/templates/library.html'" ng-class="wc.hideLibrary ? 'col-md-0' : 'col-md-6'" ng-hide="wc.hideLibrary"></div>
   </div>

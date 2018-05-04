@@ -39,6 +39,7 @@ angular.module('media_manager')
 
   wc.hideLibrary = true;
   wc.hideAddImage = true;
+  wc.hideCustomManifest = true;
 
   var dragEnabled = true;
   wc.dragControlListeners = {
@@ -85,7 +86,7 @@ angular.module('media_manager')
       collection.images = [];
       collection.title = "Untitled Collection";
     }
-    return collection
+    return collection;
   };
 
 
@@ -193,7 +194,7 @@ angular.module('media_manager')
     // post to save a new collection
     return Collection.save({}, wc.collection, function(data){
       wc.collection.id = data.id;
-      wc.courseCollections.push(wc.collection);
+      wc.courseCollections.push(Collection.get({id: data.id }));
       $location.path('/workspace/'+data.id);
     });
   };
