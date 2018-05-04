@@ -79,6 +79,7 @@ angular.module('media_manager')
           return ((x < y) ? -1 : ((x > y) ? 1 : 0));
         });
         self.isLoadingCollection.status = false;
+        self.useCustomManifest = collection.custom_iiif_manifest_url ? true : false;
       });
     } else {
       //wc.collection = [];
@@ -156,7 +157,7 @@ angular.module('media_manager')
       var collection = wc.loadActiveCollection();
       self.isLoadingCollection.status = true;
       collection.$promise.then(function(collection) {
-        wc.collection = collection;
+        angular.copy(wc.collection, collection); // copy because we don't want to change the object reference to wc.collection
 
         // update the CourseCache.collections since it is stale
         var collection_idx = wc.courseCollections.map(function(c) { return c.id; }).indexOf(collection.id);
@@ -197,6 +198,14 @@ angular.module('media_manager')
       wc.courseCollections.push(Collection.get({id: data.id }));
       $location.path('/workspace/'+data.id);
     });
+  };
+
+  wc.saveAdvancedSettings = function(useCustomManifest) {
+    if(!wc.useCustomManifest) {
+      wc.collection.custom_iiif_manifest_url = '';
+      wc.collection.custom_canvas_id = '';
+    }
+    wc.saveCollection();
   };
 
   wc.onClickSubmitWebImage = function() {
@@ -257,6 +266,7 @@ angular.module('media_manager')
 
   CourseCache.load();
 
+  wc.tabName = 'details';
   wc.layout = Preferences.get(Preferences.UI_WORKSPACE_LAYOUT);
   wc.Droplet = Droplet;
   wc.courseImages = CourseCache.images;
@@ -264,7 +274,6 @@ angular.module('media_manager')
   wc.isLoading = CourseCache.isLoading;
   wc.isSavingCollection = {status:false, msg:"Saving collection..."};
   wc.isLoadingCollection = {status:false, msg:"Loading collection..."};
-  wc.collection = wc.loadActiveCollection();
   wc.canEdit = AppConfig.perms.edit;
   wc.filesToUpload = 0;
   wc.fileUploadSize = 0;
@@ -317,5 +326,8 @@ angular.module('media_manager')
   $scope.$watch('wc.layout', function(newVal, oldVal) {
     Preferences.set(Preferences.UI_WORKSPACE_LAYOUT, newVal);
   });
+
+  wc.useCustomManifest = false;
+  wc.collection = wc.loadActiveCollection();
 
 }]);

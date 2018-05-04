@@ -53,12 +53,6 @@ ul.list-inline .as-sortable-placeholder {
 
 
 /* is this needed for library animations? */
-.row div {
-    -webkit-transition: width 0.4s ease, margin 0.4s ease;
-    -moz-transition: width 0.4s ease, margin 0.4s ease;
-    -o-transition: width 0.4s ease, margin 0.4s ease;
-    transition: width 0.4s ease, margin 0.4s ease;
-}
 
 .col-md-0 {
     width: 0px;
@@ -79,4 +73,11 @@ ul.list-inline .as-sortable-placeholder {
 
 input.ng-dirty.ng-invalid {
   border: 1px solid #FA787E;
+}
+
+.ng-animate.no-animate {
+    transition: 0s none;
+    -webkit-transition: 0s none;
+    animation: 0s none;
+    -webkit-animation: 0s none;
 }

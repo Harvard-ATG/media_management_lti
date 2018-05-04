@@ -6,58 +6,41 @@
     <notifications></notifications>
   </div>
 
-  <div class="row no-margin">
-    <div class="col-md-12">
+  <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+    <li role="presentation" ng-class="{active:wc.tabName=='details'}"><a ng-click="wc.tabName = 'details'">Details</a></li>
+    <li role="presentation" ng-class="{active:wc.tabName=='images'}"><a ng-click="wc.tabName = 'images'">Images</a></li>
+    <li role="presentation" ng-class="{active:wc.tabName=='advanced'}"><a ng-click="wc.tabName = 'advanced'">Advanced</a></li>
+  </ul>
 
+  <!-- Details -->
+  <div ng-class="{hidden:wc.tabName!='details'}" class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Details</h3>
+    </div>
+    <div class="panel-body">
+      <form name="infoForm" novalidate>
+        <div class="form-group">
+          <label for="collectionTitle">Title</label>
+          <input class="form-control" name="title" type="text" ng-model="wc.collection.title" id="collectionTitle" required>
+        </div>
+        <div class="form-group">
+          <label for="collectionDescription">Description</label>
+          <textarea class="form-control" rows="3" ng-model="wc.collection.description" id="collectionDescription"></textarea>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="wc.saveCollection()" ng-disabled="!infoForm.$valid">Save Information</button>
+        </div>
+      </form>
     </div>
   </div>
 
+  <!-- Images -->
   <div class="row">
     <div ng-class="wc.hideLibrary ? 'col-md-12' : 'col-md-6'">
 
-      <div class="panel panel-default">
+      <div ng-class="{hidden:wc.tabName!='images'}" class="panel panel-default" id="image-collection-panel" >
         <div class="panel-heading">
-          <h3 class="panel-title">Collection Information</h3>
-        </div>
-        <div class="panel-body">
-          <form name="infoForm" novalidate>
-            <div class="form-group">
-              <label for="collectionTitle">Title</label>
-              <input class="form-control" name="title" type="text" ng-model="wc.collection.title" id="collectionTitle" required>
-            </div>
-            <div class="form-group">
-              <label for="collectionDescription">Description</label>
-              <textarea class="form-control" rows="3" ng-model="wc.collection.description" id="collectionDescription"></textarea>
-            </div>
-            <div class="form-group">
-              <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="wc.saveCollection()" ng-disabled="!infoForm.$valid">Save Information</button>
-              <button class="btn btn-default" id="collectionAdvancedBtn" ng-click="wc.hideAdvanced = !wc.hideAdvanced">Advanced Settings</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div ng-show="wc.hideAdvanced" class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Advanced Settings</h3>
-        </div>
-        <div class="panel-body">
-          <div style="margin: 0 0 10px 0;">By default, the collection viewer (Mirador) will load images added to the collection unless specified otherwise.</div>
-          <div class="form-group">
-            <label for="collectionCustomManifest">Custom Manifest URL</label> <i>(customize which manifest the viewer will load)</i>
-            <input class="form-control" type="text" ng-model="wc.collection.custom_iiif_manifest_url" id="collectionCustomManifest">
-          </div>
-          <div class="form-group">
-            <label for="collectionCustomCanvas">Custom Canvas ID</label> <i>(customize which canvas the viewer will focus on)</i>
-            <input class="form-control" type="text" ng-model="wc.collection.custom_iiif_canvas_id" id="collectionCustomCanvas">
-          </div>
-          <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="wc.saveCollection()">Save Settings</button>
-        </div>
-      </div>
-
-      <div id="image-collection-panel" class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Collection Images</h3>
+          <h3 class="panel-title">Images</h3>
         </div>
         <div class="panel-body">
           <div ng-show="wc.isLoadingCollection.status || wc.isSavingCollection.status">
@@ -82,10 +65,39 @@
             <span ng-if="!wc.hideLibrary">Close Library</span>
           </button>
         </div>
-
       </div>
-
     </div>
-    <div ng-include="'/static/app/templates/library.html'" ng-class="wc.hideLibrary ? 'col-md-0' : 'col-md-6'" ng-hide="wc.hideLibrary"></div>
+    <div ng-include="'/static/app/templates/library.html'" ng-class="{'hidden': wc.hideLibrary||wc.tabName!='images', 'col-md-0': wc.hideLibrary, 'col-md-6': !wc.hideLibrary}"></div>
   </div>
+
+  <!-- Manifest -->
+  <div ng-class="{hidden:wc.tabName!='advanced'}" class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Advanced Settings</h3>
+    </div>
+    <div class="panel-body">
+      <form name="advancedForm" novalidate>
+        <div class="form-group">
+          <div class="radio">
+            <label><input type="radio" ng-model="wc.useCustomManifest" ng-value="false"> Use default manifest to display collection images in the Mirador image viewer</label>
+          </div>
+          <div class="radio">
+            <label><input type="radio" ng-model="wc.useCustomManifest" ng-value="true"> Use a custom manifest that I will provide below</label>
+          </div>
+        </div>
+        <fieldset ng-disabled="!wc.useCustomManifest">
+          <div class="form-group">
+            <label for="collectionCustomManifest">Custom Manifest URL</label> <i>(customize which manifest the viewer will load)</i>
+            <input class="form-control" type="url" ng-model="wc.collection.custom_iiif_manifest_url" id="collectionCustomManifest">
+          </div>
+          <div class="form-group">
+            <label for="collectionCustomCanvas">Custom Canvas ID</label> <i>(customize which canvas the viewer will focus on)</i>
+            <input class="form-control" type="text" ng-model="wc.collection.custom_iiif_canvas_id" id="collectionCustomCanvas">
+          </div>
+        </fieldset>
+        <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="wc.saveAdvancedSettings()" ng-disabled="!advancedForm.$valid">Save Settings</button>
+      </form>
+    </div>
+  </div>
+
 </div>
