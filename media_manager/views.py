@@ -189,24 +189,27 @@ class MiradorView(PageView):
 
     def render(self):
         course_service = CourseService.from_request(self.request)
-        collection_data = course_service.get_collection(self.collection_id)
+        collection = course_service.get_collection(self.collection_id)
 
-        custom_manifest_url = collection_data.get('custom_iiif_manifest_url', '').strip()
-        custom_canvas_id = collection_data.get('custom_iiif_canvas_id', '').strip()
-        default_manifest_url = collection_data.get('default_iiif_manifest_url', '').strip()
+        default_url = collection.get('default_iiif_manifest_url', '').strip()
+        custom_url = collection.get('custom_iiif_manifest_url', '').strip()
+        custom_canvas_id = collection.get('custom_iiif_canvas_id', '').strip()
 
-        manifest_uri = custom_manifest_url if custom_manifest_url else default_manifest_url
-        canvas_id = custom_canvas_id if custom_manifest_url and custom_canvas_id else None
-        metadataPluginEnabled = not custom_manifest_url
-
-        config = {
-            "data": [{"manifestUri": manifest_uri, "location": "Harvard University"}],
-            "canvasID": canvas_id,
-            "metadataPluginEnabled": metadataPluginEnabled,
-        }
+        if custom_url:
+            config = {
+                "data": [{"manifestUri": custom_url, "location": "Harvard University"}],
+                "canvasID": custom_canvas_id,
+                "metadataPluginEnabled": False,
+            }
+        else:
+            config = {
+                "data": [{"manifestUri": default_url, "location": "Harvard University"}],
+                "canvasID": None,
+                "metadataPluginEnabled": True,
+            }
 
         context = {
-            "miradorConfig": self.to_json(config)
+            "miradorConfig": self.to_json(config),
         }
         return render(self.request, 'mirador.html', context=context)
 
