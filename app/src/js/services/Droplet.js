@@ -2,6 +2,7 @@ angular.module('media_manager')
 .service('Droplet', ['$timeout', '$log', '$q', 'AppConfig', function($timeout, $log, $q, AppConfig){
   var ds = this;
   var ONE_MEGABYTE = 1000000; // bytes
+  var ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'zip', 'tif', 'tiff'];
 
   ds.interface = null;
 
@@ -9,8 +10,6 @@ angular.module('media_manager')
     'Accept': 'application/json',
     'Authorization': AppConfig.authorization_header
   };
-
-  ds.allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'zip', 'tif', 'tiff'];
 
   ds.limits = {
     uploadSize:  200 * ONE_MEGABYTE,
@@ -76,7 +75,7 @@ angular.module('media_manager')
   };
 
   ds.onReady = function() {
-    ds.interface.allowedExtensions(ds.allowedExtensions);
+    ds.interface.allowedExtensions(ALLOWED_EXTENSIONS);
     ds.interface.setRequestUrl(ds.getUploadUrl());
     ds.interface.setRequestHeaders(ds.requestHeaders);
     ds.interface.defineHTTPSuccess([/2.{2}/]);

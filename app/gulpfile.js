@@ -144,7 +144,7 @@ gulp.task('watch', function(){
   gulp.watch('src/js/**/*.js', ['buildJS']);
   gulp.watch('src/css/**/*.css', ['buildCSS']);
   gulp.watch('src/templates/**/*.html', ['moveHTML']);
-  gulp.watch('bower_components/**/*.js', ['buildVendor']);
+  //gulp.watch('bower_components/**/*.js', ['buildVendor']);
   //gulp.watch('src/vendor/**/*', ['moveVendorSrc']);
 });
 

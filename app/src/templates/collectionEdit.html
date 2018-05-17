@@ -1,0 +1,50 @@
+<!-- Information -->
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Collection Information</h3>
+    </div>
+    <div class="panel-body">
+      <form name="infoForm" novalidate>
+        <div class="form-group">
+          <label for="collectionTitle">Title</label>
+          <input class="form-control" name="title" type="text" ng-model="$ctrl.collection.title" id="collectionTitle" required>
+        </div>
+        <div class="form-group">
+          <label for="collectionDescription">Description</label>
+          <textarea class="form-control" rows="3" ng-model="$ctrl.collection.description" id="collectionDescription"></textarea>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="$ctrl.saveCollection()" ng-disabled="!infoForm.$valid">Save Information</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Content -->
+<div class="row">
+  <div ng-class="{'col-md-12': $ctrl.libraryClosed, 'col-md-6': $ctrl.libraryOpened}">
+    <div class="panel panel-default" >
+      <div class="panel-heading">
+        <h3 class="panel-title">Content to Use for this Collection</h3>
+      </div>
+      <div class="panel-body">
+        <div class="btn-group" role="group" aria-label="content type">
+          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.contentChoice=='I', 'btn-danger':$ctrl.contentChoice=='M'}" ng-click="$ctrl.setContentToImages()" >Your Images</button>
+          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.contentChoice=='M', 'btn-danger':$ctrl.contentChoice=='I'}" ng-click="$ctrl.setContentToManifest()">IIIF Manifest</button>
+        </div>
+        <div class="panel panel-default" style="margin-top:1em">
+          <div class="panel-body">
+            <app-collection-edit-images ng-class="{'hidden':$ctrl.contentChoice!='I'}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-remove-image="$ctrl.removeCollectionImage(image)" on-change-order="$ctrl.updateCollectionOrder(images)" on-toggle-library="$ctrl.toggleLibrary(opened)"></app-collection-edit-images>
+            <app-collection-edit-manifest ng-class="{'hidden':$ctrl.contentChoice!='M'}" collection="$ctrl.collection"></app-collection-edit-manifest>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div ng-class="{'hidden': $ctrl.libraryClosed, 'col-md-0': $ctrl.libraryClosed, 'col-md-6': $ctrl.libraryOpened}">
+    <app-collection-edit-library collection-images="$ctrl.collection.images" on-add-image="$ctrl.addCourseImageToCollection(courseImage)"></app-collection-edit-library>
+  </div>
+</div>

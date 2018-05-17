@@ -1,0 +1,24 @@
+<div ng-show="$ctrl.isLoading">
+  <span us-spinner="{top:'50%'}"></span>
+</div>
+
+<div ng-show="$ctrl.images.length == 0">Empty collection</div>
+
+<ul class="list-inline" as-sortable="$ctrl.dragControlListeners" ng-model="$ctrl.images">
+  <li class="droplet-thumb" ng-repeat="collectionImage in $ctrl.images" as-sortable-item uib-tooltip="{{collectionImage.title}}">
+    <div style="position:relative;" as-sortable-item-handle>
+      <droplet-thumb ng-model="collectionImage"></droplet-thumb>
+      <div class="overlay" ng-click="$ctrl.removeImage(collectionImage)">-</div>
+      <div class="resize-overlay" ng-click="$ctrl.goToImageView(collectionImage)">
+        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+      </div>
+    </div>
+  </li>
+</ul>
+
+<div class="clearfix"></div>
+
+<button type="button" class="btn btn-primary" style="margin-top: 10px;" ng-click="$ctrl.openOrCloseLibrary()">
+  <span ng-class="{hidden: $ctrl.isLibraryOpen}">Add Images</span>
+  <span ng-class="{hidden: !$ctrl.isLibraryOpen}">Close Library</span>
+</button>
