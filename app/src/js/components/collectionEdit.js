@@ -1,8 +1,7 @@
 angular.module("media_manager").component("appCollectionEdit",  {
     templateUrl: "/static/app/templates/collectionEdit.html",
     bindings: {
-      "collectionId": "<",
-      "onSave": "&"
+      "collectionId": "<"
     },
     controller: ["$log", "$location", "AppConfig", "CourseCache", "Notifications", "Collection", function($log, $location, AppConfig, CourseCache, Notifications, Collection) {
       var ctrl = this;
@@ -133,8 +132,8 @@ angular.module("media_manager").component("appCollectionEdit",  {
       };
 
       ctrl.updateManifest = function(data) {
-        ctrl.collection.custom_iiif_manifest_url = data.custom_iiif_manifest_url || "";
-        ctrl.collection.custom_iiif_canvas_id = data.custom_iiif_canvas_id || "";
+        ctrl.collection.iiif_custom_manifest_url = data.iiif_custom_manifest_url || "";
+        ctrl.collection.iiif_custom_canvas_id = data.iiif_custom_canvas_id || "";
         ctrl.saveCollection();
       };
 
