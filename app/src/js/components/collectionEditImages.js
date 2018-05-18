@@ -18,7 +18,7 @@ angular.module('media_manager')
 
     ctrl.removeImage = function(image) {
       $log.log('removeImage', image);
-      ctrl.onRemoveImage({ image: image });
+      ctrl.onRemoveImage({ '$event': image });
     };
 
     ctrl.dragControlListeners = {
@@ -35,7 +35,7 @@ angular.module('media_manager')
         });
         dragEnabled = true;
 
-        ctrl.onChangeOrder({ images: ctrl.images });
+        ctrl.onChangeOrder({ '$event': ctrl.images });
       }
     };
 

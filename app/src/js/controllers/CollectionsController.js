@@ -3,23 +3,27 @@ angular.module('media_manager').controller('CollectionsController', [
     'CourseCache',
     'CourseModuleService',
     'CollectionBehavior',
+    'Collection',
     'AppConfig',
     'Breadcrumbs',
     'Notifications',
     'Collection',
     '$q',
     '$http',
+    '$location',
     function(
     $scope,
     CourseCache,
     CourseModuleService,
     CollectionBehavior,
+    Collection,
     AppConfig,
     Breadcrumbs,
     Notifications,
     Collection,
     $q,
-    $http) {
+    $http,
+    $location) {
         var lc = this;
 
         CourseCache.load();
@@ -42,6 +46,19 @@ angular.module('media_manager').controller('CollectionsController', [
             lc.notifications.success("Successfully updated primary collection");
           }, function errorCallback(response) {
             lc.notifications.error("Failure. Primary collection not updated ("+response.status+")");
+          });
+        };
+
+        lc.createCollection = function() {
+          console.log("createCollection");
+          var data = {
+            course_id: AppConfig.course_id,
+            title: "Untitled Collection"
+          };
+          Collection.save(data).$promise.then(function(collection) {
+            lc.CourseCache.collections.push(collection);
+            console.log("saved new collection", collection);
+            $location.path('/workspace/'+collection.id);
           });
         };
 

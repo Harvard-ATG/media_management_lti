@@ -2,7 +2,7 @@
 <notifications></notifications>
 
 <div class="row search">
-  <a ng-if="lc.canEdit" class="btn btn-primary" ng-href="#!/workspace">+ New Collection</a>
+  <a ng-if="lc.canEdit" class="btn btn-primary" ng-click="lc.createCollection()">+ New Collection</a>
   <input ng-model="query" type="text" name="query" class="form-control" placeholder="Search for Collection" aria-label="Search for Collection" />
 </div>
 
@@ -32,7 +32,7 @@
     </div>
     <div>
       <a ng-href="#!/mirador/{{ collection.id }}" style="font-size: 16px">{{ collection.title }}</a>
-        <span ng-show="!collection.custom_iiif_manifest_url" class="label label-default">{{ collection.images.length }} Images</span>
+        <span ng-show="collection.iiif_source == 'images'" class="label label-default">{{ collection.images.length }} Images</span>
         <span class="label label-primary" ng-show="lc.isPrimaryCollection(collection.id)">Primary Collection</span>
     </div>
   </li>

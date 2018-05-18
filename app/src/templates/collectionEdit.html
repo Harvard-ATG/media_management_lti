@@ -1,51 +1,51 @@
-<!-- Information -->
-<div class="row">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Collection Information</h3>
-    </div>
-    <div class="panel-body">
-      <form name="infoForm" novalidate>
-        <div class="form-group">
-          <label for="collectionTitle">Title</label>
-          <input class="form-control" name="title" type="text" ng-model="$ctrl.collection.title" id="collectionTitle" required>
-        </div>
-        <div class="form-group">
-          <label for="collectionDescription">Description</label>
-          <textarea class="form-control" rows="3" ng-model="$ctrl.collection.description" id="collectionDescription"></textarea>
-        </div>
-        <div class="form-group">
-          <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="$ctrl.saveCollection()" ng-disabled="!infoForm.$valid">Save Information</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-
-<!-- Content -->
-<div class="row">
-  <div ng-class="{'col-md-12': $ctrl.isContentManifest, 'col-md-6': $ctrl.isContentImages}">
-    <div class="panel panel-default" >
+<div ng-if="$ctrl.initialized">
+  <!-- Information -->
+  <div class="row">
+    <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Content to Use for this Collection</h3>
+        <h3 class="panel-title">Collection Information</h3>
       </div>
       <div class="panel-body">
-        <div class="btn-group" role="group" aria-label="content type">
-          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentImages, 'btn-danger danger--deselected':!$ctrl.isContentImages}" ng-click="$ctrl.setContentToImages()" >Your Images</button>
-          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentManifest, 'btn-danger danger--deselected':!$ctrl.isContentManifest}" ng-click="$ctrl.setContentToManifest()">IIIF Manifest</button>
+        <form name="infoForm" novalidate>
+          <div class="form-group" ng-class="{'has-error': !infoForm.title.$valid}">
+            <label for="collectionTitle">Title</label>
+            <input class="form-control" name="title" type="text" ng-model="$ctrl.collection.title" ng-blur="$ctrl.updateCollectionInfo()" id="collectionTitle" required>
+            <span ng-if="!$infoForm.title.pristine && !infoForm.title.$valid">Title is required</span>
+          </div>
+          <div class="form-group">
+            <label for="collectionDescription">Description</label>
+            <textarea class="form-control" rows="5" ng-model="$ctrl.collection.description" ng-blur="$ctrl.updateCollectionInfo()" id="collectionDescription"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Content -->
+  <div class="row"  ng-class="{'hidden': !$ctrl.contentSource}">
+    <div ng-class="{'col-md-12': $ctrl.isContentManifest, 'col-md-6': $ctrl.isContentImages}">
+      <div class="panel panel-default" >
+        <div class="panel-heading">
+          <h3 class="panel-title">Content to Use for this Collection</h3>
         </div>
-        <div class="panel panel-default" style="margin-top:1em">
-          <div class="panel-body">
-            <app-collection-edit-images ng-class="{'hidden':!$ctrl.isContentImages}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-remove-image="$ctrl.removeCollectionImage(image)" on-change-order="$ctrl.updateCollectionOrder(images)" on-toggle-library="$ctrl.toggleLibrary(opened)"></app-collection-edit-images>
-            <app-collection-edit-manifest ng-class="{'hidden':!$ctrl.isContentManifest}" collection="$ctrl.collection" on-change="$ctrl.updateManifest(data)"></app-collection-edit-manifest>
-            <button type="button" class="pull-right btn btn-default" ng-click="$ctrl.openCollection()">Open this Collection</button>
+        <div class="panel-body">
+          <div class="btn-group" role="group" aria-label="content type">
+            <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentImages, 'btn-danger danger--deselected':!$ctrl.isContentImages}" ng-click="$ctrl.setContentToImages()" >Your Images</button>
+            <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentManifest, 'btn-danger danger--deselected':!$ctrl.isContentManifest}" ng-click="$ctrl.setContentToManifest()">IIIF Manifest</button>
+          </div>
+          <div class="panel panel-default" style="margin-top:1em">
+            <div class="panel-body">
+              <app-collection-edit-images ng-class="{'hidden':!$ctrl.isContentImages}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-remove-image="$ctrl.removeCollectionImage($event)" on-change-order="$ctrl.updateCollectionOrder($event)" on-toggle-library="$ctrl.toggleLibrary(opened)"></app-collection-edit-images>
+              <app-collection-edit-manifest ng-class="{'hidden':!$ctrl.isContentManifest}" collection="$ctrl.collection" on-change="$ctrl.updateManifest($event)"></app-collection-edit-manifest>
+              <button type="button" class="pull-right btn btn-default" ng-click="$ctrl.openCollection()">Open this Collection</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div ng-class="{'hidden': !$ctrl.isContentImages, 'col-md-0': !$ctrl.isContentImages, 'col-md-6': $ctrl.isContentImages}">
-    <app-collection-edit-library selected-images="$ctrl.collection.course_image_ids" on-add-image="$ctrl.addCourseImageToCollection(courseImage)"></app-collection-edit-library>
+    <div ng-class="{'hidden': !$ctrl.isContentImages, 'col-md-0': !$ctrl.isContentImages, 'col-md-6': $ctrl.isContentImages}">
+      <app-collection-edit-library selected-images="$ctrl.collection.course_image_ids" on-add-image="$ctrl.addCourseImageToCollection($event)"></app-collection-edit-library>
+    </div>
   </div>
 </div>

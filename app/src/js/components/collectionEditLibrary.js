@@ -67,7 +67,7 @@ angular.module('media_manager')
 
     ctrl.addToCollection = function (courseImage) {
       $log.log("addToCollection", courseImage);
-      ctrl.onAddImage({courseImage: courseImage});
+      ctrl.onAddImage({'$event': courseImage});
     };
 
     ctrl.goToImageView = function (courseImage) {

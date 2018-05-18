@@ -1,5 +1,16 @@
 .notifications {
-  margin: 1em 0;
   overflow: hidden;
   word-wrap: break-word;
+  position: fixed;
+  top: 7px;
+  right: 7px;
+  left: 7px;
+  width: calc(100% - 14px);
+  z-index: 10000;
+}
+.notifications .alert-success {
+  border-color: #3c763d;
+}
+.notifications .alert-danger {
+  border-color: #d43f3a;
 }

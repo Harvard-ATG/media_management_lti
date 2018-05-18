@@ -1,7 +1,8 @@
 angular.module("media_manager").component("appCollectionEdit",  {
     templateUrl: "/static/app/templates/collectionEdit.html",
     bindings: {
-      "collectionId": "<"
+      "collectionId": "<",
+      "onSave": "&"
     },
     controller: ["$log", "$location", "AppConfig", "CourseCache", "Notifications", "Collection", function($log, $location, AppConfig, CourseCache, Notifications, Collection) {
       var ctrl = this;
@@ -25,23 +26,27 @@ angular.module("media_manager").component("appCollectionEdit",  {
         return ctrl.loadingState[key] || {};
       };
 
-      ctrl.isContentImages = function() {
-        return ctrl.contentChoice === "I";
+      ctrl.setContentSource = function(source) {
+        console.log(source);
+        if(["images","custom"].indexOf(source) < 0) {
+          throw new Error("invalid content source: "+source);
+        }
+        ctrl.contentSource = source;
+        ctrl.isContentImages = (source === "images");
+        ctrl.isContentManifest = (source === "custom");
       };
-      ctrl.isContentManifest = function() {
-        return ctrl.contentChoice === "M";
-      };
+
       ctrl.setContentToImages = function() {
         $log.debug("setContentToImages");
-        ctrl.contentChoice = "I";
-        ctrl.isContentImages = (ctrl.contentChoice === "I");
-        ctrl.isContentManifest = (ctrl.contentChoice === "M");
+        ctrl.setContentSource('images');
+        ctrl.collection.iiif_source = "images";
+        ctrl.saveCollection('Collection will use your images');
       };
       ctrl.setContentToManifest = function() {
         $log.debug("setContentToManifest");
-        ctrl.contentChoice = "M";
-        ctrl.isContentImages = (ctrl.contentChoice === "I");
-        ctrl.isContentManifest = (ctrl.contentChoice === "M");
+        ctrl.setContentSource('custom');
+        ctrl.collection.iiif_source = "custom";
+        ctrl.saveCollection('Collection will use the IIIF manifest');
       };
 
       ctrl.getCollection = function(collectionId) {
@@ -57,34 +62,20 @@ angular.module("media_manager").component("appCollectionEdit",  {
             var y = b['sort_order'];
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
           });
-          if(collection.custom_iiif_manifest_url) {
-            ctrl.setContentToManifest();
-          } else {
-            ctrl.setContentToImages();
-          }
+          ctrl.setContentSource(collection.iiif_source);
           ctrl.setLoading("loadcollection", false);
         });
         return collection;
       };
 
-      ctrl.getNewCollection = function() {
-        var collection = new Collection();
-        collection.images = [];
-        collection.title = "Untitled Collection";
-        return collection;
-      };
-
       ctrl.saveCollection = function(message){
-        if(ctrl.collectionId){
-          return ctrl.updateCollection(message);
-        } else {
-          return ctrl.createCollection();
-        }
+        return ctrl.updateCollection(message);
       };
 
       ctrl.updateCollection = function(message) {
+        message = message || "Collection saved.";
         var collectionId = ctrl.collection.id;
-        $log.debug("updateCollection", collectionId, message);
+        $log.log("updateCollection", collectionId, message);
 
         ctrl.collection.course_image_ids = ctrl.collection.images.map(function(image) {
           // images could come from the image library, or already be part of the collection
@@ -96,54 +87,19 @@ angular.module("media_manager").component("appCollectionEdit",  {
           return image[image_prop_for[image.type]];
         });
 
-        // PUT to update collection
         ctrl.setLoading("savecollection", true, "Saving collection...");
 
         return Collection.update({}, ctrl.collection, function(data){
           ctrl.notifications.clear();
-          var collection = ctrl.getCollection(collectionId);
-          ctrl.setLoading("loadcollection", true, "Loading collection...");
-          collection.$promise.then(function(collection) {
-            angular.copy(ctrl.collection, collection); // copy because we don't want to change the object reference to ctrl.collection
-
-            // update the CourseCache.collections since it is stale
-            var collection_idx = ctrl.courseCollections.map(function(c) { return c.id; }).indexOf(collection.id);
-            if (collection_idx >= 0) {
-              ctrl.courseCollections.splice(collection_idx, 1, collection);
-            }
-            $log.debug("insert updated collection into cache at index: ", collection_idx);
-          }, function(response) {
-            ctrl.notifications.error("Error loading collection: " + response);
-          }).finally(function() {
-            ctrl.setLoading("loadcollection", false, "Loading collection...");
-          });
-
+          CourseCache.updateCollection(ctrl.collection);
         }, function(errorResponse) {
-          $log.debug("Error updating collection:", errorResponse);
-          ctrl.notifications.error("Error updating collection: " + errorResponse);
+          $log.error("Failed to update collection:", errorResponse);
+          ctrl.notifications.error("Failed to update collection.");
         }).$promise.then(function(data) {
-          $log.debug("Collection updated: ", data)
-          if(!message){
-            message = "Collection saved.";
-          }
+          $log.log("Collection successfully updated: ", data);
           ctrl.notifications.success(message);
         }).finally(function() {
           ctrl.setLoading("savecollection", false);
-        });
-      };
-
-      ctrl.createCollection = function() {
-        $log.debug("createCollection");
-        ctrl.collection.course_id = AppConfig.course_id;
-        ctrl.collection.course_image_ids = ctrl.collection.images.map(function(image){
-          return image.id;
-        });
-
-        // post to save a new collection
-        return Collection.save({}, ctrl.collection, function(data){
-          ctrl.collection.id = data.id;
-          ctrl.courseCollections.push(Collection.get({id: data.id }));
-          $location.path('/workspace/'+data.id);
         });
       };
 
@@ -182,6 +138,14 @@ angular.module("media_manager").component("appCollectionEdit",  {
         ctrl.saveCollection();
       };
 
+      ctrl.updateCollectionInfo = function() {
+        console.log("updateCollectionInfo");
+        var title = ctrl.collection.title.trim();
+        if(title !== "") {
+          ctrl.saveCollection("Saved collection information");
+        }
+      };
+
       ctrl.cancelCollection = function() {
         $location.path('/collections/');
       };
@@ -192,21 +156,25 @@ angular.module("media_manager").component("appCollectionEdit",  {
 
       // Component Lifecycle
       ctrl.$onInit = function() {
+        ctrl.initialized = false;
         ctrl.notifications = Notifications;
         ctrl.courseImages  = CourseCache.images;
         ctrl.courseCollections  = CourseCache.collections;
         ctrl.loadingCount = 0;
         ctrl.loadingState = {};
         ctrl.isLoading = false;
-        ctrl.contentChoice = "I";
-        ctrl.isContentImages = (ctrl.contentChoice === "I");
-        ctrl.isContentManifest = (ctrl.contentChoice === "M");
+        ctrl.contentSource = null;
+        ctrl.isContentImages = false;
+        ctrl.isContentManifest = false;
 
-        if(ctrl.collectionId) {
-          ctrl.collection = ctrl.getCollection(ctrl.collectionId);
-        } else {
-          ctrl.collection = ctrl.getNewCollection();
-        }
+        var collection = ctrl.getCollection(ctrl.collectionId);
+        collection.$promise.then(function() {
+          ctrl.collection = collection; // wait to update controller scope until the collection is done loading
+          ctrl.initialized = true;
+          ctrl.setContentSource(ctrl.collection.iiif_source);
+        }).catch(function() {
+          ctrl.notifications.error("Error loading collection: " + ctrl.collectionId);
+        });
 
         $log.debug("initialized collectionEdit", ctrl);
       };

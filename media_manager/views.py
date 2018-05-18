@@ -191,14 +191,14 @@ class MiradorView(PageView):
     def render(self):
         course_service = CourseService.from_request(self.request)
         collection = course_service.get_collection(self.collection_id)
-        manifest = collection.get('manifest', {})
+        manifest = collection.get('iiif_manifest', {})
         config = {
             "data": [{
-                "manifestUri": manifest.get('iiif_manifest_url', ''),
+                "manifestUri": manifest.get('url', ''),
                 "location": manifest.get('location', '')
             }],
-            "canvasID": manifest.get('iiif_canvas_id', ''),
-            "metadataPluginEnabled": manifest.get('content_source') == 'images',
+            "canvasID": manifest.get('canvas_id', ''),
+            "metadataPluginEnabled": manifest.get('source') == 'images',
         }
 
         context = {

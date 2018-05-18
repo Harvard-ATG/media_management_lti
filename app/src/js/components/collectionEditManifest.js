@@ -10,21 +10,23 @@ angular.module('media_manager')
 
       ctrl.save = function() {
         var data = {
-          custom_iiif_manifest_url: ctrl.collection.custom_iiif_manifest_url || "",
-          custom_iiif_canvas_id: ctrl.collection.custom_iiif_canvas_id || ""
+          iiif_custom_manifest_url: ctrl.collection.iiif_custom_manifest_url || "",
+          iiif_custom_canvas_id: ctrl.collection.iiif_custom_canvas_id || ""
         };
 
         $log.log("save manifest", data);
-        ctrl.onChange({ data: data });
+        ctrl.onChange({ '$event': data });
       };
 
       ctrl.$onInit = function() {
       };
 
       ctrl.$onChanges = function(changes) {
-        console.log("changes to manifest component", changes);
-        ctrl.collection.custom_iiif_manifest_url = changes.collection.currentValue.custom_iiif_manifest_url;
-        ctrl.collection.custom_iiif_canvas_id = changes.collection.currentValue.custom_iiif_canvas_id;
+        $log.log("changes to manifest component", changes);
+        if(changes.hasOwnProperty('collection') && !changes.collection.isFirstChange()) {
+          ctrl.collection.iiif_custom_manifest_url = changes.collection.currentValue.iiif_custom_manifest_url;
+          ctrl.collection.iiif_custom_canvas_id = changes.collection.currentValue.iiif_custom_canvas_id;
+        }
       };
   }]
 });
