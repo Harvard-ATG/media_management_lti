@@ -34,17 +34,14 @@ angular.module("media_manager").component("appCollectionEdit",  {
       ctrl.setContentToImages = function() {
         $log.debug("setContentToImages");
         ctrl.contentChoice = "I";
+        ctrl.isContentImages = (ctrl.contentChoice === "I");
+        ctrl.isContentManifest = (ctrl.contentChoice === "M");
       };
       ctrl.setContentToManifest = function() {
         $log.debug("setContentToManifest");
         ctrl.contentChoice = "M";
-        ctrl.toggleLibrary(false);
-      };
-
-      ctrl.toggleLibrary = function(opened) {
-        $log.debug("toggleLibrary", opened);
-        ctrl.libraryOpened = opened;
-        ctrl.libraryClosed = !opened;
+        ctrl.isContentImages = (ctrl.contentChoice === "I");
+        ctrl.isContentManifest = (ctrl.contentChoice === "M");
       };
 
       ctrl.getCollection = function(collectionId) {
@@ -153,7 +150,8 @@ angular.module("media_manager").component("appCollectionEdit",  {
       ctrl.addCourseImageToCollection = function(courseImage){
         $log.debug("addCollectionImage", courseImage);
         ctrl.collection.images.push(courseImage);
-        ctrl.saveCollection(courseImage.title + " added to collection.");
+        ctrl.collection.images = ctrl.collection.images.slice(0); // break old reference so child component gets change
+        ctrl.saveCollection("Image added to collection: " + courseImage.title);
       };
 
       ctrl.removeCollectionImage = function(collectionImage){
@@ -165,7 +163,8 @@ angular.module("media_manager").component("appCollectionEdit",  {
         ctrl.collection.images.some(function(item, index, arr){
           if(item.id == collectionImage.id){
             ctrl.collection.images.splice(index, 1);
-            ctrl.saveCollection(item.title + " removed from collection.");
+            ctrl.collection.images = ctrl.collection.images.slice(0); // break old reference so child component gets change
+            ctrl.saveCollection("Image removed from collection: " + item.title);
             return true;
           }
         });
@@ -173,33 +172,35 @@ angular.module("media_manager").component("appCollectionEdit",  {
 
       ctrl.updateCollectionOrder = function(reorderedImages) {
         $log.debug("updateCollectionOrder", reorderedImages);
+        ctrl.collection.images = reorderedImages.slice(0);
+        ctrl.saveCollection("Collection order saved");
+      };
 
-        var images = ctrl.collection.images;
-
-        // clear array, preserving reference
-        images.splice(0, images.length);
-
-        // add the reordered images back to the array
-        for(var i = 0; i < reorderedImages.length; i++) {
-          images.push(reorderedImages[i]);
-        }
+      ctrl.updateManifest = function(data) {
+        ctrl.collection.custom_iiif_manifest_url = data.custom_iiif_manifest_url || "";
+        ctrl.collection.custom_iiif_canvas_id = data.custom_iiif_canvas_id || "";
+        ctrl.saveCollection();
       };
 
       ctrl.cancelCollection = function() {
         $location.path('/collections/');
       };
 
+      ctrl.openCollection = function() {
+        $location.path('/mirador/' + ctrl.collectionId);
+      };
+
+      // Component Lifecycle
       ctrl.$onInit = function() {
-        $log.debug("initialize collectionEdit");
         ctrl.notifications = Notifications;
         ctrl.courseImages  = CourseCache.images;
         ctrl.courseCollections  = CourseCache.collections;
         ctrl.loadingCount = 0;
         ctrl.loadingState = {};
         ctrl.isLoading = false;
-        ctrl.libraryOpened = false;
-        ctrl.libraryClosed = !ctrl.libraryOpened;
         ctrl.contentChoice = "I";
+        ctrl.isContentImages = (ctrl.contentChoice === "I");
+        ctrl.isContentManifest = (ctrl.contentChoice === "M");
 
         if(ctrl.collectionId) {
           ctrl.collection = ctrl.getCollection(ctrl.collectionId);
@@ -207,7 +208,8 @@ angular.module("media_manager").component("appCollectionEdit",  {
           ctrl.collection = ctrl.getNewCollection();
         }
 
-        $log.debug("initializedc collectionEdit", ctrl);
+        $log.debug("initialized collectionEdit", ctrl);
       };
+
     }]
 });

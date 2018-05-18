@@ -4,12 +4,10 @@ angular.module('media_manager')
   bindings: {
     images: "<",
     isLoading: "<",
-    isLibraryOpen: "<",
     onRemoveImage: "&",
     onChangeOrder: "&",
-    onToggleLibrary: "&"
   },
-  controller: ['$log', '$location', 'Collection', function($log, $location, Collection)  {
+  controller: ['$scope', '$log', '$location', 'Collection', function($scope, $log, $location, Collection)  {
     var ctrl = this;
     var dragEnabled = true;
 
@@ -21,11 +19,6 @@ angular.module('media_manager')
     ctrl.removeImage = function(image) {
       $log.log('removeImage', image);
       ctrl.onRemoveImage({ image: image });
-    };
-
-    ctrl.openOrCloseLibrary = function() {
-      $log.log('openOrCloseLibrary', !ctrl.isLibraryOpen);
-      ctrl.onToggleLibrary({ opened: !ctrl.isLibraryOpen });
     };
 
     ctrl.dragControlListeners = {
@@ -46,11 +39,21 @@ angular.module('media_manager')
       }
     };
 
+    // Component Lifecycle
     ctrl.$onInit = function() {
-      $log.log("initialize collectionEditImages");
-      ctrl.libraryVisibility = false;
       ctrl.images = angular.copy(ctrl.images); // ensure we get our own copy
-      $log.log("initializedc collectionEditImages", ctrl);
+      $log.log("initialized collectionEditImages", ctrl);
     };
+
+    ctrl.$onChanges = function(changes) {
+      console.log("appCollectionEditImages detected changes", changes);
+      if(changes.hasOwnProperty('isLoading')) {
+        ctrl.isLoading = changes.isLoading.currentValue;
+      }
+      if(changes.hasOwnProperty('images')) {
+        ctrl.images = angular.copy(changes.images.currentValue);
+      }
+    };
+
   }]
 });

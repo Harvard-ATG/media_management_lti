@@ -3,13 +3,16 @@
     <h3 class="panel-title library-header">Image Library</h3>
   </div>
   <div class="panel-body">
+
     <div ng-show="$ctrl.isLoading.status" style="position:relative">
       <span us-spinner="{top:0,left:'50%'}"></span>
     </div>
+
     <button type="button" class="btn btn-primary" ng-click="$ctrl.hideAddImage = !$ctrl.hideAddImage">
       <span ng-if="$ctrl.hideAddImage">Add Images to Library</span>
       <span ng-if="!$ctrl.hideAddImage">Hide Image Uploading</span>
     </button>
+
     <div uib-collapse="$ctrl.hideAddImage" class="library-add-images"">
       <h5>Choose images to upload to the library or add from the web (limit 200 MB).
         JPG, PNG, GIF, and TIF images supported.</h5>
@@ -65,9 +68,12 @@
 
       </section>
     </div>
+
     <h4>
       {{ $ctrl.courseImages.length || 'No' }} images in this library
     </h4>
+
+    <div ng-if="$ctrl.courseImages.length > 0">
       <div style="margin-top: 20px">
           <div class="btn-group pull-left" uib-dropdown>
               <button id="sort_images_button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
@@ -82,15 +88,15 @@
           <div class="pull-left" style="margin-left: 20px;">
               Layout:
               <div class="btn-group" role="group" aria-label="layout">
-                  <label class="btn btn-default" ng-model="$ctrl.layout" uib-btn-radio="'gallery'" uncheckable>Gallery</label>
-                  <label class="btn btn-default" ng-model="$ctrl.layout" uib-btn-radio="'list'" uncheckable>List</label>
+                <button class="btn btn-default" ng-click="$ctrl.setLayoutGallery()" ng-class="{'active':$ctrl.isLayoutGallery}">Gallery</button>
+                <button class="btn btn-default" ng-click="$ctrl.setLayoutList()" ng-class="{'active':$ctrl.isLayoutList}">List</button>
               </div>
           </div>
       </div>
 
-      <div style="clear:both; padding: 10px;" ng-if="$ctrl.courseImages.length > 0">
-          <ul class="files list-inline" ng-show="$ctrl.layout == 'gallery'">
-            <li class="droplet-thumb" ng-repeat="courseImage in $ctrl.courseImages|filter:$ctrl.courseImageHasUrl track by $index">
+      <div style="clear:both; padding: 10px;">
+          <ul class="files list-inline" ng-class="{'hidden':!$ctrl.isLayoutGallery}">
+            <li class="droplet-thumb" ng-repeat="courseImage in $ctrl.courseImages track by $index">
               <droplet-thumb ng-model="courseImage"></droplet-thumb>
               <div ng-show="!$ctrl.inCollection(courseImage)" class="overlay" ng-click="$ctrl.addToCollection(courseImage)">+</div>
               <div ng-show="$ctrl.inCollection(courseImage)" class="overlay overlay-stay">
@@ -101,7 +107,7 @@
               </div>
             </li>
           </ul>
-          <table class="files" ng-show="$ctrl.layout == 'list'">
+          <table class="files" ng-class="{'hidden':!$ctrl.isLayoutList}" aria-hidden="true">
               <thead>
                   <tr>
                       <th>Image</th>
@@ -116,7 +122,7 @@
                       <td><span uib-tooltip="{{courseImage.title}}">{{courseImage.title | ellipsit:"12"}}</span></td>
                       <td><span uib-tooltip='{{courseImage.created | asDate | date:"MM/dd/yy @ h:mma"}}'>{{courseImage.created | asDate | date:"MM/dd/yyyy"}}</td>
                       <td style="white-space:nowrap;">
-                        <button class="btn btn-default" ng-click="$ctrl.imageView(courseImage.id)" uib-tooltip="Edit Image">
+                        <button class="btn btn-default" ng-click="$ctrl.goToImageView(courseImage)" uib-tooltip="Edit Image">
                           <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                         </button>
                         <button ng-disabled="$ctrl.inCollection(courseImage)" class="btn btn-primary" ng-click="$ctrl.addToCollection(courseImage)" uib-tooltip="Add to Collection">
@@ -128,5 +134,5 @@
               </tbody>
           </table>
       </div>
-  </div>
+    </div>
 </div>

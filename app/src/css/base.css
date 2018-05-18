@@ -81,3 +81,8 @@ input.ng-dirty.ng-invalid {
     animation: 0s none;
     -webkit-animation: 0s none;
 }
+
+.danger--deselected {
+    color: #af0c0c;
+    background-color: #f3b0ae;
+}

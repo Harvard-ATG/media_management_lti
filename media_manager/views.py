@@ -191,23 +191,15 @@ class MiradorView(PageView):
     def render(self):
         course_service = CourseService.from_request(self.request)
         collection = course_service.get_collection(self.collection_id)
-
-        default_url = collection.get('default_iiif_manifest_url', '').strip()
-        custom_url = collection.get('custom_iiif_manifest_url', '').strip()
-        custom_canvas_id = collection.get('custom_iiif_canvas_id', '').strip()
-
-        if custom_url:
-            config = {
-                "data": [{"manifestUri": custom_url, "location": "Harvard University"}],
-                "canvasID": custom_canvas_id,
-                "metadataPluginEnabled": False,
-            }
-        else:
-            config = {
-                "data": [{"manifestUri": default_url, "location": "Harvard University"}],
-                "canvasID": None,
-                "metadataPluginEnabled": True,
-            }
+        manifest = collection.get('manifest', {})
+        config = {
+            "data": [{
+                "manifestUri": manifest.get('iiif_manifest_url', ''),
+                "location": manifest.get('location', '')
+            }],
+            "canvasID": manifest.get('iiif_canvas_id', ''),
+            "metadataPluginEnabled": manifest.get('content_source') == 'images',
+        }
 
         context = {
             "miradorConfig": self.to_json(config),

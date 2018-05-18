@@ -1,21 +1,13 @@
-<form name="advancedForm" novalidate>
-  <div class="form-group">
-    <div class="radio">
-      <label><input type="radio" ng-model="$ctrl.useCustomManifest" ng-value="false"> Use default manifest to display collection images in the Mirador image viewer</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" ng-model="$ctrl.useCustomManifest" ng-value="true"> Use a custom manifest that I will provide below</label>
-    </div>
-  </div>
-  <fieldset ng-disabled="!$ctrl.useCustomManifest">
+<form name="manifestForm" novalidate>
+  <fieldset>
     <div class="form-group">
-      <label for="collectionCustomManifest">Custom Manifest URL</label> <i>(customize which manifest the viewer will load)</i>
-      <input class="form-control" type="url" ng-model="$ctrl.collection.custom_iiif_manifest_url" id="collectionCustomManifest">
+      <label for="contentManifest">IIIF Manifest URL</label> <i>(customize which manifest the viewer will load)</i>
+      <input class="form-control" type="url" ng-model="$ctrl.collection.custom_iiif_manifest_url" id="contentManifest">
     </div>
     <div class="form-group">
-      <label for="collectionCustomCanvas">Custom Canvas ID</label> <i>(customize which canvas the viewer will focus on)</i>
-      <input class="form-control" type="text" ng-model="$ctrl.collection.custom_iiif_canvas_id" id="collectionCustomCanvas">
+      <label for="contentCanvas">IIIF Canvas ID</label> <i>(customize which canvas the viewer will focus on)</i>
+      <input class="form-control" type="text" ng-model="$ctrl.collection.custom_iiif_canvas_id" id="contentCanvas">
     </div>
   </fieldset>
-  <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="$ctrl.save()" ng-disabled="!advancedForm.$valid">Save Settings</button>
+  <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="$ctrl.save()" ng-disabled="!manifestForm.$valid">Save</button>
 </form>

@@ -25,26 +25,27 @@
 
 <!-- Content -->
 <div class="row">
-  <div ng-class="{'col-md-12': $ctrl.libraryClosed, 'col-md-6': $ctrl.libraryOpened}">
+  <div ng-class="{'col-md-12': $ctrl.isContentManifest, 'col-md-6': $ctrl.isContentImages}">
     <div class="panel panel-default" >
       <div class="panel-heading">
         <h3 class="panel-title">Content to Use for this Collection</h3>
       </div>
       <div class="panel-body">
         <div class="btn-group" role="group" aria-label="content type">
-          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.contentChoice=='I', 'btn-danger':$ctrl.contentChoice=='M'}" ng-click="$ctrl.setContentToImages()" >Your Images</button>
-          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.contentChoice=='M', 'btn-danger':$ctrl.contentChoice=='I'}" ng-click="$ctrl.setContentToManifest()">IIIF Manifest</button>
+          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentImages, 'btn-danger danger--deselected':!$ctrl.isContentImages}" ng-click="$ctrl.setContentToImages()" >Your Images</button>
+          <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentManifest, 'btn-danger danger--deselected':!$ctrl.isContentManifest}" ng-click="$ctrl.setContentToManifest()">IIIF Manifest</button>
         </div>
         <div class="panel panel-default" style="margin-top:1em">
           <div class="panel-body">
-            <app-collection-edit-images ng-class="{'hidden':$ctrl.contentChoice!='I'}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-remove-image="$ctrl.removeCollectionImage(image)" on-change-order="$ctrl.updateCollectionOrder(images)" on-toggle-library="$ctrl.toggleLibrary(opened)"></app-collection-edit-images>
-            <app-collection-edit-manifest ng-class="{'hidden':$ctrl.contentChoice!='M'}" collection="$ctrl.collection"></app-collection-edit-manifest>
+            <app-collection-edit-images ng-class="{'hidden':!$ctrl.isContentImages}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-remove-image="$ctrl.removeCollectionImage(image)" on-change-order="$ctrl.updateCollectionOrder(images)" on-toggle-library="$ctrl.toggleLibrary(opened)"></app-collection-edit-images>
+            <app-collection-edit-manifest ng-class="{'hidden':!$ctrl.isContentManifest}" collection="$ctrl.collection" on-change="$ctrl.updateManifest(data)"></app-collection-edit-manifest>
+            <button type="button" class="pull-right btn btn-default" ng-click="$ctrl.openCollection()">Open this Collection</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div ng-class="{'hidden': $ctrl.libraryClosed, 'col-md-0': $ctrl.libraryClosed, 'col-md-6': $ctrl.libraryOpened}">
-    <app-collection-edit-library collection-images="$ctrl.collection.images" on-add-image="$ctrl.addCourseImageToCollection(courseImage)"></app-collection-edit-library>
+  <div ng-class="{'hidden': !$ctrl.isContentImages, 'col-md-0': !$ctrl.isContentImages, 'col-md-6': $ctrl.isContentImages}">
+    <app-collection-edit-library selected-images="$ctrl.collection.course_image_ids" on-add-image="$ctrl.addCourseImageToCollection(courseImage)"></app-collection-edit-library>
   </div>
 </div>

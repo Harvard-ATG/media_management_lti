@@ -2,13 +2,29 @@ angular.module('media_manager')
 .component('appCollectionEditManifest', {
   templateUrl: '/static/app/templates/collectionEditManifest.html',
   bindings: {
-    collection: '='
+    onChange: '&',
+    collection: '<'
   },
-  controller: ['Collection', function(Collection) {
+  controller: ['$log', 'Collection', function($log, Collection) {
       var ctrl = this;
-      ctrl.useCustomManifest = ctrl.collection.custom_iiif_manifest_url ? true : false;
+
       ctrl.save = function() {
-        console.log("save manifest settings");
+        var data = {
+          custom_iiif_manifest_url: ctrl.collection.custom_iiif_manifest_url || "",
+          custom_iiif_canvas_id: ctrl.collection.custom_iiif_canvas_id || ""
+        };
+
+        $log.log("save manifest", data);
+        ctrl.onChange({ data: data });
+      };
+
+      ctrl.$onInit = function() {
+      };
+
+      ctrl.$onChanges = function(changes) {
+        console.log("changes to manifest component", changes);
+        ctrl.collection.custom_iiif_manifest_url = changes.collection.currentValue.custom_iiif_manifest_url;
+        ctrl.collection.custom_iiif_canvas_id = changes.collection.currentValue.custom_iiif_canvas_id;
       };
   }]
 });
