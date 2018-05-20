@@ -2,3 +2,7 @@
   vertical-align:top;
   margin-top:.75em;
 }
+.iiif-canvas-selected {
+  border: 5px solid red;
+  padding: 5px;
+}

@@ -30,17 +30,15 @@
           <h3 class="panel-title">Content to Use for this Collection</h3>
         </div>
         <div class="panel-body">
+
           <div class="btn-group" role="group" aria-label="content type">
             <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentImages, 'btn-danger danger--deselected':!$ctrl.isContentImages}" ng-click="$ctrl.setContentToImages()" >Your Images</button>
             <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentManifest, 'btn-danger danger--deselected':!$ctrl.isContentManifest}" ng-click="$ctrl.setContentToManifest()">IIIF Manifest</button>
           </div>
-          <div class="panel panel-default" style="margin-top:1em">
-            <div class="panel-body">
-              <app-collection-edit-images ng-class="{'hidden':!$ctrl.isContentImages}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-remove-image="$ctrl.removeCollectionImage($event)" on-change-order="$ctrl.updateCollectionOrder($event)" on-toggle-library="$ctrl.toggleLibrary(opened)"></app-collection-edit-images>
-              <app-collection-edit-manifest ng-class="{'hidden':!$ctrl.isContentManifest}" collection="$ctrl.collection" on-change="$ctrl.updateManifest($event)"></app-collection-edit-manifest>
-              <button type="button" class="pull-right btn btn-default" ng-click="$ctrl.openCollection()">Open this Collection</button>
-            </div>
-          </div>
+
+          <app-collection-edit-images ng-class="{'hidden':!$ctrl.isContentImages}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-open="$ctrl.openCollection()" on-remove-image="$ctrl.removeCollectionImage($event)" on-change-order="$ctrl.updateCollectionOrder($event)" on-toggle-library="$ctrl.toggleLibrary(opened)"></app-collection-edit-images>
+          <app-collection-edit-manifest ng-class="{'hidden':!$ctrl.isContentManifest}" collection="$ctrl.collection" on-change="$ctrl.updateManifest($event)" on-open="$ctrl.openCollection()"></app-collection-edit-manifest>
+
         </div>
       </div>
     </div>

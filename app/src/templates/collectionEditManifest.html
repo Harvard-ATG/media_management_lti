@@ -1,13 +1,30 @@
-<form name="manifestForm" novalidate>
-  <fieldset>
-    <div class="form-group">
-      <label for="contentManifest">IIIF Manifest URL</label> <i>(customize which manifest the viewer will load)</i>
-      <input class="form-control" type="url" ng-model="$ctrl.collection.iiif_custom_manifest_url" id="contentManifest">
-    </div>
-    <div class="form-group">
-      <label for="contentCanvas">IIIF Canvas ID</label> <i>(customize which canvas the viewer will focus on)</i>
-      <input class="form-control" type="text" ng-model="$ctrl.collection.iiif_custom_canvas_id" id="contentCanvas">
-    </div>
-  </fieldset>
-  <button class="btn btn-primary" id="collectionDetailsBtn" ng-click="$ctrl.save()" ng-disabled="!manifestForm.$valid">Save</button>
-</form>
+
+<div class="row" style="margin-top: 10px;">
+  <div class="col-sm-6">
+    <form name="manifestForm" novalidate>
+      <div class="form-group">
+        <label for="contentManifest">IIIF Manifest to use for this collection</label>
+        <div class="input-group">
+          <input class="form-control" type="url" ng-model="$ctrl.collection.iiif_custom_manifest_url" id="contentManifest">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" id="manifestSelectBtn" ng-click="$ctrl.selectManifest()">Select IIIF Manifest</button>
+          </span>
+        </div>
+      </div>
+      <div class="form-group" ng-if="$ctrl.collection.iiif_custom_manifest_url">
+        <label for="contentCanvas">Optional: IIIF Canvas to focus</label>
+        <input class="form-control" type="url" ng-model="$ctrl.collection.iiif_custom_canvas_id" id="contentCanvas" ng-change="$ctrl.selectManifest()">
+      </div>
+    </form>
+  </div>
+  <div class="col-sm-6">
+    <button type="button" class="btn btn-default pull-right" ng-click="$ctrl.openCollection()" ng-disabled="!$ctrl.canOpenManifest">Open this Collection</button>
+  </div>
+</div>
+<div class="row" ng-if="$ctrl.showPreview" >
+  <div class="col-md-12" >
+    <app-manifest-preview manifest-url="$ctrl.previewManifest" canvas-id="$ctrl.previewCanvas" on-select-canvas="$ctrl.updateCanvas($event)"></app-manifest-preview>
+  </div>
+</div>
+
+

@@ -90,6 +90,7 @@ angular.module("media_manager").component("appCollectionEdit",  {
 
         return Collection.update({}, ctrl.collection, function(data){
           ctrl.notifications.clear();
+          ctrl.collection = angular.copy(ctrl.collection);
           CourseCache.updateCollection(ctrl.collection);
         }, function(errorResponse) {
           $log.error("Failed to update collection:", errorResponse);

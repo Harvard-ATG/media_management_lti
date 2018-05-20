@@ -6,14 +6,19 @@ angular.module('media_manager')
     isLoading: "<",
     onRemoveImage: "&",
     onChangeOrder: "&",
+    onOpen: "&"
   },
-  controller: ['$scope', '$log', '$location', 'Collection', function($scope, $log, $location, Collection)  {
+  controller: ['$log', '$location', function($log, $location)  {
     var ctrl = this;
     var dragEnabled = true;
 
     ctrl.goToImageView = function(image) {
       $log.log('goToImageView', image);
       $location.path('/image/' + image.course_image_id);
+    };
+
+    ctrl.openCollection = function() {
+      ctrl.onOpen();
     };
 
     ctrl.removeImage = function(image) {

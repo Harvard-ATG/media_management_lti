@@ -1,0 +1,18 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div ng-show="$ctrl.isLoading" style="min-height: 50px;">
+      <span us-spinner="{left:'100px'}"></span>
+    </div>
+    <div ng-if="$ctrl.hasError" class="alert alert-danger" role="alert">
+      <p>Failed to load manifest for preview:</p>
+      <p><a href="{{ ::$ctrl.manifestUrl }}" target="_blank">{{ ::$ctrl.manifestUrl }}</a></p>
+    </div>
+    <div ng-if="$ctrl.displayImages && $ctrl.displayImages.length > 0">
+      <p>There are a total of {{ ::$ctrl.images.length }} images in this manifest. Previewing {{ $ctrl.displayImages.length }} images below.</p>
+      <ul class="list-inline">
+        <li ng-repeat="image in $ctrl.displayImages"><img ng-src="{{ ::image.url }}" ng-class="{'iiif-canvas-selected': image.selected}" alt="{{ ::image.label }}" ng-click="$ctrl.selectCanvas(image)"></li>
+      </ul>
+      <button type="button" class="btn btn-default" ng-if="$ctrl.hasNextImages" ng-click="$ctrl.displayNextImages()">Show More</button>
+    </div>
+ </div>
+</div>
