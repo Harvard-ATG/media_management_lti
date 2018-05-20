@@ -57,7 +57,7 @@ angular.module('media_manager').controller('CollectionsController', [
           };
           Collection.save(data).$promise.then(function(collection) {
             lc.CourseCache.collections.push(collection);
-            console.log("saved new collection", collection);
+            console.log("created new collection", collection);
             $location.path('/workspace/'+collection.id);
           });
         };

@@ -26,7 +26,6 @@ angular.module("media_manager").component("appCollectionEdit",  {
       };
 
       ctrl.setContentSource = function(source) {
-        console.log(source);
         if(["images","custom"].indexOf(source) < 0) {
           throw new Error("invalid content source: "+source);
         }
@@ -139,7 +138,6 @@ angular.module("media_manager").component("appCollectionEdit",  {
       };
 
       ctrl.updateCollectionInfo = function() {
-        console.log("updateCollectionInfo");
         var title = ctrl.collection.title.trim();
         if(title !== "") {
           ctrl.saveCollection("Saved collection information");
