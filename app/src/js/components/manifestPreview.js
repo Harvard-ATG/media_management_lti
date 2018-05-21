@@ -6,11 +6,14 @@ angular.module('media_manager')
     canvasId: '<',
     onSelectCanvas: '&'
   },
-  controller: ['$log', '$http', function($log, $http) {
+  controller: ['$log', '$http', '$window', function($log, $http, $window) {
     var ctrl = this;
 
     ctrl.validIiifManifest = function(manifest) {
       var m = manifest;
+      if(!m.hasOwnProperty('@id') || !m.hasOwnProperty('@context') || !m.hasOwnProperty('label')) {
+        return false;
+      }
       if(!m.hasOwnProperty('sequences') || m.sequences.length < 1 || !m.sequences[0].hasOwnProperty('canvases')) {
         return false;
       }
@@ -36,7 +39,8 @@ angular.module('media_manager')
         }
 
         var image = {};
-        image.url       = iiif_base_uri + '/full/100,/0/default.jpg';
+        image.thumbUrl  = iiif_base_uri + '/full/100,/0/default.jpg';
+        image.largeUrl  = iiif_base_uri + '/full/pct:50/0/default.jpg';
         image.canvasId  = canvas['@id'];
         image.label     = canvas.label || 'Canvas #' + index;
         image.selected  = (selectedCanvasId && selectedCanvasId === canvas['@id']) ? true : false;
@@ -49,32 +53,53 @@ angular.module('media_manager')
 
     ctrl.handleManifestSuccess = function(response) {
       $log.log("handleManifestSuccess", response);
-      if(response.status != 200) { return; }
-      if(!ctrl.validIiifManifest(response.data)) {
-        ctrl.error = "IIIF Manifest does not appear to have a sequence with canvases.";
-        return false;
+
+      var contentType = response.headers('Content-Type');
+      if(contentType.indexOf('json') === -1) {
+        return ctrl.reportError('invalidContentType', contentType);
       }
+      if(!ctrl.validIiifManifest(response.data)) {
+        return ctrl.reportError('invalidManifestJson');
+      }
+
       ctrl.manifest = response.data;
       ctrl.images = ctrl.processCanvases(ctrl.manifest, ctrl.canvasId);
-      if(ctrl.images.length == 0) {
-        ctrl.warning = "Manifest does not appear to have any images.";
-      } else {
-        ctrl.displayCurrentImages();
-      }
-      ctrl.isLoading = false;
+      ctrl.displayCurrentImages();
 
-      $log.log("handleManifestSuccess complete", ctrl);
+      return true;
     };
 
     ctrl.handleManifestError  = function(err) {
-      $log.log("handleManifestError", err);
-      ctrl.hasError = true;
-      if(err.statusText < 0) {
-        ctrl.error = "Failed to load manifest for preview:  " + err.statusText;
+      if(err.status <= 0) {
+        ctrl.reportError('httpTimeoutError');
       } else {
-        ctrl.error = "Failed to load manifest for preview.";
+        ctrl.reportError('httpResponseError', err);
       }
-      ctrl.isLoading = false;
+      return false;
+    };
+
+    ctrl.reportError = function(code, err) {
+      $log.log("reportError", code, err);
+      ctrl.hasError = true;
+      switch(code) {
+        case 'invalidContentType':
+          var contentType = err;
+          ctrl.errorMsg = "The content type is not valid [" + contentType + "]. Expected a JSON document.";
+          break;
+        case 'invalidManifestJson':
+          ctrl.errorMsg = "Does not appear to be a valid IIIF-compliant manifest.";
+          break;
+        case 'httpResponseError':
+          ctrl.errorMsg = "The HTTP request failed to load manifest for preview. " + (err.statusText ? 'Status: ' + err.statusText : '');
+          break;
+        case 'httpTimeoutError':
+          ctrl.errorMsg = "The HTTP request timed out.";
+          break;
+        default:
+          ctrl.errorMsg = "There as a problem loading the manifest. ";
+          break;
+      }
+      return false;
     };
 
     ctrl.fetchManifest = function(url) {
@@ -83,20 +108,23 @@ angular.module('media_manager')
       var config = {
         method: "GET",
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json, application/ld+json'
         },
-        cache: true
+        cache: true,
+        timeout: 5000
       };
 
-      ctrl.isLoading = true;
       ctrl.resetErrors();
+      ctrl.isLoading = true;
       $http.get(url, config)
         .then(ctrl.handleManifestSuccess)
-        .catch(ctrl.handleManifestError);
+        .then(ctrl.resetLoading())
+        .catch(ctrl.handleManifestError)
+        .catch(ctrl.resetLoading())
     };
 
     ctrl.selectCanvas = function(image) {
-      console.log("selected canvas", image.canvasId);
       if(image.canvasId == ctrl.canvasId) {
         ctrl.onSelectCanvas({ '$event': '' });
       } else {
@@ -104,24 +132,36 @@ angular.module('media_manager')
       }
     };
 
-    ctrl.displayNextImages = function() {
-      ctrl.pageNum++;
+    ctrl.openLargeImage = function(image) {
+      $window.open(image.largeUrl, image.label, "menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes");
+    };
+
+    ctrl.displayNextImages = function(pageSize) {
+      if(typeof pageSize == 'number' && pageSize >= 0) {
+        ctrl.pageSize = pageSize;
+      }
+      ctrl.pageEnd += ctrl.pageSize;
       ctrl.displayCurrentImages();
     };
 
     ctrl.displayCurrentImages = function() {
       var start = 0;
-      var end = ctrl.pageNum * ctrl.pageSize + ctrl.pageSize;
+      var end = ctrl.pageEnd;
       if(end > ctrl.images.length) {
         end = ctrl.images.length;
       }
       ctrl.displayImages = ctrl.images.slice(start, end);
       ctrl.hasNextImages = (ctrl.images.length > ctrl.displayImages.length);
+      ctrl.pageEnd = end;
     };
 
     ctrl.resetErrors = function() {
       ctrl.hasError = false;
       ctrl.error = "";
+    };
+
+    ctrl.resetLoading = function() {
+      ctrl.isLoading = false;
     };
 
     ctrl.$onInit = function() {
@@ -130,8 +170,8 @@ angular.module('media_manager')
       ctrl.images = null;
       ctrl.manifest = null;
       ctrl.displayImages = null;
-      ctrl.pageNum = 0;
       ctrl.pageSize = 10;
+      ctrl.pageEnd = ctrl.pageSize;
       ctrl.isLoading = false;
       ctrl.fetchManifest(ctrl.manifestUrl);
     };

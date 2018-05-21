@@ -11,27 +11,23 @@ angular.module('media_manager')
 
     ctrl.selectManifest = function() {
       ctrl.save();
-      ctrl.openPreview();
+      ctrl.showManifest();
     };
 
     ctrl.updateCanvas = function(canvasId) {
       ctrl.collection.iiif_custom_canvas_id = canvasId;
       ctrl.save();
-      ctrl.openPreview();
+      ctrl.showManifest();
     };
 
     ctrl.openCollection = function() {
       ctrl.onOpen();
     };
 
-    ctrl.openPreview = function() {
+    ctrl.showManifest = function() {
       ctrl.previewManifest = ctrl.collection.iiif_custom_manifest_url;
       ctrl.previewCanvas = ctrl.collection.iiif_custom_canvas_id;
-      ctrl.showPreview = true;
-    };
-
-    ctrl.closePreview = function() {
-      ctrl.showPreview = false;
+      ctrl.previewEnabled = ctrl.previewManifest ? true : false;
     };
 
     ctrl.save = function() {
@@ -45,16 +41,18 @@ angular.module('media_manager')
     };
 
     ctrl.$onInit = function() {
-      ctrl.previewUrl = "";
-      ctrl.showPreview = false;
-      ctrl.canOpenManifest = (ctrl.collection.iiif_custom_manifest_url ? true : false);;
+      ctrl.previewEnabled = false;
+      ctrl.hasManifest = (ctrl.collection.iiif_custom_manifest_url ? true : false);
+      ctrl.showManifest();
     };
 
     ctrl.$onChanges = function(changes) {
+      $log.log("collectionEditManifest changes", changes);
       if(changes.hasOwnProperty('collection') && !changes.collection.isFirstChange()) {
-        ctrl.canOpenManifest = (ctrl.collection.iiif_custom_manifest_url ? true : false);
         ctrl.collection.iiif_custom_manifest_url = changes.collection.currentValue.iiif_custom_manifest_url;
         ctrl.collection.iiif_custom_canvas_id = changes.collection.currentValue.iiif_custom_canvas_id;
+        ctrl.hasManifest = (ctrl.collection.iiif_custom_manifest_url ? true : false);
+        ctrl.showManifest();
       }
     };
   }]

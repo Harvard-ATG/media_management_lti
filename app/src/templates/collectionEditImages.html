@@ -4,7 +4,7 @@
       <span us-spinner="{top:'50%'}"></span>
     </div>
 
-    <div ng-show="$ctrl.images.length == 0">
+    <div ng-if="$ctrl.images.length == 0">
       There are no images selected for this collection.
       Use images in this collection by adding them from the image library.
     </div>
@@ -22,7 +22,9 @@
     </ul>
 
     <div style="margin-top: 20px;">
+      <button type="button" class="btn btn-link" ng-click="$ctrl.toggleIiifUrl();" ><i class="collection__icon-iiif" style="margin-right: 5px;"></i>View link to this collection</button>
       <button type="button" class="pull-right btn btn-default" ng-disabled="$ctrl.images.length == 0" ng-click="$ctrl.openCollection()">Open this Collection</button>
     </div>
+    <div ng-show="$ctrl.showIiifUrl" class="collection__iiifurl"><input type="text" class="form-control" value="{{ ::$ctrl.iiifUrl }}" readonly></div>
   </div>
 </div>

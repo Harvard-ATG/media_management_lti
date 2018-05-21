@@ -1,18 +1,48 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <div ng-show="$ctrl.isLoading" style="min-height: 50px;">
-      <span us-spinner="{left:'100px'}"></span>
+    <div class="manifestpreview__container">
+      <div ng-show="$ctrl.isLoading" style="min-height: 50px;">
+        <span us-spinner="{left:'100px'}"></span>
+      </div>
+
+      <div ng-if="$ctrl.hasError" class="alert alert-danger" role="alert">
+        <h4>This URL is not correct.</h4>
+        <p>There was a problem loading the manifest:</p>
+        <ul>
+          <li><strong>URL:</strong> <a href="{{ ::$ctrl.manifestUrl }}" target="_blank">{{ ::$ctrl.manifestUrl }}</a></li>
+          <li><strong>Reason:</strong> {{ $ctrl.errorMsg }}</li>
+        </ul>
+      </div>
+      <div ng-if="$ctrl.hasError" class="alert alert-info" role="alert">
+        <h4>IIIF Manifest example from the <a href="https://www.harvardartmuseums.org/" target="_blank">Harvard Art Museums</a></h4>
+        <p>Given the following URL:<p>
+        <p class="manifestpreview__exampleurl">https://iiif.harvardartmuseums.org/viewers/mirador?manifest=https://iiif.harvardartmuseums.org/manifests/object/299843</p>
+        <p>Select only the second portion of the URL:</p>
+        <p class="manifestpreview__exampleurl"><i class="glyphicon glyphicon-remove"></i> https://iiif.harvardartmuseums.org/viewers/mirador?manifest=<span class="manifestpreview__exampleurl--select">https://iiif.harvardartmuseums.org/manifests/object/299843</span></p>
+        <p class="manifestpreview__exampleurl"><i class="glyphicon glyphicon-ok"></i> https://iiif.harvardartmuseums.org/manifests/object/299843</p>
+
+        <h4 style="margin-top: 1em;">IIIF Manifest example from the <a href="https://library.harvard.edu/">Harvard Library</a></h4>
+        <p>Given the following URL:</p>
+        <p class="manifestpreview__exampleurl">https://iiif.lib.harvard.edu/manifests/view/drs:10643868$1i</p>
+        <p>Remove the portions as follows:</p>
+        <p class="manifestpreview__exampleurl"><i class="glyphicon glyphicon-remove"></i> https://iiif.lib.harvard.edu/manifests/<span class="manifestpreview__exampleurl--remove">view/</span>drs:10643868<span class="manifestpreview__exampleurl--remove">$1i</span></p>
+        <p class="manifestpreview__exampleurl"><i class="glyphicon glyphicon-ok"></i> https://iiif.lib.harvard.edu/manifests/drs:10643868</p>
+      </div>
     </div>
-    <div ng-if="$ctrl.hasError" class="alert alert-danger" role="alert">
-      <p>Failed to load manifest for preview:</p>
-      <p><a href="{{ ::$ctrl.manifestUrl }}" target="_blank">{{ ::$ctrl.manifestUrl }}</a></p>
+
+      <div ng-if="!$ctrl.hasError && $ctrl.displayImages && $ctrl.displayImages.length > 0">
+        <h5>{{ ::$ctrl.manifest.label }}</h5>
+        <p>There are {{ ::$ctrl.images.length }} images in this manifest.</p>
+        <ul class="list-inline">
+          <li ng-repeat="image in $ctrl.displayImages" style="position:relative; margin-bottom: 20px; margin-right: 10px;">
+            <img ng-src="{{ ::image.thumbUrl }}" ng-class="{'manifestpreview__iiifcanvas--selected': image.selected}" alt="{{ ::image.label }}" ng-click="$ctrl.selectCanvas(image)">
+          </li>
+        </ul>
+        <div ng-if="$ctrl.hasNextImages">
+          <button type="button" class="btn btn-default" ng-if="$ctrl.hasNextImages" ng-click="$ctrl.displayNextImages(10)">Show More </button>
+          Displaying {{ $ctrl.displayImages.length }} images
+        </div>
+      </div>
     </div>
-    <div ng-if="$ctrl.displayImages && $ctrl.displayImages.length > 0">
-      <p>There are a total of {{ ::$ctrl.images.length }} images in this manifest. Previewing {{ $ctrl.displayImages.length }} images below.</p>
-      <ul class="list-inline">
-        <li ng-repeat="image in $ctrl.displayImages"><img ng-src="{{ ::image.url }}" ng-class="{'iiif-canvas-selected': image.selected}" alt="{{ ::image.label }}" ng-click="$ctrl.selectCanvas(image)"></li>
-      </ul>
-      <button type="button" class="btn btn-default" ng-if="$ctrl.hasNextImages" ng-click="$ctrl.displayNextImages()">Show More</button>
-    </div>
- </div>
+   </div>
 </div>

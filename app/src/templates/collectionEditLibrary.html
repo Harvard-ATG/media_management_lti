@@ -1,6 +1,6 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title library-header">Image Library</h3>
+    <h3 class="panel-title library__panel-title">Image Library</h3>
   </div>
   <div class="panel-body">
 
@@ -13,7 +13,7 @@
       <span ng-if="!$ctrl.hideAddImage">Hide Image Uploading</span>
     </button>
 
-    <div uib-collapse="$ctrl.hideAddImage" class="library-add-images"">
+    <div uib-collapse="$ctrl.hideAddImage" class="library__container-addimages"">
       <h5>Choose images to upload to the library or add from the web (limit 200 MB).
         JPG, PNG, GIF, and TIF images supported.</h5>
       <section class="droplet image-library" ng-class="{ uploading: $ctrl.Droplet.interface.isUploading() }">
@@ -21,18 +21,18 @@
         <notifications topic="'library'"></notifications>
 
         <div class="library-buttons">
-          <label for="uploadimages" class="button-library" ng-click="$ctrl.addImageSource = 'file'">
+          <label for="library__input-uploadimages" class="library__button" ng-click="$ctrl.addImageSource = 'file'">
               <i class="glyphicon glyphicon-upload"></i> Upload images
           </label>
-          <button class="button-library" ng-click="$ctrl.addImageSource = 'web'">
+          <button class="library__button" ng-click="$ctrl.addImageSource = 'web'">
               <i class="glyphicon glyphicon-link"></i> Add image from web
           </button>
         </div>
 
-        <div class="library-source-upload" ng-show="$ctrl.addImageSource == 'file'">
+        <div class="library__container-files-upload" ng-show="$ctrl.addImageSource == 'file'">
           <droplet ng-model="$ctrl.Droplet.interface">
-            <droplet-upload-multiple id="uploadimages" ng-model="$ctrl.Droplet.interface"></droplet-upload-multiple>
-            <ul class="files files-queued">
+            <droplet-upload-multiple id="library__input-uploadimages" ng-model="$ctrl.Droplet.interface"></droplet-upload-multiple>
+            <ul class="library__list-files-upload files files-queued">
                 <li ng-repeat="model in $ctrl.Droplet.interface.getFiles($ctrl.Droplet.interface.FILE_TYPES.VALID)" uib-tooltip="{{model.file.name}}">
                     <droplet-preview ng-model="model" ng-show="model.isImage()"></droplet-preview>
                     <droplet-preview-zip ng-model="model" ng-if="model.extension == 'zip'"></droplet-preview-zip>
@@ -45,7 +45,7 @@
           </droplet>
         </div>
 
-        <div class="library-source-web" ng-show="$ctrl.addImageSource == 'web'">
+        <div class="library__container-web-images" ng-show="$ctrl.addImageSource == 'web'">
           <form name="webimage">
             <div class="form-group">
               <label for="webimageurl">URL:</label>
@@ -107,7 +107,7 @@
               </div>
             </li>
           </ul>
-          <table class="files" ng-class="{'hidden':!$ctrl.isLayoutList}" aria-hidden="true">
+          <table class="library__table" ng-class="{'hidden':!$ctrl.isLayoutList}" aria-hidden="true">
               <thead>
                   <tr>
                       <th>Image</th>

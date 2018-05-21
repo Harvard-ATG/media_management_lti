@@ -36,7 +36,7 @@
             <button type="button" class="btn btn-default" ng-class="{'active btn-success':$ctrl.isContentManifest, 'btn-danger danger--deselected':!$ctrl.isContentManifest}" ng-click="$ctrl.setContentToManifest()">IIIF Manifest</button>
           </div>
 
-          <app-collection-edit-images ng-class="{'hidden':!$ctrl.isContentImages}" images="$ctrl.collection.images" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-open="$ctrl.openCollection()" on-remove-image="$ctrl.removeCollectionImage($event)" on-change-order="$ctrl.updateCollectionOrder($event)"></app-collection-edit-images>
+          <app-collection-edit-images ng-class="{'hidden':!$ctrl.isContentImages}" images="$ctrl.collection.images" iiif-url="$ctrl.collection.iiif_images_manifest_url" is-loading="$ctrl.isLoading" is-library-open="$ctrl.libraryOpened" on-open="$ctrl.openCollection()" on-remove-image="$ctrl.removeCollectionImage($event)" on-change-order="$ctrl.updateCollectionOrder($event)"></app-collection-edit-images>
           <app-collection-edit-manifest ng-class="{'hidden':!$ctrl.isContentManifest}" collection="$ctrl.collection" on-change="$ctrl.updateManifest($event)" on-open="$ctrl.openCollection()"></app-collection-edit-manifest>
 
         </div>

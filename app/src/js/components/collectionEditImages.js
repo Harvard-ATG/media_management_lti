@@ -4,6 +4,7 @@ angular.module('media_manager')
   bindings: {
     images: "<",
     isLoading: "<",
+    iiifUrl: "<",
     onRemoveImage: "&",
     onChangeOrder: "&",
     onOpen: "&"
@@ -44,6 +45,10 @@ angular.module('media_manager')
       }
     };
 
+    ctrl.toggleIiifUrl = function() {
+      ctrl.showIiifUrl = !ctrl.showIiifUrl;
+    };
+
     // Component Lifecycle
     ctrl.$onInit = function() {
       ctrl.images = angular.copy(ctrl.images); // ensure we get our own copy
@@ -57,6 +62,9 @@ angular.module('media_manager')
       }
       if(changes.hasOwnProperty('images')) {
         ctrl.images = angular.copy(changes.images.currentValue);
+      }
+      if(changes.hasOwnProperty('iiifUrl')) {
+        ctrl.iiifUrl = changes.iiifUrl.currentValue;
       }
     };
 
