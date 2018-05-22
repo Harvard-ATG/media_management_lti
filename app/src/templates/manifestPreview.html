@@ -35,7 +35,7 @@
         <p>There are {{ ::$ctrl.images.length }} images in this manifest.</p>
         <ul class="list-inline">
           <li ng-repeat="image in $ctrl.displayImages" class="manifestpreview__listimages">
-            <img ng-src="{{ ::image.thumbUrl }}" ng-class="{'manifestpreview__iiifcanvas--selected': image.selected}" alt="{{ ::image.label }}" ng-click="$ctrl.selectCanvas(image)">
+            <img ng-src="{{ ::image.thumbUrl }}" class="manifestpreview__image--small" ng-class="{'manifestpreview__image--selected': image.selected}" alt="{{ ::image.label }}" ng-click="$ctrl.selectCanvas(image)">
           </li>
         </ul>
         <div ng-if="$ctrl.hasNextImages">

@@ -89,10 +89,6 @@
 /*********************************************************************/
 /* COMPONENT: manifestPreview */
 
-.manifestpreview__iiifcanvas--selected {
-  border: 5px solid red;
-  padding: 5px;
-}
 .manifestpreview__exampleurl {
   margin-left: 25px;
   font-family: monospace;
@@ -113,6 +109,13 @@
   margin-bottom: 20px;
   margin-right: 10px;
   max-width: 100px;
+}
+.manifestpreview__image--small {
+  max-width: 100px;
+}
+.manifestpreview__image--selected {
+  border: 5px solid red;
+  padding: 5px;
 }
 /*********************************************************************/
 /* COMPONENT: collectionEditLibrary */
