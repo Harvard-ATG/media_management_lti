@@ -3,24 +3,24 @@
       <div class="form-group">
         <label for="contentManifest">IIIF Manifest to use for this collection</label>
         <div class="input-group">
-          <input class="form-control" type="url" ng-model="$ctrl.collection.iiif_custom_manifest_url" id="contentManifest">
+          <input class="form-control" type="url" ng-model="$ctrl.manifestUrl" ng-change="$ctrl.resetCanvas()" id="contentManifest">
           <span class="input-group-btn">
-            <button class="btn btn-primary" id="manifestSelectBtn" ng-click="$ctrl.selectManifest()">Select IIIF Manifest</button>
+            <button class="btn btn-primary" id="manifestSelectBtn" ng-click="$ctrl.update()">Select IIIF Manifest</button>
           </span>
         </div>
       </div>
-      <div class="form-group" ng-if="$ctrl.collection.iiif_custom_manifest_url">
+      <div class="form-group" ng-if="$ctrl.manifestUrl">
         <label for="contentCanvas">Image to highlight in this manifest (i.e. IIIF Canvas)</label>
-        <input class="form-control" type="url" ng-model="$ctrl.collection.iiif_custom_canvas_id" id="contentCanvas" ng-change="$ctrl.selectManifest()">
+        <input class="form-control" type="url" ng-model="$ctrl.canvasId" id="contentCanvas" ng-change="$ctrl.update()">
       </div>
   </div>
   <div class="col-sm-6">
-    <button type="button" class="btn btn-default pull-right" ng-click="$ctrl.openCollection()" ng-disabled="!$ctrl.hasManifest">Open this Collection</button>
+    <button type="button" class="btn btn-default pull-right" ng-click="$ctrl.openCollection()" ng-disabled="!$ctrl.manifestUrl">Open this Collection</button>
   </div>
 </div>
 <div class="row" ng-if="$ctrl.previewEnabled" >
   <div class="col-md-12" >
-    <app-manifest-preview manifest-url="$ctrl.previewManifest" canvas-id="$ctrl.previewCanvas" on-select-canvas="$ctrl.updateCanvas($event)"></app-manifest-preview>
+    <app-manifest-preview manifest-url="$ctrl.manifestUrl" canvas-id="$ctrl.canvasId" on-select-canvas="$ctrl.selectCanvas($event)"></app-manifest-preview>
   </div>
 </div>
 

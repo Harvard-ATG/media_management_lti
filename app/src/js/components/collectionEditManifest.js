@@ -9,49 +9,47 @@ angular.module('media_manager')
   controller: ['$log', function($log) {
     var ctrl = this;
 
-    ctrl.selectManifest = function() {
+    ctrl.selectCanvas = function(canvasId) {
+      ctrl.canvasId = canvasId;
+      ctrl.update();
+    };
+
+    ctrl.resetCanvas = function() {
+      ctrl.canvasId = "";
+    };
+
+    ctrl.update = function() {
       ctrl.save();
       ctrl.showManifest();
     };
 
-    ctrl.updateCanvas = function(canvasId) {
-      ctrl.collection.iiif_custom_canvas_id = canvasId;
-      ctrl.save();
-      ctrl.showManifest();
+    ctrl.save = function() {
+      var data = {"manifestUrl": ctrl.manifestUrl, "canvasId": ctrl.canvasId};
+      ctrl.onChange({ '$event': data });
+    };
+
+    ctrl.showManifest = function() {
+      ctrl.previewEnabled = !!ctrl.manifestUrl;
     };
 
     ctrl.openCollection = function() {
       ctrl.onOpen();
     };
 
-    ctrl.showManifest = function() {
-      ctrl.previewManifest = ctrl.collection.iiif_custom_manifest_url;
-      ctrl.previewCanvas = ctrl.collection.iiif_custom_canvas_id;
-      ctrl.previewEnabled = ctrl.previewManifest ? true : false;
-    };
-
-    ctrl.save = function() {
-      var data = {
-        iiif_custom_manifest_url: ctrl.collection.iiif_custom_manifest_url || "",
-        iiif_custom_canvas_id: ctrl.collection.iiif_custom_canvas_id || ""
-      };
-
-      $log.log("save manifest", data);
-      ctrl.onChange({ '$event': data });
-    };
-
     ctrl.$onInit = function() {
       ctrl.previewEnabled = false;
-      ctrl.hasManifest = (ctrl.collection.iiif_custom_manifest_url ? true : false);
+      ctrl.manifestUrl = ctrl.collection.iiif_custom_manifest_url;
+      ctrl.canvasId = ctrl.collection.iiif_custom_canvas_id;
       ctrl.showManifest();
     };
 
     ctrl.$onChanges = function(changes) {
       $log.log("collectionEditManifest changes", changes);
+      var change;
       if(changes.hasOwnProperty('collection') && !changes.collection.isFirstChange()) {
-        ctrl.collection.iiif_custom_manifest_url = changes.collection.currentValue.iiif_custom_manifest_url;
-        ctrl.collection.iiif_custom_canvas_id = changes.collection.currentValue.iiif_custom_canvas_id;
-        ctrl.hasManifest = (ctrl.collection.iiif_custom_manifest_url ? true : false);
+        change = changes.collection;
+        ctrl.manifestUrl = change.currentValue.iiif_custom_manifest_url;
+        ctrl.canvasId = change.currentValue.iiif_custom_canvas_id;
         ctrl.showManifest();
       }
     };

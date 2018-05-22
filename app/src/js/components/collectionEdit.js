@@ -132,8 +132,11 @@ angular.module("media_manager").component("appCollectionEdit",  {
       };
 
       ctrl.updateManifest = function(data) {
-        ctrl.collection.iiif_custom_manifest_url = data.iiif_custom_manifest_url || "";
-        ctrl.collection.iiif_custom_canvas_id = data.iiif_custom_canvas_id || "";
+        $log.log("updateManifest", data);
+
+        ctrl.collection.iiif_custom_manifest_url = data.manifestUrl || "";
+        ctrl.collection.iiif_custom_canvas_id = data.canvasId || "";
+
         ctrl.saveCollection();
       };
 
