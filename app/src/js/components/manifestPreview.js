@@ -119,9 +119,9 @@ angular.module('media_manager')
       ctrl.isLoading = true;
       $http.get(url, config)
         .then(ctrl.handleManifestSuccess)
-        .then(ctrl.resetLoading())
+        .then(ctrl.resetLoading)
         .catch(ctrl.handleManifestError)
-        .catch(ctrl.resetLoading())
+        .catch(ctrl.resetLoading)
     };
 
     ctrl.selectCanvas = function(image) {
@@ -158,10 +158,12 @@ angular.module('media_manager')
     ctrl.resetErrors = function() {
       ctrl.hasError = false;
       ctrl.error = "";
+      return ctrl;
     };
 
     ctrl.resetLoading = function() {
       ctrl.isLoading = false;
+      return ctrl;
     };
 
     ctrl.$onInit = function() {
