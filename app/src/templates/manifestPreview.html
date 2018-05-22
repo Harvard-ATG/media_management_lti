@@ -34,7 +34,7 @@
         <h5>{{ ::$ctrl.manifest.label }}</h5>
         <p>There are {{ ::$ctrl.images.length }} images in this manifest.</p>
         <ul class="list-inline">
-          <li ng-repeat="image in $ctrl.displayImages" style="position:relative; margin-bottom: 20px; margin-right: 10px;">
+          <li ng-repeat="image in $ctrl.displayImages" class="manifestpreview__listimages">
             <img ng-src="{{ ::image.thumbUrl }}" ng-class="{'manifestpreview__iiifcanvas--selected': image.selected}" alt="{{ ::image.label }}" ng-click="$ctrl.selectCanvas(image)">
           </li>
         </ul>

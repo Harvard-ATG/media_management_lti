@@ -108,7 +108,12 @@
   padding: 5px;
   text-decoration: line-through;
 }
-
+.manifestpreview__listimages {
+  position: relative;
+  margin-bottom: 20px;
+  margin-right: 10px;
+  max-width: 100px;
+}
 /*********************************************************************/
 /* COMPONENT: collectionEditLibrary */
 
