@@ -1,5 +1,5 @@
 angular.module('media_manager')
-.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, Image){
+.controller('ImageController', ['$routeParams', 'CourseCache', 'ImageBehavior', 'Breadcrumbs', '$location', '$scope', '$log', '$window', 'Image', function($routeParams, CourseCache, ImageBehavior, Breadcrumbs, $location, $scope, $log, $window, Image){
   var ic = this;
 
   Breadcrumbs.addCrumb("Edit Image");
@@ -9,7 +9,7 @@ angular.module('media_manager')
   ic.CourseCache = CourseCache;
   ic.current_image = CourseCache.getImageById($routeParams.imageId);
   ic.index = 0; // initialize to zero, but should be updated to the corret value
- 
+
   ic.defaultMetadataLabels = [
     'Date',
     'Type',
@@ -26,7 +26,7 @@ angular.module('media_manager')
       img = images[index];
       if(img.id == $routeParams.imageId){
         ic.index = index;
-        ic.current_image = img;
+        ic.changeCurrentImage(ic.index);
         break;
       }
     }
@@ -36,8 +36,7 @@ angular.module('media_manager')
     $event.preventDefault();
     if(ic.index + 1 < CourseCache.images.length){
       ic.index++;
-      ic.current_image = CourseCache.images[ic.index];
-      CourseCache.current_image = CourseCache.images[ic.index];
+      ic.changeCurrentImage(ic.index);
     }
   };
 
@@ -45,9 +44,24 @@ angular.module('media_manager')
     $event.preventDefault();
     if(ic.index > 0){
       ic.index--;
-      ic.current_image = CourseCache.images[ic.index];
-      CourseCache.current_image = CourseCache.images[ic.index];
+      ic.changeCurrentImage(ic.index);
     }
+  };
+
+  ic.changeCurrentImage = function(index) {
+    CourseCache.current_image = CourseCache.images[index];
+    ic.current_image          = CourseCache.images[index];
+
+    if(ic.current_image.image_width < 400) {
+      ic.current_image_small_url = ic.current_image.iiif_base_url + '/full/full/0/default.jpg';
+    } else {
+      ic.current_image_url = ic.current_image.iiif_base_url + '/full/400,/0/default.jpg';
+    }
+  };
+
+  ic.openFullImage = function(current_image) {
+    var title = current_image.title || "Image ID: "+current_image.id;
+    $window.open(current_image.iiif_base_url + '/full/full/0/default.jpg', title);
   };
 
   ic.save = function(){
@@ -76,8 +90,7 @@ angular.module('media_manager')
         } else if(ic.index < 0){
           ic.index = 0;
         }
-        ic.current_image = CourseCache.images[ic.index];
-        CourseCache.current_image = CourseCache.images[ic.index];
+        ic.changeCurrentImage(ic.index);
       }
     });
   };

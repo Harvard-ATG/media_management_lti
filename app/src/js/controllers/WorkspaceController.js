@@ -1,23 +1,17 @@
 angular.module('media_manager')
 .controller('WorkspaceController', ['$location',
-                                    '$log',
                                     '$routeParams',
                                     'Breadcrumbs',
                                     'Notifications',
-                                    'Preferences',
                                     'AppConfig',
                                     'CourseCache',
-                                    'Collection',
                                     function(
                                       $location,
-                                      $log,
                                       $routeParams,
                                       Breadcrumbs,
                                       Notifications,
-                                      Preferences,
                                       AppConfig,
-                                      CourseCache,
-                                      Collection){
+                                      CourseCache){
 
 
   var wc = this;
