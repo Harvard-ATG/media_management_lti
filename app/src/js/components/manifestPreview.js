@@ -118,10 +118,8 @@ angular.module('media_manager')
       ctrl.resetErrors();
       ctrl.isLoading = true;
       $http.get(url, config)
-        .then(ctrl.handleManifestSuccess)
-        .then(ctrl.resetLoading)
-        .catch(ctrl.handleManifestError)
-        .catch(ctrl.resetLoading)
+        .then(ctrl.handleManifestSuccess, ctrl.handleManifestError)
+        .then(ctrl.resetLoading, ctrl.resetLoading)
     };
 
     ctrl.selectCanvas = function(image) {
