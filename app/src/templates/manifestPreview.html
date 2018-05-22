@@ -10,7 +10,7 @@
         <p>There was a problem loading the manifest:</p>
         <ul>
           <li><strong>URL:</strong> <a href="{{ ::$ctrl.manifestUrl }}" target="_blank">{{ ::$ctrl.manifestUrl }}</a></li>
-          <li><strong>Reason:</strong> {{ $ctrl.errorMsg }}</li>
+          <li><strong>Reason:</strong> <span>{{ $ctrl.errorMsg }}</span></li>
         </ul>
       </div>
       <div ng-if="$ctrl.hasError" class="alert alert-info" role="alert">

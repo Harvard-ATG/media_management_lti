@@ -71,7 +71,7 @@ angular.module('media_manager')
 
     ctrl.handleManifestError  = function(err) {
       if(err.status <= 0) {
-        ctrl.reportError('httpTimeoutError');
+        ctrl.reportError('httpNotAvailableError');
       } else {
         ctrl.reportError('httpResponseError', err);
       }
@@ -87,16 +87,16 @@ angular.module('media_manager')
           ctrl.errorMsg = "The content type is not valid [" + contentType + "]. Expected a JSON document.";
           break;
         case 'invalidManifestJson':
-          ctrl.errorMsg = "Does not appear to be a valid IIIF-compliant manifest.";
+          ctrl.errorMsg = 'The JSON document does not appear to be a IIIF-compliant manifest as described by http://iiif.io/api/presentation/2.1/#manifest';
           break;
         case 'httpResponseError':
           ctrl.errorMsg = "The HTTP request failed to load manifest for preview. " + (err.statusText ? 'Status: ' + err.statusText : '');
           break;
-        case 'httpTimeoutError':
-          ctrl.errorMsg = "The HTTP request timed out.";
+        case 'httpNotAvailableError':
+          ctrl.errorMsg = "The HTTP request failed. Timed out or missing/misconfigured CORS HTTP headers.";
           break;
         default:
-          ctrl.errorMsg = "There as a problem loading the manifest. ";
+          ctrl.errorMsg = "There as an unknown problem loading the manifest.";
           break;
       }
       return false;
