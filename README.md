@@ -4,6 +4,8 @@ A media management application for collecting and maintaining media in online co
 
 [![Build Status](https://travis-ci.org/Harvard-ATG/media_management_lti.svg)](https://travis-ci.org/Harvard-ATG/media_management_lti)
 
+![alt text](https://github.com/Harvard-ATG/media_management_lti/blob/master/docs/IMM_HAM2.gif "IIIF Demo")
+
 ### Quickstart
 
 ```sh
