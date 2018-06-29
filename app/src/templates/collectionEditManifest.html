@@ -1,11 +1,16 @@
 <div class="row" style="margin-top: 10px;">
   <div class="col-sm-6">
-      <div class="form-group">
+      <div class="form-group" ng-class="{'has-error': $ctrl.hasError}">
+        <div ng-if="$ctrl.hasError" class="alert alert-danger" role="alert">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>
+          {{ $ctrl.errorMsg }}
+        </div>
         <label for="contentManifest">IIIF Manifest to use for this collection</label>
         <div class="input-group">
-          <input class="form-control" type="url" ng-model="$ctrl.manifestUrl" ng-change="$ctrl.resetCanvas()" id="contentManifest">
+          <input class="form-control" type="url" ng-model="$ctrl.manifestUrl" ng-change="$ctrl.validateManifest()" id="contentManifest">
           <span class="input-group-btn">
-            <button class="btn btn-primary" id="manifestSelectBtn" ng-click="$ctrl.update()">Select IIIF Manifest</button>
+            <button class="btn btn-primary" id="manifestSelectBtn" ng-disabled="$ctrl.hasError" ng-click="$ctrl.selectManifest()">Select IIIF Manifest</button>
           </span>
         </div>
       </div>

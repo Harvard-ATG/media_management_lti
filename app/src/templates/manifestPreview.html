@@ -6,13 +6,13 @@
       </div>
 
       <div ng-if="$ctrl.hasError" class="alert alert-danger" role="alert">
-        <h4>This URL is not correct.</h4>
-        <p>There was a problem loading the manifest:</p>
+        <h4>There was a problem loading the manifest URL.</h4>
         <ul>
           <li><strong>URL:</strong> <a href="{{ ::$ctrl.manifestUrl }}" target="_blank">{{ ::$ctrl.manifestUrl }}</a></li>
-          <li><strong>Reason:</strong> <span>{{ $ctrl.errorMsg }}</span></li>
+          <li><strong>Error:</strong> <span>{{ $ctrl.errorMsg }}</span></li>
         </ul>
       </div>
+
       <div ng-if="$ctrl.hasError" class="alert alert-info" role="alert">
         <h4>IIIF Manifest example from the <a href="https://www.harvardartmuseums.org/" target="_blank">Harvard Art Museums</a></h4>
         <p>Given the following URL:<p>

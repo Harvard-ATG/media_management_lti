@@ -9,13 +9,26 @@ angular.module('media_manager')
   controller: ['$log', function($log) {
     var ctrl = this;
 
-    ctrl.selectCanvas = function(canvasId) {
-      ctrl.canvasId = canvasId;
+    ctrl.validateManifest = function() {
+      ctrl.hasError = false;
+      ctrl.errorMsg = "";
+
+      var isHttps = /^https:\/\//.test(ctrl.manifestUrl);
+      if(!isHttps) {
+        ctrl.errorMsg = "The manifest URL must start with https://";
+        ctrl.hasError = true;
+      }
+      $log.log("validateManifest", ctrl.errorMsg, ctrl.hasError, ctrl.manifestUrl);
+    };
+
+    ctrl.selectManifest = function() {
+      ctrl.canvasId = "";
       ctrl.update();
     };
 
-    ctrl.resetCanvas = function() {
-      ctrl.canvasId = "";
+    ctrl.selectCanvas = function(canvasId) {
+      ctrl.canvasId = canvasId;
+      ctrl.update();
     };
 
     ctrl.update = function() {
@@ -38,6 +51,8 @@ angular.module('media_manager')
 
     ctrl.$onInit = function() {
       ctrl.previewEnabled = false;
+      ctrl.hasError = false;
+      ctrl.errorMsg = "";
       ctrl.manifestUrl = ctrl.collection.iiif_custom_manifest_url;
       ctrl.canvasId = ctrl.collection.iiif_custom_canvas_id;
       ctrl.showManifest();

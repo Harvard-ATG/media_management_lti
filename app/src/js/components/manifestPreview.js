@@ -96,7 +96,7 @@ angular.module('media_manager')
           ctrl.errorMsg = "The HTTP request failed. Timed out or missing/misconfigured CORS HTTP headers.";
           break;
         default:
-          ctrl.errorMsg = "There is a problem loading the manifest.";
+          ctrl.errorMsg = "Failed to load manifest. Reason unknown.";
           break;
       }
       return false;
