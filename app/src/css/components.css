@@ -87,6 +87,13 @@
 }
 
 /*********************************************************************/
+/* COMPONENT: collectionEditManifest */
+
+.collectioneditmanifest__input {
+  width: 100%;
+}
+
+/*********************************************************************/
 /* COMPONENT: manifestPreview */
 
 .manifestpreview__exampleurl {
@@ -110,11 +117,19 @@
   margin-right: 10px;
   max-width: 100px;
 }
+.manifestpreview__image {
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+.manifestpreview__image:hover:not(.manifestpreview__image--selected) {
+  border-bottom: 5px solid green;
+  margin-bottom: 0;
+}
 .manifestpreview__image--small {
   max-width: 100px;
 }
 .manifestpreview__image--selected {
-  border: 5px solid red;
+  border: 5px solid green;
   padding: 5px;
 }
 /*********************************************************************/

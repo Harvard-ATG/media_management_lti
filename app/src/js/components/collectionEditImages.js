@@ -6,8 +6,7 @@ angular.module('media_manager')
     isLoading: "<",
     iiifUrl: "<",
     onRemoveImage: "&",
-    onChangeOrder: "&",
-    onOpen: "&"
+    onChangeOrder: "&"
   },
   controller: ['$log', '$location', function($log, $location)  {
     var ctrl = this;
@@ -16,10 +15,6 @@ angular.module('media_manager')
     ctrl.goToImageView = function(image) {
       $log.log('goToImageView', image);
       $location.path('/image/' + image.course_image_id);
-    };
-
-    ctrl.openCollection = function() {
-      ctrl.onOpen();
     };
 
     ctrl.removeImage = function(image) {

@@ -63,6 +63,7 @@ angular.module('media_manager')
       }
 
       ctrl.manifest = response.data;
+      ctrl.pageEnd = ctrl.pageSize;
       ctrl.images = ctrl.processCanvases(ctrl.manifest, ctrl.canvasId);
       ctrl.displayCurrentImages();
 
@@ -112,7 +113,7 @@ angular.module('media_manager')
           'Accept': 'application/json, application/ld+json'
         },
         cache: true,
-        timeout: 5000
+        timeout: 3000
       };
 
       ctrl.resetErrors();
@@ -120,6 +121,7 @@ angular.module('media_manager')
       $http.get(url, config)
         .then(ctrl.handleManifestSuccess, ctrl.handleManifestError)
         .then(ctrl.resetLoading, ctrl.resetLoading)
+        .then(null, ctrl.resetImages);
     };
 
     ctrl.selectCanvas = function(image) {
@@ -152,6 +154,11 @@ angular.module('media_manager')
       ctrl.hasNextImages = (ctrl.images.length > ctrl.displayImages.length);
       ctrl.pageEnd = end;
     };
+    
+    ctrl.displayAllImages = function() {
+      ctrl.pageEnd = ctrl.images.length;
+      ctrl.displayCurrentImages();
+    };
 
     ctrl.resetErrors = function() {
       ctrl.hasError = false;
@@ -162,6 +169,12 @@ angular.module('media_manager')
     ctrl.resetLoading = function() {
       ctrl.isLoading = false;
       return ctrl;
+    };
+
+    ctrl.resetImages = function() {
+      ctrl.images = [];
+      ctrl.pageEnd = ctrl.pageSize;
+      ctrl.displayCurrentImages();
     };
 
     ctrl.$onInit = function() {

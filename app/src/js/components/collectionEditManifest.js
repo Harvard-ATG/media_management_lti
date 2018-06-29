@@ -4,7 +4,8 @@ angular.module('media_manager')
   bindings: {
     collection: '<',
     onChange: '&',
-    onOpen: '&'
+    onOpen: '&',
+    onError: '&'
   },
   controller: ['$log', function($log) {
     var ctrl = this;
@@ -12,13 +13,14 @@ angular.module('media_manager')
     ctrl.validateManifest = function() {
       ctrl.hasError = false;
       ctrl.errorMsg = "";
-
-      var isHttps = /^https:\/\//.test(ctrl.manifestUrl);
-      if(!isHttps) {
+      var isEmpty = ctrl.manifestUrl.trim() === "";
+      var isHttps = /^https:\/\/[^/]+/.test(ctrl.manifestUrl);
+      if(!isEmpty && !isHttps) {
         ctrl.errorMsg = "The manifest URL must start with https://";
         ctrl.hasError = true;
       }
-      $log.log("validateManifest", ctrl.errorMsg, ctrl.hasError, ctrl.manifestUrl);
+      ctrl.preview();
+      ctrl.onError({ '$event': ctrl.hasError });
     };
 
     ctrl.selectManifest = function() {
@@ -33,7 +35,7 @@ angular.module('media_manager')
 
     ctrl.update = function() {
       ctrl.save();
-      ctrl.showManifest();
+      ctrl.preview();
     };
 
     ctrl.save = function() {
@@ -41,8 +43,8 @@ angular.module('media_manager')
       ctrl.onChange({ '$event': data });
     };
 
-    ctrl.showManifest = function() {
-      ctrl.previewEnabled = !!ctrl.manifestUrl;
+    ctrl.preview = function() {
+      ctrl.previewEnabled = (ctrl.manifestUrl !== "" && !ctrl.hasError);
     };
 
     ctrl.openCollection = function() {
@@ -55,7 +57,7 @@ angular.module('media_manager')
       ctrl.errorMsg = "";
       ctrl.manifestUrl = ctrl.collection.iiif_custom_manifest_url;
       ctrl.canvasId = ctrl.collection.iiif_custom_canvas_id;
-      ctrl.showManifest();
+      ctrl.preview();
     };
 
     ctrl.$onChanges = function(changes) {
@@ -65,7 +67,7 @@ angular.module('media_manager')
         change = changes.collection;
         ctrl.manifestUrl = change.currentValue.iiif_custom_manifest_url;
         ctrl.canvasId = change.currentValue.iiif_custom_canvas_id;
-        ctrl.showManifest();
+        ctrl.preview();
       }
     };
   }]

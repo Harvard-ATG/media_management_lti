@@ -134,10 +134,14 @@ angular.module("media_manager").component("appCollectionEdit",  {
       ctrl.updateManifest = function(data) {
         $log.log("updateManifest", data);
 
-        ctrl.collection.iiif_custom_manifest_url = data.manifestUrl || "";
-        ctrl.collection.iiif_custom_canvas_id = data.canvasId || "";
+        ctrl.collection.iiif_custom_manifest_url = (data.manifestUrl || "").trim();
+        ctrl.collection.iiif_custom_canvas_id = (data.canvasId || "").trim();
 
         ctrl.saveCollection();
+      };
+
+      ctrl.handleManifestError = function(hasError) {
+        ctrl.isManifestUrlValid = !hasError ;
       };
 
       ctrl.updateCollectionInfo = function() {
@@ -155,6 +159,16 @@ angular.module("media_manager").component("appCollectionEdit",  {
         $location.path('/mirador/' + ctrl.collectionId);
       };
 
+      ctrl.canOpenCollection = function() {
+        var result = false;
+        if(ctrl.isContentImages) {
+          result = ctrl.isManifestUrlValid && ctrl.collection.images.length > 0;
+        } else if(ctrl.isContentManifest) {
+           result = ctrl.isManifestUrlValid && ctrl.collection.iiif_custom_manifest_url;
+        }
+        return result;
+      };
+
       // Component Lifecycle
       ctrl.$onInit = function() {
         ctrl.initialized = false;
@@ -167,6 +181,7 @@ angular.module("media_manager").component("appCollectionEdit",  {
         ctrl.contentSource = null;
         ctrl.isContentImages = false;
         ctrl.isContentManifest = false;
+        ctrl.isManifestUrlValid = true;
 
         var collection = ctrl.getCollection(ctrl.collectionId);
         collection.$promise.then(function() {
