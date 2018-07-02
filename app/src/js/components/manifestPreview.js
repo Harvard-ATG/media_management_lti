@@ -113,7 +113,7 @@ angular.module('media_manager')
           'Accept': 'application/json, application/ld+json'
         },
         cache: true,
-        timeout: 3000
+        timeout: 5000
       };
 
       ctrl.resetErrors();
