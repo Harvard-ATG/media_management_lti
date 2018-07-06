@@ -153,6 +153,12 @@ angular.module('media_manager')
     }
     return false;
   };
+  this.updateCollection = function(collection) {
+    var cached_collection = this.getCollectionById(collection.id);
+    if(cached_collection) {
+       angular.copy(collection, cached_collection);
+    }
+  };
   this.getImageById = function(id){
     var that = this;
     if(that.images.length === 0){

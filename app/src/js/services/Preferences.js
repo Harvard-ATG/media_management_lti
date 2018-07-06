@@ -3,7 +3,8 @@ angular.module('media_manager').service('Preferences', function() {
     var default_prefs = {
         ui: {
             workspace: {
-                layout: "gallery"
+                layout: "gallery",
+                _values: ["gallery", "list"]
             }
         }
     };
@@ -47,7 +48,14 @@ angular.module('media_manager').service('Preferences', function() {
                 k = path[i];
                 obj = obj[k] || {};
             }
-            obj[path[path.length-1]] = value;
+            k = path[path.length-1];
+            if(obj.hasOwnProperty("_values")) {
+                if(obj._values.indexOf(value) < 0) {
+                    console.log("Invalid preference value", value, " in ", obj);
+                    throw new Error("Invalid preference value: " + value);
+                }
+            }
+            obj[k] = value;
         }
     };
     

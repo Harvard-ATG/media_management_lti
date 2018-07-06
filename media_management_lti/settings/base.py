@@ -226,10 +226,10 @@ LOGGING = {
     },
 }
 
-# Add LTI configuration settings (for django-app-lti)
+# Add LTI configuration settings
 LTI_SETUP = {
     "TOOL_TITLE": "Media Manager",
-    "TOOL_DESCRIPTION": "Management of Medias",
+    "TOOL_DESCRIPTION": "Create and display image collections using Mirador.",
     "LAUNCH_URL": "media_manager:lti_launch",
     "LAUNCH_REDIRECT_URL": "media_manager:index",
     "EXTENSION_PARAMETERS": {

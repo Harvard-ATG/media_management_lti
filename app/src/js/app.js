@@ -42,6 +42,11 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     controllerAs: 'er'
   })
 }])
+.config(['$logProvider', function($logProvider) {
+  var debugEnabled = true;
+  console.log("debugEnabled:", debugEnabled);
+  $logProvider.debugEnabled(debugEnabled);
+}])
 .filter("asDate", function () {
     return function (input) {
         return new Date(input);

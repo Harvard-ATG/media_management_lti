@@ -14,6 +14,7 @@ from media_manager.lti import LTILaunch
 from media_manager.mixins import JsonMixin
 from media_manager.decorators import require_permission
 
+import copy
 import logging
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ class CourseViewHelper(object):
     def __init__(self, request):
         self.request = request
         self.lti_launch = LTILaunch(request)
-        self.course_service = CourseService(self.lti_launch)
+        self.course_service = CourseService.from_request(request)
         self.course_object = None
 
     def get_course_object(self):
@@ -181,19 +182,27 @@ class MiradorView(PageView):
     See also:
         - http://www.projectmirador.org
         - https://github.com/ProjectMirador/mirador
+        - https://github.com/ProjectMirador/mirador/wiki/Complete-Configuration-API
     '''
     def __init__(self, request, collection_id):
         self.collection_id = collection_id
         super(MiradorView, self).__init__(request)
 
     def render(self):
-        manifest_uri = "{base_url}/collections/{collection_id}/manifest"
-        manifest_uri = manifest_uri.format(base_url=settings.MEDIA_MANAGEMENT_API_URL, collection_id=self.collection_id)
+        course_service = CourseService.from_request(self.request)
+        collection = course_service.get_collection(self.collection_id)
+        manifest = collection.get('iiif_manifest', {})
         config = {
-            "data": [{"manifestUri": manifest_uri, "location": "Harvard University"}]
+            "data": [{
+                "manifestUri": manifest.get('url', ''),
+                "location": manifest.get('location', '')
+            }],
+            "canvasID": manifest.get('canvas_id', ''),
+            "metadataPluginEnabled": manifest.get('source') == 'images',
         }
+
         context = {
-            "miradorConfig": self.to_json(config)
+            "miradorConfig": self.to_json(config),
         }
         return render(self.request, 'mirador.html', context=context)
 
@@ -232,9 +241,9 @@ class LTIToolConfigView(View):
         url = base_url + reverse(self.LAUNCH_URL, exclude_resource_link_id=True)
         return url
 
-    def set_ext_params(self, lti_tool_config):
+    def get_extension_params(self):
         '''
-        Sets extension parameters on the ToolConfig() instance.
+        Gets extension parameters on the ToolConfig() instance.
         This includes canvas-specific things like the course_navigation and privacy level:
 
         {
@@ -245,14 +254,22 @@ class LTIToolConfigView(View):
                     "default": "disabled",
                     "text": "MY tool",
                 }
+                "custom_fields": {
+                    "key1": "value1",
+                    "key2": "value2",
+                }
             }
         }
         '''
-        EXT_PARAMS = self.EXTENSION_PARAMETERS
-        for ext_key in EXT_PARAMS:
-            for ext_param in EXT_PARAMS[ext_key]:
-                ext_value = EXT_PARAMS[ext_key][ext_param]
-                lti_tool_config.set_ext_param(ext_key, ext_param, ext_value)
+        result = {}
+        for ext_key in self.EXTENSION_PARAMETERS:
+            result[ext_key] = {}
+            for ext_param in self.EXTENSION_PARAMETERS[ext_key]:
+                ext_value = self.EXTENSION_PARAMETERS[ext_key][ext_param]
+                if ext_param == 'course_navigation' and self.request.GET.get('course_navigation', 'yes') == 'no':
+                    continue
+                result[ext_key][ext_param] = ext_value
+        return result
 
     def get_tool_config(self):
         '''Returns an instance of ToolConfig()'''
@@ -266,7 +283,13 @@ class LTIToolConfigView(View):
     def get(self, request):
         ''' Returns the LTI tool configuration as XML'''
         lti_tool_config = self.get_tool_config()
-        self.set_ext_params(lti_tool_config)
+        ext_params = self.get_extension_params()
+
+        for ext_key in ext_params:
+            for ext_param in ext_params[ext_key]:
+                ext_value = ext_params[ext_key][ext_param]
+                lti_tool_config.set_ext_param(ext_key, ext_param, ext_value)
+
         return HttpResponse(lti_tool_config.to_xml(), content_type='text/xml', status=200)
 
 

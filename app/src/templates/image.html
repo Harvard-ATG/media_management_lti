@@ -28,7 +28,7 @@
         <h4>{{ ic.CourseCache.current_image.title || "Untitled" }}</h4>
       </div>
       <div class="col-md-12 text-center" style="height: 400px;">
-        <img style="display: block;margin: auto; max-width: 100%; max-height: 100%;" ng-src="{{ ic.CourseCache.current_image.image_url }}"/>
+        <img style="cursor: pointer; display: block;margin: auto; max-width: 100%; max-height: 100%;" ng-src="{{ ic.current_image_url }}" ng-click="ic.openFullImage(ic.current_image)" />
       </div>
       <div class="col-md-12 text-center">
         <p>{{ic.CourseCache.current_image.description||'No Description'}}</p>

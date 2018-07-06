@@ -9,6 +9,14 @@ angular.module('media_manager')
       'update': {
         method:'PUT',
         headers: headers
+      },
+      'get': {
+        method: 'GET',
+        headers: headers
+      },
+      'delete': {
+        method: 'DELETE',
+        headers: headers
       }
     }
   );

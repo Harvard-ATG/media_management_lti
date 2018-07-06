@@ -6,6 +6,7 @@ sqlnet.log
 *.pyc
 *.pot
 .vagrant
+.idea
 *.sqlite3
 pyenv
 # Generated files

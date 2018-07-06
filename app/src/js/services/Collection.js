@@ -20,6 +20,11 @@ angular.module('media_manager')
         headers: headers,
         url: host + '/collections/:id'
       },
+      'delete': {
+        method: 'DELETE',
+        headers: headers,
+        url: host + '/collections/:id'
+      },
       'saveImages': {
         method: 'POST',
         headers: headers,

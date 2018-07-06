@@ -1,0 +1,138 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title library__panel-title">Image Library</h3>
+  </div>
+  <div class="panel-body">
+
+    <div ng-show="$ctrl.isLoading.status" style="position:relative">
+      <span us-spinner="{top:0,left:'50%'}"></span>
+    </div>
+
+    <button type="button" class="btn btn-primary" ng-click="$ctrl.hideAddImage = !$ctrl.hideAddImage">
+      <span ng-if="$ctrl.hideAddImage">Add Images to Library</span>
+      <span ng-if="!$ctrl.hideAddImage">Hide Image Uploading</span>
+    </button>
+
+    <div uib-collapse="$ctrl.hideAddImage" class="library__container-addimages"">
+      <h5>Choose images to upload to the library or add from the web (limit 200 MB).
+        JPG, PNG, GIF, and TIF images supported.</h5>
+      <section class="droplet image-library" ng-class="{ uploading: $ctrl.Droplet.interface.isUploading() }">
+
+        <notifications topic="'library'"></notifications>
+
+        <div class="library-buttons">
+          <label for="library__input-uploadimages" class="library__button" ng-click="$ctrl.addImageSource = 'file'">
+              <i class="glyphicon glyphicon-upload"></i> Upload images
+          </label>
+          <button class="library__button" ng-click="$ctrl.addImageSource = 'web'">
+              <i class="glyphicon glyphicon-link"></i> Add image from web
+          </button>
+        </div>
+
+        <div class="library__container-files-upload" ng-show="$ctrl.addImageSource == 'file'">
+          <droplet ng-model="$ctrl.Droplet.interface">
+            <droplet-upload-multiple id="library__input-uploadimages" ng-model="$ctrl.Droplet.interface"></droplet-upload-multiple>
+            <ul class="library__list-files-upload files files-queued">
+                <li ng-repeat="model in $ctrl.Droplet.interface.getFiles($ctrl.Droplet.interface.FILE_TYPES.VALID)" uib-tooltip="{{model.file.name}}">
+                    <droplet-preview ng-model="model" ng-show="model.isImage()"></droplet-preview>
+                    <droplet-preview-zip ng-model="model" ng-if="model.extension == 'zip'"></droplet-preview-zip>
+                    <div class="delete" ng-click="model.deleteFile()">&times;</div>
+                </li>
+            </ul>
+            <p>The image name of the uploaded files can be edited after the images are uploaded to the library.</p>
+            <input type="button" class="btn btn-primary" value="Upload" ng-disabled="$ctrl.Droplet.interface.isUploading() || $ctrl.fileStats.filesToUpload == 0" ng-click="$ctrl.Droplet.uploadFiles()" />
+            <label>Number of files to upload:</label> {{$ctrl.fileStats.filesToUpload}} <i ng-if="$ctrl.fileStats.fileUploadSize > 0">({{$ctrl.fileStats.fileUploadSize}} MB)</i>
+          </droplet>
+        </div>
+
+        <div class="library__container-web-images" ng-show="$ctrl.addImageSource == 'web'">
+          <form name="webimage">
+            <div class="form-group">
+              <label for="webimageurl">URL:</label>
+              <input ng-model="$ctrl.webimage.url" id="webimageurl" name="url" ng-pattern="/^https?:\/\//" type="text" placeholder="Enter URL to web image" class="form-control">
+              {{$ctrl.webimage.url.$valid}}
+            </div>
+            <div class="form-group">
+              <label for="webimagetitle">Title:</label>
+              <input ng-model="$ctrl.webimage.title" id="webimagetitle" name="title" type="text" placeholder="Enter a title for the image (optional)" class="form-control">
+            </div>
+            <div class="form-group" ng-if="$ctrl.webimage.url != ''">
+              <label for="webimagepreview" class="preview">Preview:</label>
+              <webimage img="$ctrl.webimage">
+            </div>
+            <div class="form-group">
+              <button id="webimage-btn" class="btn btn-primary" ng-disabled="!webimage.url.$valid || webimage.url.$viewValue.length == 0" ng-click="$ctrl.onClickSubmitWebImage()">Add from web</button>
+            </div>
+          </form>
+        </div>
+
+      </section>
+    </div>
+
+    <h4>
+      {{ $ctrl.courseImages.length || 'No' }} images in this library
+    </h4>
+
+    <div ng-if="$ctrl.courseImages.length > 0">
+      <div style="margin-top: 20px">
+          <div class="btn-group pull-left" uib-dropdown>
+              <button id="sort_images_button" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                Sort Images <span class="caret"></span>
+              </button>
+              <ul uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                  <li role="menuitem" ng-repeat="choice in $ctrl.sortChoices">
+                      <a href="javascript:;" ng-click="$ctrl.onClickSortLibrary($event, choice)">{{choice.label}}</a>
+                  </li>
+              </ul>
+          </div>
+          <div class="pull-left" style="margin-left: 20px;">
+              Layout:
+              <div class="btn-group" role="group" aria-label="layout">
+                <button class="btn btn-default" ng-click="$ctrl.setLayoutGallery()" ng-class="{'active':$ctrl.isLayoutGallery}">Gallery</button>
+                <button class="btn btn-default" ng-click="$ctrl.setLayoutList()" ng-class="{'active':$ctrl.isLayoutList}">List</button>
+              </div>
+          </div>
+      </div>
+
+      <div style="clear:both; padding: 10px;">
+          <ul class="files list-inline" ng-class="{'hidden':!$ctrl.isLayoutGallery}">
+            <li class="droplet-thumb" ng-repeat="courseImage in $ctrl.courseImages track by $index">
+              <droplet-thumb ng-model="courseImage"></droplet-thumb>
+              <div ng-show="!$ctrl.inCollection(courseImage)" class="overlay" ng-click="$ctrl.addToCollection(courseImage)">+</div>
+              <div ng-show="$ctrl.inCollection(courseImage)" class="overlay overlay-stay">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+              </div>
+              <div class="resize-overlay" ng-click="$ctrl.goToImageView(courseImage)">
+                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              </div>
+            </li>
+          </ul>
+          <table class="library__table" ng-class="{'hidden':!$ctrl.isLayoutList}" aria-hidden="true">
+              <thead>
+                  <tr>
+                      <th>Image</th>
+                      <th>Title</th>
+                      <th>Date Uploaded</th>
+                      <th style="width:90px">Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr ng-repeat="courseImage in $ctrl.courseImages track by $index">
+                      <td><droplet-thumb ng-model="courseImage"></droplet-thumb></td>
+                      <td><span uib-tooltip="{{courseImage.title}}">{{courseImage.title | ellipsit:"12"}}</span></td>
+                      <td><span uib-tooltip='{{courseImage.created | asDate | date:"MM/dd/yy @ h:mma"}}'>{{courseImage.created | asDate | date:"MM/dd/yyyy"}}</td>
+                      <td style="white-space:nowrap;">
+                        <button class="btn btn-default" ng-click="$ctrl.goToImageView(courseImage)" uib-tooltip="Edit Image">
+                          <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                        </button>
+                        <button ng-disabled="$ctrl.inCollection(courseImage)" class="btn btn-primary" ng-click="$ctrl.addToCollection(courseImage)" uib-tooltip="Add to Collection">
+                          <span ng-show="!$ctrl.inCollection(courseImage)" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                          <span ng-show="$ctrl.inCollection(courseImage)" class="glyphicon glyphicon-ok" aria-hidden="true" uib-tooltip="Already in Collection"></span>
+                        </button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+    </div>
+</div>
