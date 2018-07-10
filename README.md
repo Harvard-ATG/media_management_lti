@@ -31,11 +31,13 @@ $ open http://localhost:8080
 Note that the _web_ service talks to the [media_management_api](https://github.com/Harvard-ATG/media_management_api) 
 _web_ service on the same network. 
 
-**Building angularjus using gulp:**
+**Build javascript (e.g. angularjs):**
 
-[Gulp](https://gulpjs.com/) is a tool to build the angularjs code in the `app/` directory. A docker container can be used
-to install NodeJS and its associated dependencies and then execute gulp commands. The result of the gulp command (e.g. the build), 
-can be saved by means of mounting the app directory as a volume. See example below:
+The final step is to build the [angularjs](https://angularjs.org/) client code stored in the `app/` directory. 
+
+In order to do this, it's necessary to use [gulp](https://gulpjs.com/), a NodeJS build tool, and run the `gulp build`
+command in the `app/` directory. Rather than installing a gulp locally, the commands below build a docker container
+expressly for that purpose and then execute the necessary command(s).
 
 ```
 $ cd app
@@ -45,8 +47,11 @@ $ docker run --rm -v `pwd`:/code gulp gulp build
 $ docker run --rm -v `pwd`:/code gulp gulp watch
 ```
 
-Note that the `--rm` flag is used to remove the container after the command is executed since the result of the command is saved
+Notes:
+
+- The `--rm` flag is used to remove the container after the command is executed since the result of the command is saved
 to the volume that was mounted (e.g. current directory).
+- The `-v` flag mounts the app directory so that the build is saved outside of the container.
 
 **Other tasks:**
 
