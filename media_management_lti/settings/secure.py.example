@@ -19,7 +19,7 @@ SECURE_SETTINGS = {
         "client_secret": "",
     },
 
-    'media_management_api_url': 'http://localhost:8000/api',
+    'media_management_api_url': 'http://media-management-api.localhost:8000/api',
 
     'google_analytics_tracking_id': None,
 }

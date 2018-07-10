@@ -4,6 +4,8 @@ services:
     image: redis
   db:
     image: postgres
+    ports:
+      - "8081:5432"
     environment:
       POSTGRES_USER: media_management_lti
       POSTGRES_PASSWORD: media_management_lti
@@ -22,8 +24,8 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: media_management_lti.settings.local
     networks:
-      - default
-      - public
+      default:
+      public:
 networks:
   public:
     external:
