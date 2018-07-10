@@ -19,6 +19,10 @@ A media management application for collecting and maintaining media in online co
 $ cp media_management_lti/settings/secure.py.example media_management_lti/settings/secure.py
 ```
 
+Note that you need to create API credentials on the [media_management_api](https://github.com/Harvard-ATG/media_management_api) 
+admin interface and then update the `secure.py` with the `client_id/client_secret`. This is used by the LTI tool to obtain
+API tokens for end-users.
+
 **Start docker services:**
 
 ```
