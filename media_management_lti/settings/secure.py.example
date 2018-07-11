@@ -10,13 +10,16 @@ SECURE_SETTINGS = {
     'db_default_name': 'media_management_lti',
     'db_default_user': 'media_management_lti',
     'db_default_password': 'media_management_lti',
-    'media_management_api_url': 'http://localhost:8000/api',
+    'db_default_host': 'db',
+    'redis_host': 'redis',
 
     # These credentials must be manually created/obtained from the API.
     'media_management_api_credentials': {
         "client_id": "",
         "client_secret": "",
     },
+
+    'media_management_api_url': 'http://media-management-api.localhost:8000/api',
 
     'google_analytics_tracking_id': None,
 }

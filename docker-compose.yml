@@ -1,0 +1,32 @@
+version: '3'
+services:
+  redis:
+    image: redis
+  db:
+    image: postgres
+    ports:
+      - "8081:5432"
+    environment:
+      POSTGRES_USER: media_management_lti
+      POSTGRES_PASSWORD: media_management_lti
+      POSTGRES_DB: media_management_lti
+  web:
+    build: .
+    image: harvard-atg/media_management_lti:dev
+    command: ["./wait-for-it.sh", "db:5432", "--", "python", "manage.py", "runserver", "0.0.0.0:8080"]
+    volumes:
+      - .:/code
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DJANGO_SETTINGS_MODULE: media_management_lti.settings.local
+    networks:
+      default:
+      public:
+networks:
+  public:
+    external:
+      name: media_management_api_public
