@@ -8,7 +8,7 @@ body {
   top: 76px;
 }
 .break-word {
-  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .row.search {
