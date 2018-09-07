@@ -130,6 +130,7 @@ angular.module('media_manager')
         {'label': 'Newest to Oldest', 'name': 'created', 'dir': 'desc'},
         {'label': 'Oldest to Newest', 'name': 'created', 'dir': 'asc'},
         {'label': 'Title', 'name': 'title', 'dir': 'asc'},
+        {'label': 'Default Order', 'name': 'sort_order', 'dir': 'asc'},
       ];
 
       ctrl.courseImages = ctrl.getCourseImages();
