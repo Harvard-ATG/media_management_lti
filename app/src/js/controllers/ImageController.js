@@ -53,7 +53,7 @@ angular.module('media_manager')
     ic.current_image          = CourseCache.images[index];
 
     if(ic.current_image.image_width < 400) {
-      ic.current_image_small_url = ic.current_image.iiif_base_url + '/full/full/0/default.jpg';
+      ic.current_image_url = ic.current_image.iiif_base_url + '/full/full/0/default.jpg';
     } else {
       ic.current_image_url = ic.current_image.iiif_base_url + '/full/400,/0/default.jpg';
     }

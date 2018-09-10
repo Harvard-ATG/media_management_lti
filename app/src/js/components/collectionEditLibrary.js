@@ -9,6 +9,31 @@ angular.module('media_manager')
     var ctrl = this;
     var LOOKUP_SELECTED = {};
 
+    ctrl.filterByTitle = function(query) {
+      if(!query) {
+        return function() { return true; };
+      }
+      query = query.trim().toLowerCase();
+      return function(obj) {
+        var title = obj.title.toLowerCase();
+        return title.indexOf(query) !== -1;
+      };
+    };
+
+    ctrl.filterImages = function(query) {
+      var valid_query = (typeof query === "string" && query.trim().length > 0);
+      if(valid_query) {
+        ctrl.filteredCourseImages = ctrl.courseImages.filter(ctrl.filterByTitle(query));
+      } else {
+        ctrl.filteredCourseImages = ctrl.courseImages.slice(0);
+      }
+    };
+
+    ctrl.resetFilter = function() {
+      ctrl.imagequery = '';
+      ctrl.filterImages(null);
+    };
+
     ctrl.getCourseImages = function() {
       var images =  CourseCache.images || [];
       return images.filter(ctrl.courseImageHasUrl);
@@ -27,6 +52,7 @@ angular.module('media_manager')
 
     ctrl.updateCourseImages = function() {
       ctrl.courseImages = ctrl.getCourseImages(); // break old reference so component detects the change
+      ctrl.filterImages(ctrl.imagequery);
     };
 
     ctrl.updateLayout = function(layout) {
@@ -127,14 +153,15 @@ angular.module('media_manager')
       ctrl.fileStats = {filesToUpload: 0, fileUploadSize: 0};
       ctrl.webimage = {title: "", url:""};
       ctrl.sortChoices = [
+        {'label': 'Default Order', 'name': 'sort_order', 'dir': 'asc'},
         {'label': 'Newest to Oldest', 'name': 'created', 'dir': 'desc'},
         {'label': 'Oldest to Newest', 'name': 'created', 'dir': 'asc'},
         {'label': 'Title', 'name': 'title', 'dir': 'asc'},
-        {'label': 'Default Order', 'name': 'sort_order', 'dir': 'asc'},
       ];
 
       ctrl.courseImages = ctrl.getCourseImages();
-      ctrl.sortLibrary(ctrl.sortChoices[0]);
+      ctrl.filteredCourseImages = ctrl.courseImages;
+      ctrl.sortLibrary(ctrl.sortChoices[1]);
       ctrl.updateLayout(Preferences.get(Preferences.UI_WORKSPACE_LAYOUT));
 
       $log.log("initialized collectionEditLibrary", ctrl);
