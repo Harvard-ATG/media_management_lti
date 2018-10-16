@@ -1,4 +1,5 @@
 # Image Media Manager (IMM)
+
 A media management application for collecting and maintaining media in online course environments. This application supports the IIIF standard for image management, and seamlessly integrates with other applications such as Mirador and LTI-compliant learning management systems like Canvas and edX.
 
 
@@ -10,18 +11,24 @@ A media management application for collecting and maintaining media in online co
 
 **Prerequisites:**
 
-- Ensure [docker](https://www.docker.com/) is installed.
-- Ensure [media_management_api](https://github.com/Harvard-ATG/media_management_api) docker services are up and running.
+The following components are required for running this LTI tool:
 
-**Configure django:**
+1. [media_management_api](https://github.com/Harvard-ATG/media_management_api): API backend for storing and managing data
+2. [loris](https://github.com/harvard-atg/loris): Image server for delivering images from an S3 bucket
+3. An AWS S3 bucket that the API can write to and Loris can read from. 
+
+To proceed with this quickstart, ensure that you have [docker](https://www.docker.com/) installed and that those components are configured appropriately. 
+
+**Configure LTI django application:**
+
+- Setup the secure settings:
 
 ```
 $ cp media_management_lti/settings/secure.py.example media_management_lti/settings/secure.py
 ```
 
-Note that you need to create API credentials on the [media_management_api](https://github.com/Harvard-ATG/media_management_api) 
-admin interface and then update the `secure.py` with the `client_id/client_secret`. This is used by the LTI tool to obtain
-API tokens for end-users.
+- Generate API credentials on the [media_management_api](https://github.com/Harvard-ATG/media_management_api)  admin interface
+- Update `media_management_lti/settings/secure.py` with the client_id and client_secret that were generated. These API credentials are used to obtain API tokens for end-users.
 
 **Start docker services:**
 
