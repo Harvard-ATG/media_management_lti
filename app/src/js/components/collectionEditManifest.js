@@ -1,6 +1,6 @@
 angular.module('media_manager')
 .component('appCollectionEditManifest', {
-  templateUrl: '/static/app/templates/collectionEditManifest.html',
+  templateUrl: '/static/app/templates/components/collectionEditManifest.html',
   bindings: {
     collection: '<',
     onChange: '&',

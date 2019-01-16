@@ -1,0 +1,61 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Course Details</h3>
+  </div>
+  <div class="panel-body">
+    <b>Title:</b> {{ $ctrl.course.title }}<br>
+    <b>SIS ID:</b> {{ $ctrl.course.sis_course_id }}<br>
+    <b>LTI Context:</b> {{ $ctrl.course.lti_context_id }}<br>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Import Course Content</h3>
+  </div>
+  <div class="panel-body">
+    <div class="import-course-search" style="margin: 0 0 1em 0;">
+      Search courses by SIS ID or title:
+      <input type="text" name="import_course_search" ng-model="$ctrl.import_course_value" style="min-width: 250px;">
+      <button role="button" class="btn btn-primary" ng-click="$ctrl.importCourseContent()">Import Course</button>
+      <a role="button" class="btn btn-default" href="#/">Cancel</a>
+    </div>
+    <table class="table table-condensed" ng-show="$ctrl.courseCopyList">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>SIS ID</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="courseCopy in $ctrl.courseCopyList">
+          <td>{{ courseCopy.source.title }}</td>
+          <td>{{ courseCopy.source.sis_course_id }}</td>
+          <td>{{ courseCopy.created }}</td>
+          <td>{{ courseCopy.state }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-danger" ng-click="$ctrl.confirmDeleteImports = true">Clear Import Results</button>
+    <app-confirm-delete ng-show="$ctrl.confirmDeleteImports" on-confirm="$ctrl.deleteImports()" on-cancel="$ctrl.confirmDeleteImports = false" msg="Click OK to confirm that you would like to clear import records, otherwise click Cancel."></app-confirm-delete>
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Delete Course Content</h3>
+  </div>
+  <div class="panel-body">
+    <button class="btn btn-danger" style="display:block;" ng-click="$ctrl.confirmDeleteCollections = true" style="margin-bottom: 1em">Permanently Delete Collections</button>
+    <app-confirm-delete ng-show="$ctrl.confirmDeleteCollections" on-confirm="$ctrl.deleteCollections()" on-cancel="$ctrl.confirmDeleteCollections = false" msg="Click OK to confirm that you would like to permanently delete collections, otherwise click Cancel."></app-confirm-delete>
+
+    <button class="btn btn-danger" style="display:block; margin-top: 1em;" ng-click="$ctrl.confirmDeleteImages = true" style="margin-bottom: 1em">Permanently Delete Images</button>
+    <app-confirm-delete ng-show="$ctrl.confirmDeleteImages" on-confirm="$ctrl.deleteImages()" on-cancel="$ctrl.confirmDeleteImages = false" msg="Click OK to confirm that you would like to permanently delete images, otherwise click Cancel."></app-confirm-delete>
+
+  </div>
+</div>
+
+<a href="#/">Return to home page</a>

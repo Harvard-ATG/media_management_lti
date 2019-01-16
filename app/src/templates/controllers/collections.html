@@ -3,7 +3,7 @@
 
 <div class="row search">
   <a ng-if="lc.canEdit" class="btn btn-primary" ng-click="lc.createCollection()">+ New Collection</a>
-  <input ng-model="query" type="text" name="query" class="form-control" placeholder="Search for Collection" aria-label="Search for Collection" />
+  <a ng-if="lc.canEdit" ng-href="#!/settings" class="btn btn-default pull-right">Settings</a>
 </div>
 
 <span us-spinner="{top:200}" spinner-on="lc.isLoadingCollections.status"></span>

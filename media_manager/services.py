@@ -49,7 +49,16 @@ class CourseService(object):
         found = api.search_courses(course_identifiers)
         if len(found) == 0:
             logger.info("Search returned no results, so creating course.")
-            data = api.create_course(self.lti_launch.get_context_title(), course_identifiers)
+            data = api.create_course({
+                "title": self.lti_launch.get_context_title(),
+                "sis_course_id": self.lti_launch.get_sis_course_id(),
+                "lti_custom_canvas_course_id": self.lti_launch.get_canvas_course_id(),
+                "lti_context_id": self.lti_launch.get_context_id(),
+                "lti_tool_consumer_instance_guid": self.lti_launch.get_tool_consumer_instance_guid(),
+                "lti_context_title": self.lti_launch.get_context_title(),
+                "lti_context_label": self.lti_launch.get_context_label(),
+                "lti_tool_consumer_instance_name": self.lti_launch.get_tool_consumer_instance_name(),
+            })
             api_course_id = data['id']
         elif len(found) == 1:
             api_course_id = found[0]['id']
@@ -136,37 +145,30 @@ class APIService(object):
 
         logger.info("API: instance base_url=%s headers=%s" % (self.base_url, self.headers))
 
-    def search_courses(self, course_identifiers):
+    def search_courses(self, params):
         '''
-        Searches the /courses endpoint for a course with matching course identifiers. Expects
-        the course_identifiers to be a dictionary with the following keys:
-
-            - lti_context_id : the LTI launch parameter "context_id"
-            - lti_tool_consumer_instance_guid : the LTI launch parameter "tool_consumer_instance_guid"
+        Searches the /courses endpoint for a course using the provided query params.
         '''
         url = "%s/courses" % self.base_url
-        params = course_identifiers.copy()
-
         logger.info("API: request url: %s params: %s" % (url, params))
 
         r = requests.get(url, headers=self.headers, params=params)
         if r.status_code != 200:
-            logger.info("API: no such course exists with course identifiers: %s" % course_identifiers)
+            logger.info("API: no courses found with params: %s" % params)
             return []
 
         return r.json()
 
-    def create_course(self, title, course_identifiers):
+    def create_course(self, post_data):
         '''
         Creates a new course at the /courses endpoint.
         '''
         url = "%s/courses" % self.base_url
 
-        post_data = {}
-        post_data.update({"title": title})
-        post_data.update(course_identifiers)
-
-        logger.info("API: request url: %s post data: %s" % (url, post_data))
+        required = ('title', 'lti_context_id', 'lti_tool_consumer_instance_guid', 'sis_course_id')
+        for field in required:
+            if field not in post_data:
+                raise Exception("API: missing required field: %s" % field)
 
         r = requests.post(url, headers=self.headers, data=json.dumps(post_data))
         if r.status_code < 200 or r.status_code > 201:

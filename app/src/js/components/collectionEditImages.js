@@ -1,6 +1,6 @@
 angular.module('media_manager')
 .component('appCollectionEditImages', {
-  templateUrl: '/static/app/templates/collectionEditImages.html',
+  templateUrl: '/static/app/templates/components/collectionEditImages.html',
   bindings: {
     images: "<",
     isLoading: "<",

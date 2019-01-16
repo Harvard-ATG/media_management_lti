@@ -1,6 +1,6 @@
 angular.module('media_manager')
 .component('appCollectionEditLibrary', {
-  templateUrl: '/static/app/templates/collectionEditLibrary.html',
+  templateUrl: '/static/app/templates/components/collectionEditLibrary.html',
   bindings: {
     onAddImage: '&',
     selectedImages: '<'

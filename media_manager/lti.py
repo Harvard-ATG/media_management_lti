@@ -30,7 +30,7 @@ class LTILaunch(object):
         if hasattr(self.request, 'LTI') and self.request.LTI:
             return dict(self.request.LTI)
         return dict()
- 
+
     def get_course_identifiiers(self):
         course_identifiers = {
             "lti_context_id": self.get_context_id(),
@@ -44,8 +44,17 @@ class LTILaunch(object):
     def get_sis_user_id(self):
         return self.launch_params.get('lis_person_sourcedid', None)
 
+    def get_sis_course_id(self):
+        return self.launch_params.get('lis_course_offering_sourcedid', None)
+
     def get_context_id(self):
         return self.launch_params.get('context_id', None)
+
+    def get_context_label(self):
+        return self.launch_params.get('context_label', None)
+
+    def get_canvas_course_id(self):
+        return self.launch_params.get('custom_canvas_course_id', None)
 
     def get_resource_link_id(self):
         return self.launch_params.get('resource_link_id', None)
@@ -55,6 +64,9 @@ class LTILaunch(object):
 
     def get_tool_consumer_instance_guid(self):
         return self.launch_params.get('tool_consumer_instance_guid', None)
+
+    def get_tool_consumer_instance_name(self):
+        return self.launch_params.get('tool_consumer_instance_name', None)
 
     def get_perms(self):
         perms = {
