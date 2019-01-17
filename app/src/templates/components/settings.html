@@ -15,8 +15,13 @@
   </div>
   <div class="panel-body">
     <div class="import-course-search" style="margin: 0 0 1em 0;">
-      Search courses by SIS ID or title:
-      <input type="text" name="import_course_search" ng-model="$ctrl.import_course_value" style="min-width: 250px;">
+      Search courses by SIS ID:
+      <input style="min-width: 250px;"type="text" ng-model="$ctrl.import_course_value" uib-typeahead="course for course in $ctrl.searchCourses($viewValue)" typeahead-loading="$ctrl.loadingCourses" typeahead-no-results="$ctrl.noCourseResults"  ng-model-options="{ debounce: 250 }" class="form-control">
+      <i ng-show="$ctrl.loadingCourses" class="glyphicon glyphicon-refresh"></i>
+      <div ng-show="$ctrl.noCourseResults">
+        <i class="glyphicon glyphicon-remove"></i> No Results Found
+      </div>
+
       <button role="button" class="btn btn-primary" ng-click="$ctrl.importCourseContent()">Import Course</button>
       <a role="button" class="btn btn-default" href="#/">Cancel</a>
     </div>

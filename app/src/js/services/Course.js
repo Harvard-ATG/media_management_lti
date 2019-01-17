@@ -67,9 +67,14 @@ angular.module('media_manager').factory('Course', ['$resource', 'AppConfig', fun
         headers: headers,
         url: host + '/courses/:id/course_copy',
         transformRequest: function(data) {
-          console.log("transform copyCourse", data);
           return JSON.stringify({"copy_source_id": data['copy_source_id']});
         }
+      },
+      'searchCourses': {
+        method: 'GET',
+        headers: headers,
+        url: host + '/courses/search',
+        isArray: true
       },
       'addWebImage': {
         method: 'POST',

@@ -93,7 +93,7 @@ angular.module('media_manager')
   this.reload = function() {
     this.loaded = false;
     this.load();
-  };
+  }.bind(this);
   this.getCollectionById = function(id) {
     for (var i = 0; i < this.collections.length; i++) {
       if (this.collections[i].id == id) {

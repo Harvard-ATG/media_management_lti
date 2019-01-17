@@ -16,6 +16,25 @@ angular.module('media_manager').component('appSettings', {
       });
     }
 
+    var _searchMap = {};
+
+    ctrl.searchCourses = function(val) {
+      console.log("searchCourses", val);
+      var course = Course.searchCourses({q: val});
+      return course.$promise.then(function(response) {
+        _searchMap = {};
+        var key = "", results = [];
+        for(var i = 0; i < response.length; i++) {
+          key = response[i].title + " (SIS ID: " + response[i].sis_course_id + ")";
+          _searchMap[key] = response[i];
+          results.push(key);
+        }
+        return results;
+      }).catch(function() {
+        _searchMap = {};
+      });
+    };
+
     ctrl.deleteCollections = function() {
       console.log("deleteCollections");
       var course = Course.deleteCollections({ id: AppConfig.course_id });
@@ -40,10 +59,16 @@ angular.module('media_manager').component('appSettings', {
     };
 
     ctrl.importCourseContent = function() {
-      console.log("Import course: " + ctrl.import_course_value);
+      var copy_source_id = null;
+      var course_object = _searchMap[ctrl.import_course_value];
+      if(course_object) {
+        copy_source_id = course_object.id;
+      }
+
+      console.log("Import course: ", ctrl.import_course_value, copy_source_id);
       var course = Course.copyCourse({
         id: AppConfig.course_id,
-        copy_source_id: ctrl.import_course_value
+        copy_source_id: copy_source_id
       });
       notifyWhen(course.$promise, {success: "Imported completed", error: "Error importing course content"});
       course.$promise.then(function() {
