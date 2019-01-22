@@ -3,11 +3,6 @@ angular.module('media_manager').component('appSettings', {
   bindings: {},
   controller: ['AppConfig', 'Course', 'CourseCache', 'Notifications', '$q', '$uibModal', function(AppConfig, Course, CourseCache, Notifications, $q, $uibModal) {
     var ctrl = this;
-
-    ctrl.confirmDeleteImports = false;
-    ctrl.confirmDeleteImages = false;
-    ctrl.confirmDeleteCollections = false;
-
     var _searchMap = {}; // holds mapping of search strings to course response objects
 
     ctrl.searchCourses = function(val) {
