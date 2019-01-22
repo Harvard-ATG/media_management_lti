@@ -87,6 +87,16 @@ angular.module('media_manager').factory('Notifications', function() {
             this.messages.splice(found, 1);
           }
           return this;
+        },
+        handlePromise: function(promise, options) {
+          var self = this;
+          return promise.then(function(data) {
+            var msg = options.msgProp ? data[options.msgProp] : options.msgText || "Success";
+            self.clear().success(msg);
+          }).catch(function(data) {
+            var msg = options.errorProp ? data[options.errorProp] : options.errorText || "Error";
+            self.clear().error(msg);
+          });
         }
     };
     return service;

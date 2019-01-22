@@ -15,7 +15,7 @@
   </div>
   <div class="panel-body">
     <div class="import-course-search" style="margin: 0 0 1em 0;">
-      Search courses by SIS ID:
+      Search courses by SIS ID or title:
       <input style="min-width: 250px;"type="text" ng-model="$ctrl.import_course_value" uib-typeahead="course for course in $ctrl.searchCourses($viewValue)" typeahead-loading="$ctrl.loadingCourses" typeahead-no-results="$ctrl.noCourseResults"  ng-model-options="{ debounce: 250 }" class="form-control">
       <i ng-show="$ctrl.loadingCourses" class="glyphicon glyphicon-refresh"></i>
       <div ng-show="$ctrl.noCourseResults">
@@ -43,9 +43,7 @@
         </tr>
       </tbody>
     </table>
-    <button class="btn btn-danger" ng-click="$ctrl.confirmDeleteImports = true">Clear Import Results</button>
-    <app-confirm-delete ng-show="$ctrl.confirmDeleteImports" on-confirm="$ctrl.deleteImports()" on-cancel="$ctrl.confirmDeleteImports = false" msg="Click OK to confirm that you would like to clear import records, otherwise click Cancel."></app-confirm-delete>
-
+    <app-button-confirm-delete button-text="Clear Import Results" on-confirm="$ctrl.deleteImports()" msg="Click OK to confirm that you would like to clear import records, otherwise click Cancel."></app-button-confirm-delete>
   </div>
 </div>
 
@@ -54,12 +52,8 @@
     <h3 class="panel-title">Delete Course Content</h3>
   </div>
   <div class="panel-body">
-    <button class="btn btn-danger" style="display:block;" ng-click="$ctrl.confirmDeleteCollections = true" style="margin-bottom: 1em">Permanently Delete Collections</button>
-    <app-confirm-delete ng-show="$ctrl.confirmDeleteCollections" on-confirm="$ctrl.deleteCollections()" on-cancel="$ctrl.confirmDeleteCollections = false" msg="Click OK to confirm that you would like to permanently delete collections, otherwise click Cancel."></app-confirm-delete>
-
-    <button class="btn btn-danger" style="display:block; margin-top: 1em;" ng-click="$ctrl.confirmDeleteImages = true" style="margin-bottom: 1em">Permanently Delete Images</button>
-    <app-confirm-delete ng-show="$ctrl.confirmDeleteImages" on-confirm="$ctrl.deleteImages()" on-cancel="$ctrl.confirmDeleteImages = false" msg="Click OK to confirm that you would like to permanently delete images, otherwise click Cancel."></app-confirm-delete>
-
+    <app-button-confirm-delete style="display:block;margin-bottom: 1em;" button-text="Permanently Delete Collections" on-confirm="$ctrl.deleteCollections()" msg="Click OK to confirm that you would like to permanently delete collections, otherwise click Cancel."></app-button-confirm-delete>
+    <app-button-confirm-delete button-text="Permanently Delete Images" on-confirm="$ctrl.deleteImages()" msg="Click OK to confirm that you would like to permanently delete images, otherwise click Cancel."></app-button-confirm-delete>
   </div>
 </div>
 
