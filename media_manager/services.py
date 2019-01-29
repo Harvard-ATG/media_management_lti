@@ -1,31 +1,48 @@
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from media_manager.models import Course
 from media_manager.lti import LTILaunch
 
 import requests
 import json
-import re
 import logging
 
 logger = logging.getLogger(__name__)
 
 class CourseService(object):
-    def __init__(self, lti_launch, api_auth):
+    def __init__(self, lti_launch):
         self.lti_launch = lti_launch
-        self.api_auth = api_auth
 
     @classmethod
     def from_request(cls, request):
         lti_launch = LTILaunch(request)
-        api_auth = APIAuthService(user_id=lti_launch.get_sis_user_id(), perms=lti_launch.get_perms())
-        return cls(lti_launch, api_auth)
+        return cls(lti_launch)
+
+    def obtain_token(self, api_course_id=None):
+        if self.lti_launch.is_test_student():
+            user_id = "TestStudent:%s" % self.lti_launch.get_context_id()
+        else:
+            user_id = self.lti_launch.get_sis_user_id()
+
+        course_permission=None
+        if api_course_id is not None:
+            course_permission = self.lti_launch.get_read_write_permission()
+
+        api = APIService()
+        token_response = api.obtain_token(user_id=user_id, course_id=api_course_id, course_permission=course_permission)
+
+        access_token = token_response.get('access_token', None)
+        if access_token is None:
+            raise PermissionDenied("Failed to obtain an access token")
+
+        return access_token
 
     def load_course(self, raise_exception=False):
         '''
         Loads the current course model instance associated with the context identifiers.
         If none exists, it will attempt to find or create one.
         '''
-        course_identifiers = self.lti_launch.get_course_identifiiers()
+        course_identifiers = self.lti_launch.get_course_identifiers()
         try:
             logger.info("Attempting to load local course object with course_identifiers=%s" % course_identifiers)
             course = Course.objects.get(**course_identifiers)
@@ -43,16 +60,17 @@ class CourseService(object):
         Searches the API for a course with matching context identifiers (context_id and tool_consumer_instance_guid),
         or if none exists, creates a new course context in the API.
         '''
-        create_token = self.api_auth.obtain_create_token()
-        course_identifiers = self.lti_launch.get_course_identifiiers()
-        api = APIService(access_token=create_token)
+        access_token = self.obtain_token()
+        api = APIService(access_token=access_token)
+
+        course_identifiers = self.lti_launch.get_course_identifiers()
         found = api.search_courses(course_identifiers)
         if len(found) == 0:
             logger.info("Search returned no results, so creating course.")
             data = api.create_course({
                 "title": self.lti_launch.get_context_title(),
                 "sis_course_id": self.lti_launch.get_sis_course_id(),
-                "lti_custom_canvas_course_id": self.lti_launch.get_canvas_course_id(),
+                "canvas_course_id": self.lti_launch.get_canvas_course_id(),
                 "lti_context_id": self.lti_launch.get_context_id(),
                 "lti_tool_consumer_instance_guid": self.lti_launch.get_tool_consumer_instance_guid(),
                 "lti_context_title": self.lti_launch.get_context_title(),
@@ -67,65 +85,17 @@ class CourseService(object):
             err_msg = "Multiple courses exist with course identifiers %s. Only zero or one course should exist with those identifiers." % course_identifiers
             logger.error(err_msg)
             raise Exception(err_msg)
+
         course = Course(api_course_id=api_course_id, **course_identifiers)
         course.save()
         logger.info("Created course object with api_course_id=%s and course_identifiers=%s" % (api_course_id, course_identifiers))
+
         return course
 
-    def obtain_user_token(self, course_instance):
-        return self.api_auth.obtain_user_token(course_instance=course_instance)
-
     def get_collection(self, collection_id):
-        course_identifiers = self.lti_launch.get_course_identifiiers()
-        course = Course.objects.get(**course_identifiers)
-        user_token = self.api_auth.obtain_user_token(course_instance=course)
-        api = APIService(access_token=user_token)
+        access_token = self.obtain_token()
+        api = APIService(access_token=access_token)
         return api.get_collection(collection_id)
-
-class APIAuthService(object):
-    def __init__(self, user_id, perms):
-        self.user_id = user_id
-        self.perms = perms
-
-    def obtain_create_token(self):
-        '''
-        Returns an access token that has sufficient privilege to *create* a course.
-        '''
-        if not self.perms['edit']:
-            raise Exception("Insufficient permission to obtain create token")
-        return self.obtain_token(course_instance=None, raise_exception=True)
-
-    def obtain_user_token(self, course_instance=None):
-        '''
-        Returns an access token to read or write to a specific course.
-        '''
-        if course_instance is None:
-            raise Exception("Course instance required to obtain a user token")
-        return self.obtain_token(course_instance=course_instance, raise_exception=True)
-
-    def obtain_token(self, course_instance=None, raise_exception=False):
-        '''
-        Returns an access token for the current user.
-        '''
-        if self.perms['edit']:
-            scope_perm = 'write'
-        elif self.perms['read']:
-            scope_perm = 'read'
-        else:
-            raise Exception("Insufficient permission to obtain token")
-
-        if course_instance is None:
-            scope_obj = '*'
-        else:
-            scope_obj = str(course_instance.api_course_id)
-
-        scope = "%s:course:%s" % (scope_perm, scope_obj)
-
-        token_response = APIService().obtain_token(self.user_id, scope)
-        access_token = token_response.get('access_token', None)
-        if raise_exception and access_token is None:
-            raise Exception("Failed to obtain an access token")
-        return access_token
 
 class APIService(object):
     def __init__(self, access_token=None):
@@ -142,8 +112,35 @@ class APIService(object):
 
         if access_token is not None:
             self.headers['Authorization'] = "Token %s" % access_token
-
         logger.info("API: instance base_url=%s headers=%s" % (self.base_url, self.headers))
+
+    def obtain_token(self, user_id=None, course_id=None, course_permission=None):
+        '''
+        Obtains an access token for the given user_id and scope.
+        '''
+        url = "%s/auth/obtain-token" % self.base_url
+        post_data = {
+            "client_id": self.client_credentials['client_id'],
+            "client_secret": self.client_credentials['client_secret'],
+            "user_id": user_id,
+        }
+        if course_id is not None:
+            post_data.update({
+                "course_id": course_id,
+                "course_permission": course_permission,
+            })
+        logger.debug("OBTAIN TOKEN: %s" % post_data)
+        r = requests.post(url, headers=self.headers, data=json.dumps(post_data))
+        if r.status_code != 200:
+            raise Exception("API: failed to obtain token. status_code=%s text=%s" % (r.status_code, r.text))
+
+        logger.info("API: obtained token: %s" % (r.text))
+
+        data = r.json()
+        if not data:
+            raise Exception("API: obtained token, but response is empty")
+
+        return data
 
     def search_courses(self, params):
         '''
@@ -181,31 +178,6 @@ class APIService(object):
             raise Exception("API: created course, but response is empty")
         if 'id' not in data:
             raise Exception("API: created course, but no course_id")
-
-        return data
-
-    def obtain_token(self, user_id, scope):
-        '''
-        Obtains anaccess token for the given user_id and scope.
-        '''
-        url = "%s/auth/obtain-token" % self.base_url
-
-        post_data = {
-            "client_id": self.client_credentials['client_id'],
-            "client_secret": self.client_credentials['client_secret'],
-            "user_id": user_id,
-            "scope": scope,
-        }
-
-        r = requests.post(url, headers=self.headers, data=json.dumps(post_data))
-        if r.status_code != 200:
-            raise Exception("API: failed to obtain token. status_code=%s text=%s" % (r.status_code, r.text))
-
-        logger.info("API: obtained token: %s" % (r.text))
-
-        data = r.json()
-        if not data:
-            raise Exception("API: obtained token, but response is empty")
 
         return data
 

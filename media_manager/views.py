@@ -53,7 +53,8 @@ class CourseViewHelper(object):
         return self.lti_launch.get_perms()
 
     def api_access_token(self):
-        return self.course_service.obtain_user_token(course_instance=self.get_course_object())
+        course_object = self.get_course_object()
+        return self.course_service.obtain_token(api_course_id=course_object.api_course_id)
 
 class Endpoint(object):
     '''
