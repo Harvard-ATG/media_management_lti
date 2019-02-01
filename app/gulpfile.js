@@ -74,55 +74,6 @@ gulp.task('moveVendorFonts', function(){
 gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
 
 
-
-
-var tmpDir = 'tmp';
-var miradorDir = tmpDir + '/mirador';
-var miradorBuildDir = miradorDir + '/build/mirador';
-gulp.task('cloneMirador', function(done){
-  if(!fs.existsSync(tmpDir)){
-    fs.mkdirSync(tmpDir);
-  }
-  if(!fs.existsSync(miradorDir)){
-    git.clone('https://github.com/IIIF/Mirador', {args: miradorDir}, function(err) {
-      if(err){
-        throw err;
-      }
-      done(err);
-    });
-  } else {
-    done();
-  }
-});
-gulp.task('buildMirador', ['cloneMirador'], function(done){
-  exec('npm install', {cwd: miradorDir}, function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    if(err){
-      done(err);
-    }
-    exec('./node_modules/grunt-cli/bin/grunt', {cwd: miradorDir}, function (err, stdout, stderr) {
-      console.log(stdout);
-      console.log(stderr);
-      done(err);
-    });
-  });
-});
-gulp.task('moveMirador', ['buildMirador'], function(){
-  gulp.src([miradorBuildDir + '/**/*'])
-  .pipe(gulp.dest('src/vendor/mirador'));
-});
-
-gulp.task('cleanMirador', function(){
-  del([miradorDir, 'build/app/vendor/mirador', 'src/vendor/mirador']);
-});
-
-gulp.task('mirador', ['cloneMirador', 'buildMirador', 'moveMirador']);
-
-
-
-
-
 gulp.task('clean', function(done) {
   del(['build/build.json']).then(function(){
     done();
