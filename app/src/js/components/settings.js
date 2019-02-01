@@ -42,6 +42,9 @@ angular.module('media_manager').component('appSettings', {
       console.log("deleteImports");
       var course = Course.deleteCourseCopies({ id: AppConfig.course_id });
       var promise = Notifications.handlePromise(course.$promise, {msgText: "Cleared imports", errorText: "Error clearing imports"});
+      promise.then(function(response) {
+        ctrl.courseCopyList = [];
+      });
       ctrl.confirmDeleteImports = false;
     };
 
