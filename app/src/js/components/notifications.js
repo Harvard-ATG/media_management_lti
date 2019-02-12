@@ -1,5 +1,5 @@
 angular.module('media_manager').component('notifications', {
-  templateUrl: '/static/app/templates/notifications.html',
+  templateUrl: '/static/app/templates/components/notifications.html',
   bindings: {
     "topic": "<"
   },

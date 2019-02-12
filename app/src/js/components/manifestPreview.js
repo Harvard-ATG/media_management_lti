@@ -1,6 +1,6 @@
 angular.module('media_manager')
 .component('appManifestPreview', {
-  templateUrl: '/static/app/templates/manifestPreview.html',
+  templateUrl: '/static/app/templates/components/manifestPreview.html',
   bindings: {
     manifestUrl: '<',
     canvasId: '<',
@@ -154,7 +154,7 @@ angular.module('media_manager')
       ctrl.hasNextImages = (ctrl.images.length > ctrl.displayImages.length);
       ctrl.pageEnd = end;
     };
-    
+
     ctrl.displayAllImages = function() {
       ctrl.pageEnd = ctrl.images.length;
       ctrl.displayCurrentImages();

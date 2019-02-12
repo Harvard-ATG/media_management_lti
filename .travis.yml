@@ -18,7 +18,7 @@ before_script:
 - psql -c 'CREATE DATABASE media_management_lti;' -U postgres
 - psql -c 'GRANT ALL PRIVILEGES ON DATABASE media_management_lti TO media_management_lti;'
   -U postgres
-- cp -v media_management_lti/settings/secure.py.example media_management_lti/settings/secure.py
+- cp -v media_management_lti/settings/secure.py.travis media_management_lti/settings/secure.py
 script:
 - python manage.py migrate --noinput
 - python manage.py test media_manager

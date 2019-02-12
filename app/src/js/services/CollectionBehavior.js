@@ -24,7 +24,7 @@ angular.module('media_manager')
         var deferredDelete = $q.defer();
         var modalInstance = $uibModal.open({
             animation: false,
-            templateUrl: '/static/app/templates/modalConfirmDelete.html',
+            templateUrl: '/static/app/templates/components/modalConfirmDelete.html',
             controller: ['$scope', function($scope) {
                 var cd = this;
                 var collection = CourseCache.getCollectionById(id);

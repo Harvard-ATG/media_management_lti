@@ -30,8 +30,8 @@ class LTILaunch(object):
         if hasattr(self.request, 'LTI') and self.request.LTI:
             return dict(self.request.LTI)
         return dict()
- 
-    def get_course_identifiiers(self):
+
+    def get_course_identifiers(self):
         course_identifiers = {
             "lti_context_id": self.get_context_id(),
             "lti_tool_consumer_instance_guid": self.get_tool_consumer_instance_guid()
@@ -44,8 +44,17 @@ class LTILaunch(object):
     def get_sis_user_id(self):
         return self.launch_params.get('lis_person_sourcedid', None)
 
+    def get_sis_course_id(self):
+        return self.launch_params.get('lis_course_offering_sourcedid', None)
+
     def get_context_id(self):
         return self.launch_params.get('context_id', None)
+
+    def get_context_label(self):
+        return self.launch_params.get('context_label', None)
+
+    def get_canvas_course_id(self):
+        return self.launch_params.get('custom_canvas_course_id', None)
 
     def get_resource_link_id(self):
         return self.launch_params.get('resource_link_id', None)
@@ -55,6 +64,14 @@ class LTILaunch(object):
 
     def get_tool_consumer_instance_guid(self):
         return self.launch_params.get('tool_consumer_instance_guid', None)
+
+    def get_tool_consumer_instance_name(self):
+        return self.launch_params.get('tool_consumer_instance_name', None)
+
+    def is_test_student(self):
+        lis_person_sourcedid = self.launch_params.get('lis_person_sourcedid', '')
+        lis_person_name_full = self.launch_params.get('lis_person_name_full', '')
+        return not lis_person_sourcedid and lis_person_name_full ==  "Test Student"
 
     def get_perms(self):
         perms = {
@@ -68,6 +85,14 @@ class LTILaunch(object):
             perms["edit"] = bool(re.search('Instructor|Administrator|TeachingAssistant', role_str))
 
         return perms
+
+    def get_read_write_permission(self):
+        perms = self.get_perms()
+        if perms["edit"]:
+            return "write"
+        elif perms["read"]:
+            return "read"
+        raise PermissionDenied("LTI role does not grant permission")
 
     def has_perm(self, permission):
         perms = self.get_perms()

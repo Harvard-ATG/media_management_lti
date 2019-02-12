@@ -4,7 +4,7 @@ from .local import *
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'media_management_lti',
+        'NAME': 'db.sqlite3',
     },
 }
 

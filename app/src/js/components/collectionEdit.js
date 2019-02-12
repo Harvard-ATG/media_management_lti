@@ -1,5 +1,5 @@
 angular.module("media_manager").component("appCollectionEdit",  {
-    templateUrl: "/static/app/templates/collectionEdit.html",
+    templateUrl: "/static/app/templates/components/collectionEdit.html",
     bindings: {
       "collectionId": "<"
     },

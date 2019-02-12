@@ -12,32 +12,37 @@ angular.module('media_manager', ['ui.bootstrap', 'ngRoute', 'ngDroplet', 'xedita
     }
   })
   .when('/workspace', {
-    templateUrl: "/static/app/templates/workspace.html",
+    templateUrl: "/static/app/templates/controllers/workspace.html",
     controller: 'WorkspaceController',
     controllerAs: 'wc'
   })
   .when('/workspace/:collectionId', {
-    templateUrl: "/static/app/templates/workspace.html",
+    templateUrl: "/static/app/templates/controllers/workspace.html",
     controller: 'WorkspaceController',
     controllerAs: 'wc'
   })
   .when('/collections', {
-    templateUrl: "/static/app/templates/collections.html",
+    templateUrl: "/static/app/templates/controllers/collections.html",
     controller: 'CollectionsController',
     controllerAs: 'lc'
   })
+  .when('/settings', {
+    templateUrl: "/static/app/templates/controllers/settings.html",
+    controller: "SettingsController",
+    controllerAs: 'sc',
+  })
   .when('/mirador/:collectionId', {
-    templateUrl: "/static/app/templates/mirador.html",
+    templateUrl: "/static/app/templates/controllers/mirador.html",
     controller: 'MiradorController',
     controllerAs: 'mr'
   })
   .when('/image/:imageId', {
-    templateUrl: "/static/app/templates/image.html",
+    templateUrl: "/static/app/templates/controllers/image.html",
     controller: 'ImageController',
     controllerAs: 'ic'
   })
   .when('/error/:errorCode', {
-    templateUrl: "/static/app/templates/error.html",
+    templateUrl: "/static/app/templates/controllers/error.html",
     controller: 'ErrorController',
     controllerAs: 'er'
   })

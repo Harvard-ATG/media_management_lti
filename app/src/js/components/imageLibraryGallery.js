@@ -1,5 +1,5 @@
 angular.module('media_manager').component('appImageLibraryGallery', {
-  templateUrl: '/static/app/templates/imageLibraryGallery.html',
+  templateUrl: '/static/app/templates/components/imageLibraryGallery.html',
   bindings: {
     courseImages: "<",
     onAddToCollection: "&",
