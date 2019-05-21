@@ -14,7 +14,7 @@ angular.module('media_manager')
   ds.limits = {
     uploadSize:  200 * ONE_MEGABYTE,
     zipSize:     200 * ONE_MEGABYTE,
-    imageSize:    20 * ONE_MEGABYTE
+    imageSize:    50 * ONE_MEGABYTE
   };
 
   ds.validators = [
