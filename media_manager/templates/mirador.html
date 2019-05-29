@@ -18,13 +18,12 @@ window.miradorConfig = {{miradorConfig|safe}};
 (function() {
     var config = window.miradorConfig;
 
+    // See also: https://github.com/ProjectMirador/mirador/blob/v2.6.0/js/src/settings.js
     var windowObject = {
+      "id": "viewer",
       "annotationLayer" : false,
-      "loadedManifest": config.data[0].manifestUri
-      //"bottomPanel" : false,
-      //"sidePanel" : false,
-      //"viewType": "ImageView",
-      //"canvasId": "http://iiif/id/and/uri/of/your/canvas/canvas-id"
+      "loadedManifest": config.data[0].manifestUri,
+      "windowOptions": {},
     };
     if(config.imageViewEnabled) {
       windowObject.viewType = 'ImageView';
@@ -41,32 +40,22 @@ window.miradorConfig = {{miradorConfig|safe}};
         "windowSettings": {
           "availableViews": ["ThumbnailsView", "ImageView", "BookView", "ScrollView"],
           "viewType": "ThumbnailsView",
-          "layoutOptions": {
-            "newObject" : false,
-            "close": false,
-            "slotRight": false,
-            "slotLeft": false,
-            "slotAbove": false,
-            "slotBelow": false
-          },
+          "layoutOptions": {"newObject" : false, "close": false, "slotRight": false, "slotLeft": false, "slotAbove": false, "slotBelow": false},
           "canvasControls": {
             "annotations" : {
               "annotationLayer": false
             },
             "imageManipulation": {
-              "manipulationLayer": false
+              "manipulationLayer": true
             }
           }
         },
         "windowObjects": [windowObject],
         "saveSession": false,
-        "mainMenuSettings": {
-          "show": false
-        },
+        "mainMenuSettings": {"show": false},
         "displayLayout": false,
         "showAddFromURLBox": false,
     };
-
     console.log("Loading mirador with settings: ", miradorSettings);
 
     window.mirador = Mirador(miradorSettings);
