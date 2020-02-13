@@ -4,7 +4,6 @@ var sort = require('gulp-sort');
 var del = require('del');
 var uglify = require('gulp-uglify');
 var minifycss = require('gulp-minify-css');
-var git = require('gulp-git');
 var exec = require('child_process').exec;
 var fs = require('fs');
 //var Server = require('karma').Server;
