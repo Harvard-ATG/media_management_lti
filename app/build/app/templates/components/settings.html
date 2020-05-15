@@ -1,0 +1,60 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Course Details</h3>
+  </div>
+  <div class="panel-body">
+    <b>Title:</b> {{ $ctrl.course.title }}<br>
+    <b>SIS ID:</b> {{ $ctrl.course.sis_course_id }}<br>
+    <b>LTI Context:</b> {{ $ctrl.course.lti_context_id }}<br>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Import Course Content</h3>
+  </div>
+  <div class="panel-body">
+    <div class="import-course-search" style="margin: 0 0 1em 0;">
+      Search courses by SIS ID or title:
+      <input style="min-width: 250px;"type="text" ng-model="$ctrl.import_course_value" uib-typeahead="course for course in $ctrl.searchCourses($viewValue)" typeahead-loading="$ctrl.loadingCourses" typeahead-no-results="$ctrl.noCourseResults"  ng-model-options="{ debounce: 250 }" class="form-control">
+      <i ng-show="$ctrl.loadingCourses" class="glyphicon glyphicon-refresh"></i>
+      <div ng-show="$ctrl.noCourseResults">
+        <i class="glyphicon glyphicon-remove"></i> No Results Found
+      </div>
+
+      <button role="button" class="btn btn-primary" ng-click="$ctrl.importCourseContent()">Import Course</button>
+      <a role="button" class="btn btn-default" href="#/">Cancel</a>
+    </div>
+    <table class="table table-condensed" ng-show="$ctrl.courseCopyList">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>SIS ID</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="courseCopy in $ctrl.courseCopyList">
+          <td>{{ courseCopy.source.title }}</td>
+          <td>{{ courseCopy.source.sis_course_id }}</td>
+          <td>{{ courseCopy.created }}</td>
+          <td>{{ courseCopy.state }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <app-button-confirm-delete button-text="Clear Import Results" on-confirm="$ctrl.deleteImports()" msg="Click OK to confirm that you would like to clear import records, otherwise click Cancel."></app-button-confirm-delete>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Delete Course Content</h3>
+  </div>
+  <div class="panel-body">
+    <app-button-confirm-delete style="display:block;margin-bottom: 1em;" button-text="Permanently Delete Collections" on-confirm="$ctrl.deleteCollections()" msg="Click OK to confirm that you would like to permanently delete collections, otherwise click Cancel."></app-button-confirm-delete>
+    <app-button-confirm-delete button-text="Permanently Delete Images" on-confirm="$ctrl.deleteImages()" msg="Click OK to confirm that you would like to permanently delete images, otherwise click Cancel."></app-button-confirm-delete>
+  </div>
+</div>
+
+<a href="#/">Return to home page</a>

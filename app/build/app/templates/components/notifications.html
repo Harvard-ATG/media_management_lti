@@ -1,0 +1,8 @@
+<div ng-repeat="message in $ctrl.getMessages()" class="notifications">
+	<div class="alert alert-{{message.type}}" role="alert">
+		<button type="button" class="close" aria-label="Close" ng-click="$ctrl.close(message)">
+      <span aria-hidden="true">&times;</span> Close
+		</button>
+		<div ng-bind-html="message.content|newlines|rawhtml"></div>
+	</div>
+</div>

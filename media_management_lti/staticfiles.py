@@ -44,10 +44,10 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             return []
 
         # Clean build files from previous runs
-        self.clean_files()
+        # self.clean_files() # Freezing build as of 5/15/20 -abarrett
 
         # Build the source files
-        self.build_src_files()
+        # self.build_src_files() # Freezing build as of 5/15/20 -abarrett
 
         # Hash the built artifacts (cache-busting tactic)
         hashed_files = self.hash_build_files()

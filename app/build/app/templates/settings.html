@@ -1,0 +1,29 @@
+<breadcrumbs></breadcrumbs>
+<notifications></notifications>
+<div ng-if="sc.canEdit" class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <fieldset>
+        <legend>Admin Users</legend>
+      </fieldset>
+
+      <fieldset>
+        <legend>Import Course Content</legend>
+        <p>Select a course and then click the import button to copy all collections and images into this course:</p>
+        <select name="courses">
+          <option value="1">Course A</option>
+          <option value="1">Course B</option>
+          <option value="1">Course C</option>
+        </select>
+        <button class="btn btn-primary">Import Course Content</button>
+      </fieldset>
+
+      <br>
+      <fieldset>
+        <legend>Main View Settings</legend>
+        <input type="radio" name="frontview" value="collection_list" checked="checked"> Show the list of collections when the tool is opened<br>
+        <input type="radio" name="frontview" value="collection_detail"> Show images from a particular collection when the tool is opened<br>
+      </fieldset>
+    </div>
+  </div>
+</div>

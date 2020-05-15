@@ -1,0 +1,32 @@
+table.metadata {
+    table-layout: fixed;
+    min-width: 21.5em;
+    width: 100%;
+    border-collapse: collapse;
+    border-box;
+    display: table;
+    border-color: #ccc;
+    font-family: 'Open Sans', 'Lucida Grande', Verdana, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.42857143;
+    color: #000;
+    background-color: #fff;
+    margin: 5px 0;
+}
+
+table.metadata tr {
+    border-bottom: 1px solid #ccc;
+}
+
+table.metadata td.label {
+    padding: .5em;
+    font-weight: bold;
+    vertical-align: top;
+    width: 7em;
+}
+
+table.metadata td.information {
+    padding: .5em;
+    width: 12.5em;
+    word-wrap: break-word;
+}
