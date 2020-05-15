@@ -1,0 +1,32 @@
+<div class="row" style="margin-top: 10px;">
+  <div class="col-sm-8">
+      <div class="form-group" ng-class="{'has-error': $ctrl.hasError}">
+        <label for="contentManifest">IIIF Manifest to use for this collection</label>
+        <div class="input-group">
+          <input class="form-control" type="url" ng-model="$ctrl.manifestUrl" ng-change="$ctrl.validateManifest()" id="contentManifest">
+          <span class="input-group-btn">
+            <button class="btn btn-primary" id="manifestSelectBtn" ng-disabled="$ctrl.hasError" ng-click="$ctrl.selectManifest()">Select IIIF Manifest</button>
+          </span>
+        </div>
+        <div ng-if="$ctrl.hasError" class="alert alert-danger" style="margin-top: 4px;" role="alert">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>
+          {{ $ctrl.errorMsg }}
+        </div>
+      </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+      <div class="form-group" ng-if="$ctrl.manifestUrl">
+        <label for="contentCanvas">Image to highlight in this manifest (i.e. IIIF Canvas)</label>
+        <input class="form-control collectioneditmanifest__input" type="url" ng-model="$ctrl.canvasId" id="contentCanvas" ng-change="$ctrl.update()">
+      </div>
+  </div>
+</div>
+<div class="row" ng-if="$ctrl.previewEnabled" >
+  <div class="col-md-12" >
+    <app-manifest-preview manifest-url="$ctrl.manifestUrl" canvas-id="$ctrl.canvasId" on-select-canvas="$ctrl.selectCanvas($event)"></app-manifest-preview>
+  </div>
+</div>
+

@@ -1,0 +1,10 @@
+<breadcrumbs ng-if="mr.showBreadcrumbs"></breadcrumbs>
+
+<div ng-if="mr.canEdit" class="pull-right" style="margin: 10px;">
+    <a href="#!/collections" class="btn btn-default">Course Collections</a>
+    <a ng-href="#!/workspace/{{ mr.collection_id }}" class="btn btn-primary">Edit Collection</a>
+</div>
+
+<div ng-if="mr.canRead" id="miraroot">
+  <iframe resizable-iframe id="miraframe" ng-src="{{mr.iframeSrc}}" allowfullscreen="true" frameborder="0" scrolling="auto" marginheight="0" marginwidth="0" height="100%" width="100%"></iframe>
+</div>

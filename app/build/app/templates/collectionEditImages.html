@@ -1,0 +1,29 @@
+<div class="panel panel-default" style="margin-top:1em">
+  <div class="panel-body">
+    <div ng-show="$ctrl.isLoading">
+      <span us-spinner="{top:'50%'}"></span>
+    </div>
+
+    <div ng-if="$ctrl.images.length == 0">
+      There are no images selected for this collection.
+      Use images in this collection by adding them from the image library.
+    </div>
+
+    <ul class="list-inline" style="overflow:auto;" as-sortable="$ctrl.dragControlListeners" ng-model="$ctrl.images">
+      <li class="droplet-thumb" ng-repeat="collectionImage in $ctrl.images" as-sortable-item uib-tooltip="{{collectionImage.title}}">
+        <div style="position:relative;" as-sortable-item-handle>
+          <droplet-thumb ng-model="collectionImage"></droplet-thumb>
+          <div class="overlay" ng-click="$ctrl.removeImage(collectionImage)">-</div>
+          <div class="resize-overlay" ng-click="$ctrl.goToImageView(collectionImage)">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <div style="margin-top: 20px;">
+      <button type="button" class="btn btn-link" ng-click="$ctrl.toggleIiifUrl();" ><i class="collection__icon-iiif" style="margin-right: 5px;"></i>View link to this collection</button>
+    </div>
+    <div ng-show="$ctrl.showIiifUrl" class="collection__iiifurl"><input type="text" class="form-control" value="{{ ::$ctrl.iiifUrl }}" readonly></div>
+  </div>
+</div>
