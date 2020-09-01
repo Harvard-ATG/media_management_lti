@@ -1,0 +1,17 @@
+[run]
+source = .
+omit =
+    */node_modules/*
+    manage.py
+    media_management_lti/*
+    media_manager/migrations/*
+    media_manager/templatetags/*
+    media_manager/mixins.py
+    media_manager/services.py
+    media_manager/lti.py
+    media_manager/decorators.py
+branch = True
+
+[report]
+show_missing = True
+skip_covered = True

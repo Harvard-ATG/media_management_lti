@@ -1,3 +1,4 @@
+from builtins import object
 from django.db import models
 
 class Course(models.Model):
@@ -7,7 +8,7 @@ class Course(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    class Meta:
+    class Meta(object):
         verbose_name = 'course'
         verbose_name_plural = 'courses'
         unique_together = ("lti_context_id", "lti_tool_consumer_instance_guid")
@@ -23,7 +24,7 @@ class CourseModule(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    class Meta:
+    class Meta(object):
         verbose_name = 'module'
         verbose_name_plural = 'module'
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.contrib.staticfiles import storage
 from django.core.files.base import File
 from django.conf import settings
@@ -78,18 +79,18 @@ class StaticFilesStorage(storage.StaticFilesStorage):
 
         # Run the commands.
         for cmd in (NPM_INSTALL, BOWER_INSTALL, GULP_BUILD):
-            print "\n%s%s%s\n" % ("*" * 25, cmd, "*" * 25)
+            print("\n%s%s%s\n" % ("*" * 25, cmd, "*" * 25))
             which_cmd = cmd[0]
-            print "Which [%s]?" % which_cmd
+            print("Which [%s]?" % which_cmd)
             found_cmd = subprocess.check_output(['/usr/bin/which', which_cmd], **subprocess_args).strip()
-            print "Found [%s] at [%s]" % (which_cmd, found_cmd)
+            print("Found [%s] at [%s]" % (which_cmd, found_cmd))
             cmd[0] = found_cmd
-            print "Running cmd [%s] with args [%s]\n" % (' '.join(cmd), subprocess_args)
+            print("Running cmd [%s] with args [%s]\n" % (' '.join(cmd), subprocess_args))
             child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **subprocess_args)
             (stdoutdata, stderrdata) = child.communicate()
             while child.returncode is None:
                 continue
-            print "%s\n%s\n" % (stdoutdata, stderrdata)
+            print("%s\n%s\n" % (stdoutdata, stderrdata))
 
     def hash_build_files(self):
         """
@@ -106,13 +107,13 @@ class StaticFilesStorage(storage.StaticFilesStorage):
                 can_hash_file = (name.endswith('.js') or name.endswith('.css')) and re.match(file_pattern, name) is None
                 if can_hash_file:
                     orig_file_path = os.path.join(root, name)
-                    print "Hashing file: %s" % orig_file_path
+                    print("Hashing file: %s" % orig_file_path)
                     with open(orig_file_path, 'rb') as f:
                         hash_result = self.file_hash(File(f))
                         (file_name, file_extension) = os.path.splitext(name)
                         new_file_path = os.path.join(root, "%s-%s%s" % (file_name, hash_result, file_extension))
                         hashed_files[orig_file_path] = new_file_path
-                        print "Copying file %s to %s" % (orig_file_path, new_file_path)
+                        print("Copying file %s to %s" % (orig_file_path, new_file_path))
                         shutil.copyfile(orig_file_path, new_file_path)
 
         return hashed_files
@@ -128,7 +129,7 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         build_manifest = {}
         strip_src_path = BUILD_SRC + "/"
         strip_dst_path = settings.BASE_DIR + "/"
-        for original_path, hashed_path in hashed_files.iteritems():
+        for original_path, hashed_path in hashed_files.items():
             src = original_path.replace(strip_src_path, '')
             dst = hashed_path.replace(strip_dst_path, '')
             build_manifest[src] = dst
@@ -136,8 +137,8 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         # Write the JSON file with the mappings
         manifest_file = MANIFEST_FILE
         manifest_json = json.dumps(build_manifest)
-        print "Build manifest: %s" % manifest_json
-        print "Writing build manifest: %s" % manifest_file
+        print("Build manifest: %s" % manifest_json)
+        print("Writing build manifest: %s" % manifest_file)
         with open(manifest_file, 'w') as f:
             f.write(manifest_json)
 
@@ -149,9 +150,9 @@ class StaticFilesStorage(storage.StaticFilesStorage):
             (BUILD_SRC, BUILD_DST),
         ]
         for (src, dst) in copies:
-            print "Copying tree %s to %s" % (src, dst)
+            print("Copying tree %s to %s" % (src, dst))
             if os.path.exists(dst):
-                print "Deleting tree %s" % dst
+                print("Deleting tree %s" % dst)
                 shutil.rmtree(dst)
             shutil.copytree(src, dst)
 
@@ -161,10 +162,10 @@ class StaticFilesStorage(storage.StaticFilesStorage):
         """
         build_tree = os.path.join(BUILD_SRC, 'app')
         if os.path.exists(build_tree):
-            print "Deleting build source tree %s" % build_tree
+            print("Deleting build source tree %s" % build_tree)
             shutil.rmtree(build_tree)
         if os.path.exists(MANIFEST_FILE):
-            print "Deleting build manifest %s" % MANIFEST_FILE
+            print("Deleting build manifest %s" % MANIFEST_FILE)
             os.remove(MANIFEST_FILE)
 
     def file_hash(self, content=None):

@@ -26,3 +26,16 @@ app/.*.json
 
 # Mirador
 #/app/src/vendor/mirador
+
+# Auto-generated backup files
+*.bak
+
+# Any SSL keys/certs
+*.pem
+
+# Files that `coverage` generates
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover

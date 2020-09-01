@@ -1,3 +1,4 @@
+from builtins import object
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from media_manager.models import Course

@@ -1,3 +1,4 @@
+from builtins import object
 from django.core.exceptions import PermissionDenied
 import re
 import logging
@@ -19,7 +20,7 @@ class LTILaunch(object):
         elif 'LTI_LAUNCH' not in self.request.session:
             raise LTILaunchError("Session is missing LTI_LAUNCH dict.")
         else:
-            session_keys = self.request.session['LTI_LAUNCH'].keys()
+            session_keys = list(self.request.session['LTI_LAUNCH'].keys())
             if len(session_keys) == 0:
                 raise LTILaunchError("Session LTI_LAUNCH dict is empty")
 
