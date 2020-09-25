@@ -30,6 +30,11 @@ $ cp media_management_lti/settings/secure.py.example media_management_lti/settin
 - Generate API credentials on the [media_management_api](https://github.com/Harvard-ATG/media_management_api)  admin interface
 - Update `media_management_lti/settings/secure.py` with the client_id and client_secret that were generated. These API credentials are used to obtain API tokens for end-users.
 
+**Install TLS certificates to [support HTTPS on localhost](https://blog.filippo.io/mkcert-valid-https-certificates-for-localhost/)**
+- Install the [mkcert tool](https://github.com/FiloSottile/mkcert). E.g, `$ brew install mkcert` on MacOS.
+- Run `$ mkcert -install` and `$ mkcert localhost 127.0.0.1`. A TLS certificate and key pair will be generated. See output for the location of the pair on your filesystem.
+- Update the `runsslserver` command in ./docker-compose.yml with the paths to the TLS certificate and key. Alternatively, as expected by ./docker-compose.yml, rename the certificate to `cert.pem` and the key to `key.pem`, and ensure they are in project root, i.e. ./cert.pem and ./key.pem.
+
 **Start docker services:**
 
 ```
@@ -67,5 +72,5 @@ to the volume that was mounted (e.g. current directory).
 **Other tasks:**
 
 - Access the database: `docker-compose exec db psql -U media_management_lti`
-- Run unit tests: `docker-compose exec web python manage.py test`
+- Run unit tests: `bash run-tests.sh`
 

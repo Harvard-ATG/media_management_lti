@@ -12,15 +12,18 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
+from __future__ import absolute_import
+from django.urls import include, path
 from django.contrib import admin
-import views
+from . import views
+
+app_name = "media_manager"
 
 urlpatterns = [
-    url(r'^$', views.app, name='index'),
-    url(r'^app$', views.app, name='app'),
-    url(r'^mirador/(?P<collection_id>[0-9]+)$', views.mirador, name="mirador"),
-    url(r'^endpoints/module$', views.module_endpoint, name="module_endpoint"),
-    url(r'^lti/launch$', views.LTILaunchView.as_view(), name="lti_launch"),
-    url(r'^lti/config$', views.LTIToolConfigView.as_view(), name="lti_config"),
+    path('', views.app, name='index'),
+    path('app', views.app, name='app'),
+    path('mirador/<int:collection_id>', views.mirador, name="mirador"),
+    path('endpoints/module', views.module_endpoint, name="module_endpoint"),
+    path('lti/launch', views.LTILaunchView.as_view(), name="lti_launch"),
+    path('lti/config', views.LTIToolConfigView.as_view(), name="lti_config"),
 ]

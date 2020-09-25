@@ -13,7 +13,7 @@ services:
   web:
     build: .
     image: harvard-atg/media_management_lti:dev
-    command: ["./wait-for-it.sh", "db:5432", "--", "python", "manage.py", "runserver", "0.0.0.0:8080"]
+    command: ["./wait-for-it.sh", "db:5432", "--", "python", "manage.py", "runsslserver", "--certificate", "cert.pem", "--key", "key.pem", "0.0.0.0:8080"]
     volumes:
       - .:/code
     ports:
@@ -22,7 +22,7 @@ services:
       - db
       - redis
     environment:
-      DJANGO_SETTINGS_MODULE: media_management_lti.settings.local
+      DJANGO_SETTINGS_MODULE: media_management_lti.settings.test
     networks:
       default:
       public:

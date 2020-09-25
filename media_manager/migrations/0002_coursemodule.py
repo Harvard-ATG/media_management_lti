@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('api_collection_id', models.IntegerField(null=True)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('course', models.ForeignKey(to='media_manager.Course')),
+                ('course', models.ForeignKey(on_delete=models.CASCADE, to='media_manager.Course')),
             ],
             options={
                 'verbose_name': 'module',

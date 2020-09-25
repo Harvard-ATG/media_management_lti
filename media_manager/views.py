@@ -1,3 +1,4 @@
+from builtins import object
 from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponse, Http404, HttpResponseRedirect
@@ -7,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
-from ims_lti_py.tool_config import ToolConfig
+from lti import ToolConfig
 from media_manager.models import CourseModule
 from media_manager.services import CourseService
 from media_manager.lti import LTILaunch
@@ -207,9 +208,6 @@ class MiradorView(PageView):
         }
         return render(self.request, 'mirador.html', context=context)
 
-import django_auth_lti.patch_reverse
-
-
 class LTILaunchView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -246,7 +244,6 @@ class LTIToolConfigView(View):
         '''
         Gets extension parameters on the ToolConfig() instance.
         This includes canvas-specific things like the course_navigation and privacy level:
-
         {
             "canvas.instructure.com": {
                 "privacy_level": "public",
