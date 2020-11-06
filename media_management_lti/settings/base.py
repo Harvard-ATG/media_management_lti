@@ -266,3 +266,10 @@ MEDIA_MANAGEMENT_API_CREDENTIALS = SECURE_SETTINGS.get("media_management_api_cre
 
 # Google analytics
 GOOGLE_ANALYTICS_TRACKING_ID = None
+
+# End Of Life
+# This setting determines whether or not to display a message to admin users.
+try:
+    IS_END_OF_LIFE = bool(int(SECURE_SETTINGS.get("is_end_of_life", "0")))
+except ValueError:
+    IS_END_OF_LIFE = False

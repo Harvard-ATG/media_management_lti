@@ -153,6 +153,7 @@ class AppView(PageView):
             module_collection_id = None
             angular_route = "/collections"
 
+        permissions = self.helper.launch_perms()
         config = {
             "media_management_api": {
                 "root_endpoint": settings.MEDIA_MANAGEMENT_API_URL,
@@ -160,7 +161,7 @@ class AppView(PageView):
                 "course_id": course_object.api_course_id,
             },
             "resource_link_id": self.helper.launch_resource_link_id(),
-            "permissions": self.helper.launch_perms(),
+            "permissions": permissions,
             "module": {
                 "collection_id": module_collection_id,
                 "enabled": module_enabled,
@@ -168,7 +169,10 @@ class AppView(PageView):
             },
             "angular_route": angular_route,
         }
-        context = {"appConfig": self.to_json(config)}
+        context = {
+            "appConfig": self.to_json(config),
+            "canViewEndOfLifeMsg": settings.IS_END_OF_LIFE and permissions["edit"] is True,
+        }
         return render(self.request, 'index.html', context=context)
 
 class MiradorView(PageView):

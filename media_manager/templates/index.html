@@ -12,7 +12,10 @@ window.appConfig = {{appConfig|safe}};
   </script>
   {% include_google_analytics %}
 </head>
-<body ng-app="media_manager">
-  <div ng-view></div>
+<body>
+  {% include "_end_of_life.html" %}
+  <div ng-app="media_manager">
+    <div ng-view></div>
+  </div>
 </body>
 </html>
