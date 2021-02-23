@@ -1054,6 +1054,28 @@ angular.module('media_manager').component('appSettings', {
       });
     };
 
+    ctrl.exportCourseImages = function() {
+      // Helper function to trigger a file download using magic of object URLs.
+      // See also: https://javascript.info/blob#blob-as-url
+      function triggerDownload(csvdata) {
+        var blob = new Blob([csvdata], {type: 'text/csv'});
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.style.display = "hidden";
+        a.href = url;
+        a.download = 'export.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+
+      // Submit authorized request for CSV export and then trigger download.
+      var course = Course.exportCourseImages({ id: AppConfig.course_id });
+      return course.$promise.then(function(response) {
+        var csvdata = response.join("\n");
+        triggerDownload(csvdata);
+      });
+    };
+
     ctrl.$onInit = function() {
       ctrl.course = Course.getCourse({ id: AppConfig.course_id });
       ctrl.courseCopyList = Course.getCourseCopies({ id: AppConfig.course_id });
@@ -1857,6 +1879,18 @@ angular.module('media_manager').factory('Course', ['$resource', 'AppConfig', fun
         headers: headers,
         url: host + '/courses/search',
         isArray: true
+      },
+      'exportCourseImages': {
+        method: 'GET',
+        headers: {
+          'Authorization': headers.Authorization,
+          'Accept': 'text/csv'
+        },
+        url: host + '/courses/:id/library_export',
+        isArray: true,
+        transformResponse: function(data, headersGetter, status) {
+          return data.split("\n");
+        }
       },
       'addWebImage': {
         method: 'POST',
