@@ -22,7 +22,7 @@ services:
       - db
       - redis
     environment:
-      DJANGO_SETTINGS_MODULE: media_management_lti.settings.test
+      DJANGO_SETTINGS_MODULE: media_management_lti.settings.local
     networks:
       default:
       public:
