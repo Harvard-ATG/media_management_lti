@@ -76,6 +76,18 @@ angular.module('media_manager').factory('Course', ['$resource', 'AppConfig', fun
         url: host + '/courses/search',
         isArray: true
       },
+      'exportCourseImages': {
+        method: 'GET',
+        headers: {
+          'Authorization': headers.Authorization,
+          'Accept': 'text/csv'
+        },
+        url: host + '/courses/:id/library_export',
+        isArray: true,
+        transformResponse: function(data, headersGetter, status) {
+          return data.split("\n");
+        }
+      },
       'addWebImage': {
         method: 'POST',
         headers: headers,
