@@ -3,40 +3,41 @@ var concat = require('gulp-concat');
 var sort = require('gulp-sort');
 var del = require('del');
 var uglify = require('gulp-uglify');
-var minifycss = require('gulp-minify-css');
+var cleancss = require('gulp-clean-css');
 var exec = require('child_process').exec;
 var fs = require('fs');
 //var Server = require('karma').Server;
 //var jshint = require('gulp-jshint');
 
-gulp.task('moveHTML', function(){
+
+function moveHTML() {
   return gulp.src(['src/templates/**/*.html'])
     .pipe(gulp.dest('build/app/templates'));
-});
+}
 
-gulp.task('moveVendorSrc', function(){
+function moveVendorSrc() {
   return gulp.src(['src/vendor/**/*'])
     .pipe(sort())
     .pipe(gulp.dest('build/app/vendor'));
-});
+}
 
-gulp.task('buildJS', function(){
+function buildJS() {
   return gulp.src('src/js/**/*.js')
     .pipe(sort())
     .pipe(concat('app.js'))
     //.pipe(uglify())
     .pipe(gulp.dest('build/app/js'));
-});
+}
 
-gulp.task('buildCSS', function(){
+function buildCSS() {
   return gulp.src('src/css/**/*.css')
     .pipe(sort())
     .pipe(concat('styles.css'))
-    .pipe(minifycss())
+    .pipe(cleancss())
     .pipe(gulp.dest('build/app/css'));
-});
+}
 
-gulp.task('buildVendorJS', function(){
+function buildVendorJS() {
   return gulp.src([ 'bower_components/jquery/dist/jquery.min.js',
                     'bower_components/angular/angular.js',
                     'bower_components/angular-bootstrap/ui-bootstrap.js',
@@ -54,49 +55,33 @@ gulp.task('buildVendorJS', function(){
                     ])
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest('build/app/js'));
-});
+}
 
-gulp.task('buildVendorCSS', function(){
+
+function moveVendorFonts() {
+  return gulp.src(['bower_components/bootstrap/dist/fonts/*']).pipe(gulp.dest('build/app/fonts'));
+}
+
+function buildVendorCSS() {
   return gulp.src(['bower_components/bootstrap/dist/css/bootstrap.css',
                     'bower_components/angular-xeditable/dist/css/xeditable.css',
                     'bower_components/angular-bootstrap/ui-bootstrap-csp.css',
                     'bower_components/ng-sortable/dist/ng-sortable.min.css'])
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest('build/app/css'));
-});
+}
 
-gulp.task('moveVendorFonts', function(){
-  return gulp.src(['bower_components/bootstrap/dist/fonts/*'])
-  .pipe(gulp.dest('build/app/fonts'));
-});
-
-gulp.task('buildVendor', ['buildVendorJS', 'buildVendorCSS', 'moveVendorFonts', 'moveVendorSrc']);
-
-
-gulp.task('clean', function(done) {
-  del(['build/build.json']).then(function(){
-    done();
-  }); // created by "manage.py collectstatic"
-});
+function clean() {
+	return del([
+    'build/build.json', // created by manage.py collectstatic
+  ]); 
+}
 
 
-gulp.task('build', ['clean', 'moveHTML', 'buildJS', 'buildCSS', 'buildVendor']);
+var buildVendor = gulp.series(buildVendorJS, buildVendorCSS, moveVendorFonts, moveVendorSrc);
+var build = gulp.series(clean, moveHTML, buildJS, buildCSS, buildVendor); 
 
-gulp.task('connect', function(){
-  connect.server({
-    root: 'build',
-    livereload: true
-  });
 
-});
-
-gulp.task('watch', function(){
-  gulp.watch('src/js/**/*.js', ['buildJS']);
-  gulp.watch('src/css/**/*.css', ['buildCSS']);
-  gulp.watch('src/templates/**/*.html', ['moveHTML']);
-  //gulp.watch('bower_components/**/*.js', ['buildVendor']);
-  //gulp.watch('src/vendor/**/*', ['moveVendorSrc']);
-});
-
-gulp.task('default', ['build', 'watch', 'connect']);
-gulp.task('dev', ['build', 'watch']);
+exports.build = build;
+exports.clean = clean;
+exports.default = build;

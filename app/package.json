@@ -5,19 +5,23 @@
   "main": "src/js/app.js",
   "scripts": {
     "test": "karma start",
-    "_comment": "cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && pwd && npm install && ./node_modules/grunt-cli/bin/grunt"
+    "_comment": "cd src && mkdir -p vendor && cd vendor && if cd Mirador; then cd ..; else git clone https://github.com/IIIF/Mirador; fi && cd Mirador && pwd && npm install && ./node_modules/grunt-cli/bin/grunt",
+    "preinstall": "npx npm-force-resolutions"
+  },
+  "resolutions": {
+    "graceful-fs": "^4.2.4"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "bower": "^1.8.8",
-    "del": "^2.2.0",
-    "eslint": "^4.19.1",
-    "gulp": "^3.9.0",
+    "bower": "^1.8.12",
+    "del": "^6.0.0",
+    "eslint": "^7.20.0",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.7.0",
     "gulp-jshint": "^2.1.0",
-    "gulp-minify-css": "^1.2.4",
     "gulp-sort": "^2.0.0",
     "gulp-uglify": "^3.0.2",
     "jasmine-core": "^3.5.0",
@@ -28,11 +32,11 @@
     "karma-spec-reporter": "0.0.32"
   },
   "dependencies": {
-    "bower": "^1.8.8",
-    "del": "^5.1.0",
-    "gulp": "^3.9.0",
+    "bower": "^1.8.12",
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
-    "gulp-minify-css": "^1.2.4",
     "gulp-sort": "^2.0.0",
     "gulp-uglify": "^3.0.2"
   }
