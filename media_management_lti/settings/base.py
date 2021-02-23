@@ -221,6 +221,11 @@ LOGGING = {
             'level': _DEFAULT_LOG_LEVEL,
             'handlers': ['default'],
             'propagate': False,
+        },
+        'django': {
+            'level': _DEFAULT_LOG_LEVEL,
+            'handlers': ['default'],
+            'propagate': False,
         }
     },
 }
