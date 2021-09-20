@@ -1688,7 +1688,7 @@ angular.module('media_manager').service('AppConfig', function() {
     //    http://localhost:8000/path/to/view?resource_link_id=2a8b2d3fa51ea413d19
     this.resource_link_id = this.config.resource_link_id;
 
-    this.authorization_header = "Token " + this.access_token;
+    this.authorization_header = "Bearer " + this.access_token;
 });
 
 angular.module('media_manager').service('Breadcrumbs', function() {
