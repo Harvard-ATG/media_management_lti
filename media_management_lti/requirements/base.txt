@@ -2,7 +2,7 @@ Django~=2.2.0
 # Postgres
 psycopg2==2.8.5
 # Redis Cache
-redis==3.5.3
+redis==4.4.4
 django-redis-cache==2.1.1
 hiredis==1.1.0
 
