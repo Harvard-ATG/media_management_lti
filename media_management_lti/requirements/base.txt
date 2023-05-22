@@ -6,7 +6,7 @@ redis==3.5.3
 django-redis-cache==2.1.1
 hiredis==1.1.0
 
-requests==2.24.0
+requests==2.31.0
 
 git+https://github.com/Harvard-University-iCommons/django-auth-lti.git@v2.0.1#egg=django-auth-lti==2.0.1
 git+https://github.com/Harvard-ATG/media_management_sdk.git@v0.2.0#egg=media_management_sdk==0.2.0
